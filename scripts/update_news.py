@@ -9,7 +9,7 @@ ROOT=Path(__file__).resolve().parents[1]; NEWS_JSON=ROOT/'news.json'
 QUERIES=['診療放射線技師 OR 放射線技師 OR 放射線部','放射線診療 CT MRI FPD','放射線 被ばく 線量管理 安全管理','核医学 SPECT PET 放射線技師','放射線 AI 画像診断 読影支援','診療報酬 放射線 画像診断 補助金']
 OFFICIAL=('jart.jp','jsrt.or.jp','jrs.or.jp','jsnm.org','jastro.or.jp','mhlw.go.jp','nra.go.jp','pmda.go.jp','mext.go.jp','fda.gov','iaea.org','who.int','canon-medical.co.jp','fujifilm.com','gehealthcare.co.jp','siemens-healthineers.com','philips.co.jp')
 BLOCKED_SOURCES=('ウォーカープラス','WEBザテレビジョン','テレビジョン','週刊女性PRIME','女性自身','スポーツ報知','日刊スポーツ','ORICON NEWS','モデルプレス','まいどなニュース')
-CATEGORIES=('制度・職能','学術・AI','CT・MRI','一般撮影・FPD','安全管理','核医学','放射線治療','教育','診療報酬・補助金','その他')
+CATEGORIES=('制度','職能','学術','AI','CT','MRI','一般撮影','安全管理','核医学','放射線治療','教育','診療報酬・補助金','その他')
 def fetch(url):
  r=Request(url,headers={'User-Agent':'Mozilla/5.0 radiology-technologist-news'}); return urlopen(r,timeout=30).read().decode('utf-8','ignore')
 def rss(q):
@@ -36,7 +36,7 @@ def enrich(items):
  key=os.environ.get('OPENAI_API_KEY')
  if not key: return items
  payload=[{'id':i,'title':x['title'],'source':x['source'],'description':x['description']} for i,x in enumerate(items[:20])]
- prompt='''病院の放射線部門を管理する技師長向けにニュースを分類してください。各項目へ category, importance, summary, why を付けてください。categoryは必ず次の10個から1個だけ選択し、複数カテゴリを連結しないでください：制度・職能、学術・AI、CT・MRI、一般撮影・FPD、安全管理、核医学、放射線治療、教育、診療報酬・補助金、その他。importanceは高・中・低の1個。重要度は技師長の実務への影響で判定し、制度変更、人員、安全、線量、装置更新、診療報酬、補助金、AI導入などを高く評価してください。'''+json.dumps(payload,ensure_ascii=False)
+ prompt='''病院の放射線部門を管理する技師長向けにニュースを分類してください。各項目へ category, importance, summary, why を付けてください。categoryは必ず次の13個から1個だけ選択し、複数カテゴリを連結しないでください：制度、職能、学術、AI、CT、MRI、一般撮影、安全管理、核医学、放射線治療、教育、診療報酬・補助金、その他。FPDは独立カテゴリにせず、FPDに関するニュースは内容に最も近い「一般撮影」または「安全管理」などへ分類してください。importanceは高・中・低の1個。重要度は技師長の実務への影響で判定し、制度変更、人員、安全、線量、装置更新、診療報酬、補助金、AI導入などを高く評価してください。'''+json.dumps(payload,ensure_ascii=False)
  body=json.dumps({'model':'gpt-4o-mini','messages':[{'role':'system','content':'Return valid JSON only.'},{'role':'user','content':prompt}],'temperature':0.1,'response_format':{'type':'json_object'}}).encode()
  try:
   req=Request('https://api.openai.com/v1/chat/completions',data=body,headers={'Authorization':'Bearer '+key,'Content-Type':'application/json'}); data=json.loads(urlopen(req,timeout=60).read().decode()); data=json.loads(data['choices'][0]['message']['content']); vals=data.get('items',[]); by={int(v['id']):v for v in vals if 'id' in v}
@@ -47,7 +47,8 @@ def enrich(items):
 def category(x):
  c=x.get('category','その他')
  if c in CATEGORIES: return c
- t=(str(c)+' '+x.get('headline','')+' '+x.get('summary','')).lower(); rules=[('診療報酬・補助金',('診療報酬','補助金','助成金','加算')),('安全管理',('安全','被ばく','線量')),('一般撮影・FPD',('一般撮影','FPD','マンモグラフィ')),('CT・MRI',('CT','MRI')),('核医学',('核医学','SPECT','PET','MIBG','DAT')),('放射線治療',('放射線治療','リニアック','陽子線','粒子線')),('教育',('教育','国家試験','研修','認定')),('学術・AI',('AI','人工知能','学術','研究','画像診断','読影','STAT')),('制度・職能',('制度','職能','人員','養成','確保','タスクシフト'))]
+ t=(str(c)+' '+x.get('headline','')+' '+x.get('summary','')).lower()
+ rules=[('診療報酬・補助金',('診療報酬','補助金','助成金','加算')),('安全管理',('安全','被ばく','線量')),('一般撮影',('一般撮影','FPD','マンモグラフィ')),('CT',('CT',)),('MRI',('MRI',)),('核医学',('核医学','SPECT','PET','MIBG','DAT')),('放射線治療',('放射線治療','リニアック','陽子線','粒子線')),('教育',('教育','国家試験','研修','認定')),('AI',('AI','人工知能','AI導入')),('学術',('学術','研究','学会')),('制度',('制度','養成','確保')),('職能',('職能','タスクシフト','タスクシェア'))]
  for cat,terms in rules:
   if any(k.lower() in t for k in terms): return cat
  return 'その他'
@@ -58,8 +59,7 @@ def importance(x,official):
 def main():
  now=datetime.now(timezone.utc); cutoff=now-timedelta(hours=30); db=load(); clean=[]; seen=set()
  for x in db:
-  k=norm(x.get('headline')) or x.get('url')
-  src=x.get('source','')
+  k=norm(x.get('headline')) or x.get('url'); src=x.get('source','')
   if any(b.lower() in src.lower() for b in BLOCKED_SOURCES): continue
   if k and k not in seen: seen.add(k); clean.append(x)
  db=clean; urls={x.get('url') for x in db}; titles={norm(x.get('headline')) for x in db}; candidates={}
