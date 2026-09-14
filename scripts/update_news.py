@@ -1,7 +1,4 @@
-import json
-import os
-import re
-import xml.etree.ElementTree as ET
+import json, os, re, xml.etree.ElementTree as ET
 from datetime import datetime, timezone, timedelta
 from email.utils import parsedate_to_datetime
 from html import unescape
@@ -9,75 +6,78 @@ from pathlib import Path
 from urllib.parse import quote
 from urllib.request import Request, urlopen
 
-ROOT = Path(__file__).resolve().parents[1]
-NEWS_JSON = ROOT / 'news.json'
-
-QUERIES = [
-    '診療放射線技師 OR 放射線技師 OR 放射線部',
-    '放射線診療 CT MRI FPD',
-    '放射線 被ばく 線量管理 安全管理',
-    '核医学 SPECT PET 放射線技師',
-    '放射線 AI 画像診断 読影支援',
-    '診療報酬 放射線 画像診断 補助金',
-]
-
-OFFICIAL_DOMAINS = ('jart.jp','jsrt.or.jp','jrs.or.jp','jsnm.org','jastro.or.jp','mhlw.go.jp','nra.go.jp','pmda.go.jp','mext.go.jp','fda.gov','iaea.org','who.int','canon-medical.co.jp','fujifilm.com','gehealthcare.co.jp','siemens-healthineers.com','philips.co.jp')
+ROOT=Path(__file__).resolve().parents[1]; NEWS_JSON=ROOT/'news.json'
+QUERIES=['診療放射線技師 OR 放射線技師 OR 放射線部','放射線診療 CT MRI FPD','放射線 被ばく 線量管理 安全管理','核医学 SPECT PET 放射線技師','放射線 AI 画像診断 読影支援','診療報酬 放射線 画像診断 補助金']
+OFFICIAL=('jart.jp','jsrt.or.jp','jrs.or.jp','jsnm.org','jastro.or.jp','mhlw.go.jp','nra.go.jp','pmda.go.jp','mext.go.jp','fda.gov','iaea.org','who.int','canon-medical.co.jp','fujifilm.com','gehealthcare.co.jp','siemens-healthineers.com','philips.co.jp')
+CATEGORIES=('制度・職能','学術・AI','CT・MRI','一般撮影・FPD','安全管理','核医学','放射線治療','教育','診療報酬・補助金','その他')
 
 def fetch(url):
-    req = Request(url, headers={'User-Agent':'Mozilla/5.0 radiology-technologist-news'})
-    with urlopen(req, timeout=30) as r:
-        return r.read().decode('utf-8', errors='ignore')
-
-def rss_items(query):
-    url='https://news.google.com/rss/search?q='+quote(query+' when:2d')+'&hl=ja&gl=JP&ceid=JP:ja'
-    root=ET.fromstring(fetch(url)); out=[]
-    for item in root.findall('./channel/item'):
-        title=unescape(item.findtext('title','')); link=item.findtext('link','')
-        desc=unescape(re.sub('<[^>]+>',' ',item.findtext('description','')))
-        pub=item.findtext('pubDate',''); source_el=item.find('source'); source=source_el.text if source_el is not None else ''
-        try: dt=parsedate_to_datetime(pub).astimezone(timezone.utc)
-        except Exception: dt=datetime.now(timezone.utc)
-        if title and link: out.append({'title':title,'url':link,'description':desc[:700],'source':source,'published':dt.isoformat()})
-    return out
-
-def domain(url):
-    m=re.search(r'https?://([^/]+)',url or '')
-    return m.group(1).lower().replace('www.','') if m else ''
-
-def load_news():
-    if not NEWS_JSON.exists(): return []
-    try: return json.loads(NEWS_JSON.read_text(encoding='utf-8'))
-    except Exception: return []
-
-def ai_enrich(items):
-    key=os.environ.get('OPENAI_API_KEY')
-    if not key or not items: return items
-    payload=[{'id':i,'title':x['title'],'source':x['source'],'description':x['description']} for i,x in enumerate(items[:15])]
-    prompt='''あなたは日本の診療放射線技師長向けニュース編集者です。以下のニュース候補を評価してください。各項目についてJSON配列で、id、category、importance、summary、whyを返してください。categoryは「制度・職能」「学術・AI」「CT・MRI」「一般撮影・FPD」「安全管理」「核医学」「放射線治療」「教育」「診療報酬・補助金」「その他」のいずれか。importanceは「高」「中」「低」。診療放射線技師の業務、放射線部門管理、装置更新、線量管理、安全、AI、制度変更、補助金に直結するものを高くしてください。summaryは日本語で2文以内、whyは技師長目線で1文。推測で内容を足さず、入力情報だけで判断してください。候補:\n''' + json.dumps(payload,ensure_ascii=False)
-    body=json.dumps({'model':'gpt-4o-mini','messages':[{'role':'system','content':'Return valid JSON only.'},{'role':'user','content':prompt}],'temperature':0.2,'response_format':{'type':'json_object'}}).encode()
-    try:
-        req=Request('https://api.openai.com/v1/chat/completions',data=body,headers={'Authorization':'Bearer '+key,'Content-Type':'application/json'})
-        raw=json.loads(urlopen(req,timeout=60).read().decode()); text=raw['choices'][0]['message']['content']; data=json.loads(text)
-        enriched=data.get('items',data if isinstance(data,list) else []); by_id={int(x['id']):x for x in enriched if 'id' in x}
-        for i,item in enumerate(items[:15]):
-            e=by_id.get(i)
-            if e: item.update({k:e[k] for k in ('category','importance','summary','why') if k in e})
-    except Exception as e: print('OpenAI enrichment skipped:',e)
-    return items
-
+ r=Request(url,headers={'User-Agent':'Mozilla/5.0 radiology-technologist-news'}); return urlopen(r,timeout=30).read().decode('utf-8','ignore')
+def rss(q):
+ root=ET.fromstring(fetch('https://news.google.com/rss/search?q='+quote(q+' when:2d')+'&hl=ja&gl=JP&ceid=JP:ja')); out=[]
+ for it in root.findall('./channel/item'):
+  title=unescape(it.findtext('title','')); link=it.findtext('link',''); desc=unescape(re.sub('<[^>]+>',' ',it.findtext('description',''))); pub=it.findtext('pubDate',''); se=it.find('source'); src=se.text if se is not None else ''
+  try: dt=parsedate_to_datetime(pub).astimezone(timezone.utc)
+  except: dt=datetime.now(timezone.utc)
+  if title and link: out.append({'title':title,'url':link,'description':desc[:700],'source':src,'published':dt.isoformat()})
+ return out
+def norm(s): return re.sub(r'[^0-9a-zぁ-んァ-ヶ一-龠]','',str(s or '').lower())
+def dom(url):
+ m=re.search(r'https?://([^/]+)',url or ''); return m.group(1).lower().replace('www.','') if m else ''
+def relevant(x):
+ text=(x.get('title','')+' '+x.get('description','')+' '+x.get('source','')).lower()
+ bad=('漫画','マンガ','芸能','俳優','女優','アイドル','タレント','画像集','写真集','昭和あるある')
+ good=('診療放射線技師','放射線技師','放射線部','放射線科','CT','MRI','FPD','一般撮影','マンモグラフィ','核医学','SPECT','PET','放射線治療','線量','被ばく','AI','画像診断','読影','STAT','診療報酬','補助金','国家試験','研修','認定','医療機器','装置更新')
+ return not any(k in text for k in bad) and any(k.lower() in text for k in good)
+def load():
+ try: return json.loads(NEWS_JSON.read_text(encoding='utf-8'))
+ except: return []
+def enrich(items):
+ key=os.environ.get('OPENAI_API_KEY')
+ if not key: return items
+ payload=[{'id':i,'title':x['title'],'source':x['source'],'description':x['description']} for i,x in enumerate(items[:20])]
+ prompt='''病院の放射線部門を管理する技師長向けにニュースを分類してください。各項目へ category, importance, summary, why を付けてください。categoryは必ず次の10個から1個だけ選択し、複数カテゴリを連結しないでください：制度・職能、学術・AI、CT・MRI、一般撮影・FPD、安全管理、核医学、放射線治療、教育、診療報酬・補助金、その他。importanceは高・中・低の1個。重要度は技師長の実務への影響で判定し、制度変更、人員、安全、線量、装置更新、診療報酬、補助金、AI導入などを高く評価してください。'''+json.dumps(payload,ensure_ascii=False)
+ body=json.dumps({'model':'gpt-4o-mini','messages':[{'role':'system','content':'Return valid JSON only.'},{'role':'user','content':prompt}],'temperature':0.1,'response_format':{'type':'json_object'}}).encode()
+ try:
+  req=Request('https://api.openai.com/v1/chat/completions',data=body,headers={'Authorization':'Bearer '+key,'Content-Type':'application/json'}); data=json.loads(urlopen(req,timeout=60).read().decode()); data=json.loads(data['choices'][0]['message']['content']); vals=data.get('items',[]); by={int(v['id']):v for v in vals if 'id' in v}
+  for i,x in enumerate(items[:20]):
+   if i in by: x.update({k:by[i][k] for k in ('category','importance','summary','why') if k in by[i]})
+ except Exception as e: print('AI skipped:',e)
+ return items
+def category(x):
+ c=x.get('category','その他')
+ if c in CATEGORIES: return c
+ t=(str(c)+' '+x.get('headline','')+' '+x.get('summary','')).lower()
+ rules=[('診療報酬・補助金',('診療報酬','補助金','助成金','加算')),('安全管理',('安全','被ばく','線量')),('一般撮影・FPD',('一般撮影','FPD','マンモグラフィ')),('CT・MRI',('CT','MRI')),('核医学',('核医学','SPECT','PET','MIBG','DAT')),('放射線治療',('放射線治療','リニアック','陽子線','粒子線')),('教育',('教育','国家試験','研修','認定')),('学術・AI',('AI','人工知能','学術','研究','画像診断','読影','STAT')),('制度・職能',('制度','職能','人員','養成','確保','タスクシフト'))]
+ for cat,terms in rules:
+  if any(k.lower() in t for k in terms): return cat
+ return 'その他'
+def importance(x,official):
+ t=(x.get('headline','')+' '+x.get('summary','')+' '+x.get('why','')).lower()
+ high=('法令','制度変更','診療報酬','補助金','安全','被ばく','線量管理','装置更新','保守','人員','養成','確保','AI導入','タスクシフト','医療機器')
+ if any(k.lower() in t for k in high): return '高'
+ return x.get('importance') if x.get('importance') in ('高','中','低') else ('中' if official else '低')
 def main():
-    now=datetime.now(timezone.utc); cutoff=now-timedelta(hours=30); db=load_news(); seen={x.get('url') for x in db}; candidates={}
-    for query in QUERIES:
-        try:
-            for item in rss_items(query):
-                if item['published'] < cutoff.isoformat() or item['url'] in seen: continue
-                candidates[item['url']]=item
-        except Exception as e: print('RSS error:',e)
-    fresh=ai_enrich(sorted(candidates.values(),key=lambda x:x['published'],reverse=True)[:30])
-    for x in fresh:
-        d=domain(x['url']); official=any(d==z or d.endswith('.'+z) for z in OFFICIAL_DOMAINS)
-        x.update({'date':x['published'][:10],'category':x.get('category','その他'),'importance':x.get('importance','高' if official else '中'),'headline':x.pop('title'),'summary':x.get('summary',x.pop('description','')[:180] or '最新情報が公開されています。'),'why':x.get('why','放射線部門の運用・安全管理に関係する可能性があるため、原文確認を推奨します。'),'source':x.get('source') or d}); x.pop('published',None)
-    db.extend(fresh); db.sort(key=lambda x:(x.get('date',''),{'高':3,'中':2,'低':1}.get(x.get('importance'),0)),reverse=True); db=db[:200]
-    NEWS_JSON.write_text(json.dumps(db,ensure_ascii=False,indent=2),encoding='utf-8'); print(f'Added {len(fresh)} new items; database now has {len(db)} items.')
-
+ now=datetime.now(timezone.utc); cutoff=now-timedelta(hours=30); db=load(); clean=[]; seen=set()
+ for x in db:
+  k=norm(x.get('headline')) or x.get('url')
+  if k and k not in seen: seen.add(k); clean.append(x)
+ db=clean; urls={x.get('url') for x in db}; titles={norm(x.get('headline')) for x in db}; candidates={}
+ for q in QUERIES:
+  try:
+   for x in rss(q):
+    if x['published']>=cutoff.isoformat() and x['url'] not in urls and norm(x['title']) not in titles and relevant(x): candidates[x['url']]=x
+  except Exception as e: print('RSS error:',e)
+ fresh=enrich(sorted(candidates.values(),key=lambda x:x['published'],reverse=True)[:30]); added=[]; newtitles=set()
+ for x in fresh:
+  k=norm(x['title'])
+  if not k or k in newtitles: continue
+  newtitles.add(k); d=dom(x['url']); official=any(d==z or d.endswith('.'+z) for z in OFFICIAL)
+  added.append({'date':x['published'][:10],'category':category(x),'importance':importance(x,official),'headline':x['title'],'summary':x.get('summary') or x.get('description','')[:180],'why':x.get('why') or '放射線部門の実務への影響を確認する価値があります。','source':x.get('source') or d,'url':x['url']})
+ db+=added; final=[]; seen=set()
+ for x in sorted(db,key=lambda z:(z.get('date',''),{'高':3,'中':2,'低':1}.get(z.get('importance'),0)),reverse=True):
+  k=norm(x.get('headline')) or x.get('url')
+  if k in seen: continue
+  seen.add(k); x['category']=category(x); final.append(x)
+ NEWS_JSON.write_text(json.dumps(final[:200],ensure_ascii=False,indent=2),encoding='utf-8'); print(f'Added {len(added)} new items; database now has {len(final[:200])} items.')
 if __name__=='__main__': main()
