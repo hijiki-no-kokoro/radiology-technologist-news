@@ -28,7 +28,14 @@ const esc=s=>String(s??'').replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'
 let db=[],cat='all',q='';
 const today=new Date().toLocaleDateString('sv-SE',{timeZone:'Asia/Tokyo'});document.getElementById('today').textContent=today.replaceAll('-','/');
 function card(n){const imp=n.importance||'中';const cls=imp==='高'?'high':'mid';return `<article class="card"><div class="meta"><span class="tag">${esc(n.category)}</span><span class="tag ${cls}">重要度 ${esc(imp)}</span><span>${esc(n.date)}</span></div><h2>${esc(n.headline)}</h2><p>${esc(n.summary)}</p><div class="why"><b>技師長目線</b>${esc(n.why)}</div><a href="${esc(n.url)}" target="_blank" rel="noopener">${esc(n.source||'公式情報')} ↗</a></article>`}
-function render(){let list=db.filter(n=>(cat==='all'||n.category===cat)&&(!q||JSON.stringify(n).toLowerCase().includes(q.toLowerCase())));let todays=list.filter(n=>n.date===today);if(!todays.length)todays=list.slice(0,6);document.getElementById('todayGrid').innerHTML=todays.map(card).join('')||'<div class="empty">本日のニュースはまだありません。</div>';let past=list.filter(n=>!todays.includes(n));document.getElementById('pastGrid').innerHTML=past.map(card).join('')||'<div class="empty">過去ニュースはありません。</div>';document.getElementById('count').textContent=`${db.length}件蓄積`}
+function render(){
+  const list=db.filter(n=>(cat==='all'||n.category===cat)&&(!q||JSON.stringify(n).toLowerCase().includes(q.toLowerCase())));
+  const todays=list.filter(n=>n.date===today);
+  const past=list.filter(n=>n.date!==today);
+  document.getElementById('todayGrid').innerHTML=todays.map(card).join('')||'<div class="empty">本日のニュースはまだありません。</div>';
+  document.getElementById('pastGrid').innerHTML=past.map(card).join('')||'<div class="empty">過去ニュースはありません。</div>';
+  document.getElementById('count').textContent=`${db.length}件蓄積`;
+}
 fetch('news.json?'+Date.now()).then(r=>r.json()).then(x=>{db=x;document.getElementById('status').textContent=`毎朝8:00に更新中。現在 ${db.length}件のニュースを蓄積しています。`;render()}).catch(e=>{document.getElementById('status').textContent='ニュースDBの読み込みに失敗しました。';render()});
 document.querySelectorAll('.filters button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.filters button').forEach(x=>x.classList.remove('active'));b.classList.add('active');cat=b.dataset.cat;render()});document.getElementById('search').oninput=e=>{q=e.target.value;render()};
 </script>
