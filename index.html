@@ -219,7 +219,7 @@ function render(){
   const byDate={};
   pastFiltered.forEach(n=>{(byDate[n.date]=byDate[n.date]||[]).push(n);});
   const dates=Object.keys(byDate).sort((a,b)=>b.localeCompare(a));
-  const accHtml = dates.length ? dates.map((d,i)=>`<details class="daygroup"${i===0?' open':''}><summary><span>${esc(d)}</span><span class="daycount">${byDate[d].length}件</span></summary><div class="daylist">${byDate[d].map(pastRow).join('')}</div></details>`).join('') : '<div class="empty">該当する過去ニュースはありません。</div>';
+  const accHtml = dates.length ? dates.map((d,i)=>`<details class="daygroup" open><summary><span>${esc(d)}</span><span class="daycount">${byDate[d].length}件</span></summary><div class="daylist">${byDate[d].map(pastRow).join('')}</div></details>`).join('') : '<div class="empty">該当する過去ニュースはありません。</div>';
   document.getElementById('pastAccordion').innerHTML = accHtml;
 
   document.getElementById('todayView').hidden = tab!=='today';
