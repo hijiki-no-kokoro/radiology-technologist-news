@@ -159,6 +159,7 @@ footer{text-align:center;color:#4b5560;font-size:11.5px;padding:34px 16px;border
   <div class="tabs">
     <button class="tabbtn active" data-tab="today">今日<span class="cnt mono" id="tabTodayCnt"></span></button>
     <button class="tabbtn" data-tab="past">過去ログ<span class="cnt mono" id="tabPastCnt"></span></button>
+    <button class="tabbtn" data-tab="general">一般ニュース<span class="cnt mono" id="tabGeneralCnt"></span></button>
   </div>
 
   <div id="todayView">
@@ -167,6 +168,11 @@ footer{text-align:center;color:#4b5560;font-size:11.5px;padding:34px 16px;border
 
   <div id="pastView" hidden>
     <div id="pastAccordion"></div>
+  </div>
+
+  <div id="generalView" hidden>
+    <div class="notice" style="border-left-color:var(--amber)">こちらは公式情報源以外(一般ニュースサイト・週刊誌等)からの記事です。内容の正確性は各情報源でご確認ください。</div>
+    <div id="generalAccordion"></div>
   </div>
 </main>
 <footer>Radiology Technologist News</footer>
@@ -205,25 +211,35 @@ function pastRow(n){
   return `<div class="dayrow"><span class="imp ${esc(imp)}" onclick="setImp('${esc(imp)}')" title="クリックで重要度「${esc(imp)}」のニュースだけ表示">${esc(imp)}</span><div class="rowtext"><a href="${esc(n.url)}" target="_blank" rel="noopener">${esc(n.headline)}</a><div class="rowmeta"><span class="tag" style="padding:2px 7px">${esc(n.category)}</span><span>${esc(n.source||'')}</span></div></div></div>`;
 }
 
+function groupByDateHtml(list, emptyMsg){
+  if(!list.length) return `<div class="empty">${emptyMsg}</div>`;
+  const byDate={};
+  list.forEach(n=>{(byDate[n.date]=byDate[n.date]||[]).push(n);});
+  const dates=Object.keys(byDate).sort((a,b)=>b.localeCompare(a));
+  return dates.map(d=>`<details class="daygroup" open><summary><span>${esc(d)}</span><span class="daycount">${byDate[d].length}件</span></summary><div class="daylist">${byDate[d].map(pastRow).join('')}</div></details>`).join('');
+}
+
 function render(){
   const filtered=db.filter(matchesFilter);
-  const todays=filtered.filter(n=>n.date===today);
-  const allPast=db.filter(n=>n.date!==today);
-  const pastFiltered=filtered.filter(n=>n.date!==today);
+  const officialAll=db.filter(n=>(n.track||'official')==='official');
+  const officialFiltered=filtered.filter(n=>(n.track||'official')==='official');
+  const generalFiltered=filtered.filter(n=>n.track==='general');
 
-  document.getElementById('todayGrid').innerHTML = todays.map(n=>todayCard(n,allPast)).join('') || '<div class="empty">本日のニュースはまだありません。</div>';
+  const todays=officialFiltered.filter(n=>n.date===today);
+  const pastFiltered=officialFiltered.filter(n=>n.date!==today);
+  const allPastForRelated=officialAll.filter(n=>n.date!==today);
+
+  document.getElementById('todayGrid').innerHTML = todays.map(n=>todayCard(n,allPastForRelated)).join('') || '<div class="empty">本日のニュースはまだありません。</div>';
   document.getElementById('tabTodayCnt').textContent = `(${todays.length})`;
   document.getElementById('tabPastCnt').textContent = `(${pastFiltered.length})`;
+  document.getElementById('tabGeneralCnt').textContent = `(${generalFiltered.length})`;
 
-  // group past by date desc
-  const byDate={};
-  pastFiltered.forEach(n=>{(byDate[n.date]=byDate[n.date]||[]).push(n);});
-  const dates=Object.keys(byDate).sort((a,b)=>b.localeCompare(a));
-  const accHtml = dates.length ? dates.map((d,i)=>`<details class="daygroup" open><summary><span>${esc(d)}</span><span class="daycount">${byDate[d].length}件</span></summary><div class="daylist">${byDate[d].map(pastRow).join('')}</div></details>`).join('') : '<div class="empty">該当する過去ニュースはありません。</div>';
-  document.getElementById('pastAccordion').innerHTML = accHtml;
+  document.getElementById('pastAccordion').innerHTML = groupByDateHtml(pastFiltered, '該当する過去ニュースはありません。');
+  document.getElementById('generalAccordion').innerHTML = groupByDateHtml(generalFiltered, '該当する一般ニュースはありません。');
 
   document.getElementById('todayView').hidden = tab!=='today';
   document.getElementById('pastView').hidden = tab!=='past';
+  document.getElementById('generalView').hidden = tab!=='general';
 }
 
 document.querySelectorAll('.tabbtn').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tabbtn').forEach(x=>x.classList.remove('active'));b.classList.add('active');tab=b.dataset.tab;render()});
