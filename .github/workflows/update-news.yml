@@ -5,6 +5,9 @@ on:
     - cron: '0 8 * * *'
       timezone: 'Asia/Tokyo'
   workflow_dispatch:
+  push:
+    paths:
+      - 'scripts/update_news.py'
 
 permissions:
   contents: write
