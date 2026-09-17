@@ -3,7 +3,7 @@ from datetime import datetime, timezone, timedelta
 from email.utils import parsedate_to_datetime
 from html import unescape
 from pathlib import Path
-from urllib.parse import quote
+from urllib.parse import quote, urljoin
 from urllib.request import Request, urlopen
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -51,6 +51,60 @@ def rss(q):
     return out
 
 
+def direct_official():
+    """公式サイトを直接読む。Google Newsの索引遅延に依存しない。"""
+    out=[]
+    now=datetime.now(timezone.utc).isoformat()
+
+    # JARTトップには「本会からのお知らせ」が掲載されるため、日付＋リンク周辺を直接抽出。
+    try:
+        html=fetch('https://www.jart.jp/')
+        for m in re.finditer(r'<a[^>]+href=["\'](?P<href>[^"\']+)["\'][^>]*>\s*(?P<title>.*?)\s*</a>',html,re.I|re.S):
+            title=' '.join(re.sub(r'<[^>]+>',' ',m.group('title')).split())
+            if not title or not any(k in title for k in ('STAT','告示研修','アンケート','研修','セミナー','学術大会','お知らせ')):
+                continue
+            href=urljoin('https://www.jart.jp/',m.group('href'))
+            before=html[max(0,m.start()-800):m.start()]
+            dm=re.search(r'(20\d{2})[/.年](\d{1,2})[/.月](\d{1,2})',re.sub(r'<[^>]+>',' ',before))
+            date=f'{dm.group(1)}-{int(dm.group(2)):02d}-{int(dm.group(3)):02d}' if dm else now[:10]
+            out.append({'title':title,'url':href,'description':title,'source':'JART','published':date+'T00:00:00+09:00'})
+    except Exception as e:
+        print('JART direct error:',e)
+
+    # JART生涯教育・告示研修ページも直接取得。更新日がGoogle Newsに載らない場合を補完。
+    for url in ('https://www.jart.jp/activity/lifelong-study','https://www.jart.jp/activity/lifelong-study/notification-training'):
+        try:
+            html=fetch(url)
+            for m in re.finditer(r'<a[^>]+href=["\'](?P<href>[^"\']+)["\'][^>]*>\s*(?P<title>.*?)\s*</a>',html,re.I|re.S):
+                title=' '.join(re.sub(r'<[^>]+>',' ',m.group('title')).split())
+                if not title or not any(k in title for k in ('STAT','告示研修','研修','セミナー')):
+                    continue
+                href=urljoin(url,m.group('href'))
+                out.append({'title':title,'url':href,'description':title,'source':'JART','published':now})
+        except Exception as e:
+            print('JART page error:',e)
+
+    # 厚労省「過去の新着情報」は日付ごとにまとまっているので、放射線関連だけを直接抽出。
+    try:
+        html=fetch('https://www.mhlw.go.jp/stf/new-info/')
+        clean=re.sub(r'<script.*?</script>|<style.*?</style>',' ',html,flags=re.I|re.S)
+        clean=re.sub(r'<[^>]+>',' ',clean)
+        clean=' '.join(unescape(clean).split())
+        relevant_terms=('診療放射線技師','放射線技師','放射線','医療機器','診療報酬','医療安全','線量','国家試験')
+        if any(k in clean for k in relevant_terms):
+            # 個別リンクはHTML側から取得
+            for m in re.finditer(r'<a[^>]+href=["\'](?P<href>[^"\']+)["\'][^>]*>\s*(?P<title>.*?)\s*</a>',html,re.I|re.S):
+                title=' '.join(re.sub(r'<[^>]+>',' ',m.group('title')).split())
+                if not title or not any(k in title for k in relevant_terms):
+                    continue
+                href=urljoin('https://www.mhlw.go.jp/stf/new-info/',m.group('href'))
+                out.append({'title':title,'url':href,'description':title,'source':'厚生労働省','published':now})
+    except Exception as e:
+        print('MHLW direct error:',e)
+
+    return out
+
+
 def norm(s):
     return re.sub(r'[^0-9a-zぁ-んァ-ヶ一-龠]','',str(s or '').lower())
 
@@ -95,7 +149,7 @@ def category(x):
 
 def importance(x, official):
     t=(x.get('title','')+' '+x.get('description','')).lower()
-    high=('制度変更','診療報酬','補助金','安全管理','被ばく','線量管理','装置更新','人員','養成','確保','AI導入','タスクシフト','タスクシェア','ガイドライン','業務範囲')
+    high=('制度変更','診療報酬','補助金','安全管理','被ばく','線量管理','装置更新','人員','養成','確保','AI導入','タスクシフト','タスクシェア','ガイドライン','業務範囲','STAT','告示研修')
     if any(k.lower() in t for k in high): return '高'
     if official: return '中'
     return '低'
@@ -112,6 +166,18 @@ def main():
     db=load()
     seen={norm(x.get('headline')) or x.get('url') for x in db}
     candidates={}
+
+    # まず公式サイトを直接取得。Google News側の索引遅延を回避する。
+    for x in direct_official():
+        try:
+            dt=datetime.fromisoformat(x['published'].replace('Z','+00:00'))
+            if dt < cutoff: continue
+        except Exception: pass
+        if not relevant(x): continue
+        k=norm(x['title']) or x['url']
+        if k not in seen: candidates[x['url']]=x
+
+    # 一般ニュース＋公式サイトのGoogle News索引も補完として使用。
     for q in QUERIES:
         try:
             for x in rss(q):
@@ -122,22 +188,21 @@ def main():
         except Exception as e:
             print('RSS error:',e)
 
-    # 公式ソースを優先して先にDBへ入れる。一般ニュースに枠を取られないようにする。
     fresh=sorted(candidates.values(),key=lambda x:(is_official(x['url']),x['published']),reverse=True)
     added=[]; added_titles=set()
     for x in fresh[:50]:
         k=norm(x['title'])
         if not k or k in added_titles: continue
         added_titles.add(k)
-        official=is_official(x['url'])
+        official=is_official(x['url']) or x.get('source') in ('JART','厚生労働省')
         cat=category(x)
         added.append({
           'date':x['published'][:10],
           'category':cat,
           'importance':importance(x,official),
           'headline':x['title'],
-          'summary':re.sub(r'\\s+',' ',x.get('description','')).strip()[:220],
-          'why':'放射線部門の実務への影響を確認する価値があります。',
+          'summary':re.sub(r'\s+',' ',x.get('description','')).strip()[:220],
+          'why':'公式情報のため、放射線部門の運用・教育・制度への影響を確認する価値があります。' if official else '放射線部門の実務への影響を確認する価値があります。',
           'source':x.get('source') or dom(x['url']),
           'url':x['url'],
           'track':'official' if official else 'general'
