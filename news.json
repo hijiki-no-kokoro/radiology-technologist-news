@@ -155,6 +155,17 @@
   },
   {
     "date": "2026-09-17",
+    "category": "教育",
+    "importance": "高",
+    "headline": "告示研修 告示研修の制度概要や受講に関する 情報をご案内します。 詳細を見る",
+    "summary": "告示研修 告示研修の制度概要や受講に関する 情報をご案内します。 詳細を見る",
+    "why": "公式情報のため、放射線部門の運用・教育・制度への影響を確認する価値があります。",
+    "source": "JART",
+    "url": "https://www.jart.jp/activity/lifelong-study/notification-training",
+    "track": "official"
+  },
+  {
+    "date": "2026-09-17",
     "category": "制度",
     "importance": "中",
     "headline": "医薬品・医療機器",
