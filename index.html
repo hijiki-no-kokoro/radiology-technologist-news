@@ -15,244 +15,76 @@
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font-family:"Noto Sans JP",-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
 .mono{font-family:"JetBrains Mono",monospace}
-
 header{padding:26px 20px 20px;background:linear-gradient(180deg,#0e141b,var(--bg));border-bottom:1px solid var(--border)}
 .hwrap{max-width:1180px;margin:auto;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:14px}
 header h1{margin:0;font-size:24px;font-weight:800;display:flex;align-items:center;gap:10px}
 header h1::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--cyan);box-shadow:0 0 10px var(--cyan);display:inline-block}
 header p{margin:4px 0 0;color:var(--muted);font-size:13px}
 .livebadge{font-size:11px;color:var(--cyan);border:1px solid #1e5b52;background:#0e2420;padding:5px 11px;border-radius:999px;font-weight:700;letter-spacing:.03em}
-
 main{max-width:1180px;margin:auto;padding:22px 20px 50px}
-
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:22px}
 .stat{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:14px 16px}
 .stat .num{font-size:26px;font-weight:800;font-family:"JetBrains Mono",monospace}
 .stat .lbl{font-size:11.5px;color:var(--muted);margin-top:2px;letter-spacing:.02em}
 .stat.hi .num{color:var(--red)}.stat.mid .num{color:var(--amber)}.stat.lo .num{color:var(--green)}.stat.all .num{color:var(--cyan)}
-.stat{cursor:pointer;transition:border-color .15s,background .15s}
-.stat:hover{border-color:#3a4856}
-.stat.active{background:var(--panel2);border-color:var(--cyan)}
+.stat{cursor:pointer;transition:border-color .15s,background .15s}.stat:hover{border-color:#3a4856}.stat.active{background:var(--panel2);border-color:var(--cyan)}
 .stat.hi.active{border-color:var(--red)}.stat.mid.active{border-color:var(--amber)}.stat.lo.active{border-color:var(--green)}
-
 .notice{background:var(--panel2);border:1px solid var(--border);border-left:3px solid var(--violet);color:var(--muted);padding:10px 14px;border-radius:8px;margin-bottom:18px;font-size:12.5px}
-
-.toolbar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:14px}
-.search-wrap{position:relative;flex:1;min-width:220px}
+.toolbar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:14px}.search-wrap{position:relative;flex:1;min-width:220px}
 .search{width:100%;padding:11px 14px 11px 36px;border:1px solid var(--border);background:var(--panel);color:var(--text);border-radius:10px;font-size:14px;font-family:inherit}
-.search::placeholder{color:var(--muted)}
-.search:focus{outline:none;border-color:var(--cyan)}
+.search::placeholder{color:var(--muted)}.search:focus{outline:none;border-color:var(--cyan)}
 .search-wrap::before{content:"⌕";position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:15px}
-
-.filters{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:18px}
-.filters button{border:1px solid var(--border);background:var(--panel);color:var(--muted);border-radius:999px;padding:7px 13px;cursor:pointer;font-size:12.5px;font-weight:600;font-family:inherit;transition:all .15s}
-.filters button:hover{border-color:var(--cyan);color:var(--text)}
-.filters button.active{background:#123028;border-color:var(--cyan);color:var(--cyan)}
-
-/* tabs */
-.tabs{display:flex;gap:4px;border-bottom:1px solid var(--border);margin-bottom:18px}
-.tabbtn{background:none;border:none;color:var(--muted);font-family:inherit;font-size:13.5px;font-weight:700;padding:10px 16px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
-.tabbtn:hover{color:var(--text)}
-.tabbtn.active{color:var(--cyan);border-bottom-color:var(--cyan)}
-.tabbtn .cnt{color:var(--muted);font-weight:500;margin-left:4px}
-
-.section-title{display:flex;align-items:center;gap:10px;margin:6px 0 14px}
-.section-title h2{margin:0;font-size:15px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
-.section-title .badge{font-size:11px;font-weight:700;color:var(--violet);background:#1b1730;border:1px solid #362a5c;padding:3px 9px;border-radius:999px}
-
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
-.card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:18px;transition:border-color .15s,transform .15s}
-.card:hover{border-color:#33424f;transform:translateY(-2px)}
-
-.meta{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-bottom:11px}
-.tag{font-size:11px;font-weight:700;color:var(--violet);background:#1b1730;border:1px solid #362a5c;padding:3px 9px;border-radius:6px}
-.imp{padding:3px 9px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer}
-.imp:hover{filter:brightness(1.25)}
-.imp.impactive{outline:2px solid currentColor;outline-offset:1px}
-.imp.高{background:#33131a;color:var(--red);border:1px solid #5c2530}
-.imp.中{background:#332a10;color:var(--amber);border:1px solid #5c4a1e}
-.imp.低{background:#12301e;color:var(--green);border:1px solid #234d33}
-.date-txt{font-size:11px;color:var(--muted);font-family:"JetBrains Mono",monospace}
-
-h2.headline{font-size:15.5px;line-height:1.6;margin:0 0 10px;font-weight:700;color:var(--text)}
-p.summary{line-height:1.75;font-size:13px;color:var(--muted);margin:0 0 12px}
-.why{background:var(--panel2);border-radius:8px;padding:10px 12px;margin:0 0 12px;font-size:12.5px;line-height:1.6;border:1px solid var(--border)}
-.why b{display:block;color:var(--cyan);margin-bottom:3px;font-size:11px;font-weight:700}
-a.source{color:var(--cyan);text-decoration:none;font-weight:700;font-size:12.5px}
-a.source:hover{text-decoration:underline}
-
-/* related news */
-.related{margin-top:12px;padding-top:12px;border-top:1px dashed var(--border)}
-.related summary{cursor:pointer;font-size:12px;color:var(--muted);font-weight:700;list-style:none;display:flex;align-items:center;gap:6px}
-.related summary::-webkit-details-marker{display:none}
-.related summary::before{content:"▸";color:var(--cyan);transition:transform .15s}
-.related[open] summary::before{transform:rotate(90deg)}
-.related ul{margin:10px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:7px}
-.related li{font-size:12.5px;line-height:1.5}
-.related li a{color:var(--text);text-decoration:none}
-.related li a:hover{color:var(--cyan)}
-.related li .rdate{color:var(--muted);font-family:"JetBrains Mono",monospace;font-size:10.5px;margin-right:6px}
-
-/* past log accordion */
-.daygroup{background:var(--panel);border:1px solid var(--border);border-radius:12px;margin-bottom:10px;overflow:hidden}
-.daygroup summary{cursor:pointer;list-style:none;padding:13px 16px;display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:13.5px}
-.daygroup summary::-webkit-details-marker{display:none}
-.daygroup summary::after{content:"▾";color:var(--muted);transition:transform .15s}
-.daygroup[open] summary::after{transform:rotate(180deg)}
-.daygroup summary .daycount{color:var(--muted);font-weight:500;font-size:12px;font-family:"JetBrains Mono",monospace}
-.daylist{border-top:1px solid var(--border)}
-.dayrow{padding:12px 16px;display:flex;gap:10px;align-items:flex-start;border-bottom:1px solid var(--border)}
-.dayrow:last-child{border-bottom:none}
-.dayrow .imp{flex-shrink:0;margin-top:1px}
-.dayrow .rowtext a{color:var(--text);text-decoration:none;font-size:13.5px;font-weight:600;line-height:1.5}
-.dayrow .rowtext a:hover{color:var(--cyan)}
-.dayrow .rowmeta{margin-top:4px;display:flex;gap:8px;color:var(--muted);font-size:11px}
-
-.empty{padding:44px 20px;text-align:center;color:var(--muted);font-size:13.5px;grid-column:1/-1;border:1px dashed var(--border);border-radius:12px}
-
-footer{text-align:center;color:#4b5560;font-size:11.5px;padding:34px 16px;border-top:1px solid var(--border);margin-top:10px}
+.filters{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:18px}.filters button{border:1px solid var(--border);background:var(--panel);color:var(--muted);border-radius:999px;padding:7px 13px;cursor:pointer;font-size:12.5px;font-weight:600;font-family:inherit;transition:all .15s}
+.filters button:hover{border-color:var(--cyan);color:var(--text)}.filters button.active{background:#123028;border-color:var(--cyan);color:var(--cyan)}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--border);margin-bottom:22px}.tabbtn{background:none;border:none;color:var(--muted);font-family:inherit;font-size:13.5px;font-weight:700;padding:10px 16px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}.tabbtn:hover{color:var(--text)}.tabbtn.active{color:var(--cyan);border-bottom-color:var(--cyan)}.tabbtn .cnt{color:var(--muted);font-weight:500;margin-left:4px}
+.section{margin-bottom:30px}.section-title{display:flex;align-items:center;gap:10px;margin:6px 0 14px}.section-title h2{margin:0;font-size:15px;font-weight:700;color:var(--text);letter-spacing:.04em}.section-title .badge{font-size:11px;font-weight:700;color:var(--violet);background:#1b1730;border:1px solid #362a5c;padding:3px 9px;border-radius:999px}
+.section.general .section-title .badge{color:var(--amber);background:#2b2110;border-color:#5c4a1e}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:18px;transition:border-color .15s,transform .15s}.card:hover{border-color:#33424f;transform:translateY(-2px)}
+.meta{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-bottom:11px}.tag{font-size:11px;font-weight:700;color:var(--violet);background:#1b1730;border:1px solid #362a5c;padding:3px 9px;border-radius:6px}.imp{padding:3px 9px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer}.imp:hover{filter:brightness(1.25)}.imp.高{background:#33131a;color:var(--red);border:1px solid #5c2530}.imp.中{background:#332a10;color:var(--amber);border:1px solid #5c4a1e}.imp.低{background:#12301e;color:var(--green);border:1px solid #234d33}.date-txt{font-size:11px;color:var(--muted);font-family:"JetBrains Mono",monospace}
+h2.headline{font-size:15.5px;line-height:1.6;margin:0 0 10px;font-weight:700;color:var(--text)}p.summary{line-height:1.75;font-size:13px;color:var(--muted);margin:0 0 12px}.why{background:var(--panel2);border-radius:8px;padding:10px 12px;margin:0 0 12px;font-size:12.5px;line-height:1.6;border:1px solid var(--border)}.why b{display:block;color:var(--cyan);margin-bottom:3px;font-size:11px;font-weight:700}a.source{color:var(--cyan);text-decoration:none;font-weight:700;font-size:12.5px}a.source:hover{text-decoration:underline}
+.related{margin-top:12px;padding-top:12px;border-top:1px dashed var(--border)}.related summary{cursor:pointer;font-size:12px;color:var(--muted);font-weight:700;list-style:none;display:flex;align-items:center;gap:6px}.related summary::-webkit-details-marker{display:none}.related summary::before{content:"▸";color:var(--cyan);transition:transform .15s}.related[open] summary::before{transform:rotate(90deg)}.related ul{margin:10px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:7px}.related li{font-size:12.5px;line-height:1.5}.related li a{color:var(--text);text-decoration:none}.related li a:hover{color:var(--cyan)}.related li .rdate{color:var(--muted);font-family:"JetBrains Mono",monospace;font-size:10.5px;margin-right:6px}
+.daygroup{background:var(--panel);border:1px solid var(--border);border-radius:12px;margin-bottom:10px;overflow:hidden}.daygroup summary{cursor:pointer;list-style:none;padding:13px 16px;display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:13.5px}.daygroup summary::-webkit-details-marker{display:none}.daygroup summary::after{content:"▾";color:var(--muted);transition:transform .15s}.daygroup[open] summary::after{transform:rotate(180deg)}.daygroup summary .daycount{color:var(--muted);font-weight:500;font-size:12px;font-family:"JetBrains Mono",monospace}.daylist{border-top:1px solid var(--border)}.dayrow{padding:12px 16px;display:flex;gap:10px;align-items:flex-start;border-bottom:1px solid var(--border)}.dayrow:last-child{border-bottom:none}.dayrow .imp{flex-shrink:0;margin-top:1px}.dayrow .rowtext a{color:var(--text);text-decoration:none;font-size:13.5px;font-weight:600;line-height:1.5}.dayrow .rowtext a:hover{color:var(--cyan)}.dayrow .rowmeta{margin-top:4px;display:flex;gap:8px;color:var(--muted);font-size:11px}
+.empty{padding:44px 20px;text-align:center;color:var(--muted);font-size:13.5px;grid-column:1/-1;border:1px dashed var(--border);border-radius:12px}footer{text-align:center;color:#4b5560;font-size:11.5px;padding:34px 16px;border-top:1px solid var(--border);margin-top:10px}
 </style>
 </head>
 <body>
-<header>
-  <div class="hwrap">
-    <div>
-      <h1>診療放射線技師ニュース</h1>
-      <p>制度・学術・AI・画像診断・安全管理などを毎日チェック</p>
-    </div>
-    <span class="livebadge mono">● LIVE — 8:00 UPDATE</span>
-  </div>
-</header>
-
+<header><div class="hwrap"><div><h1>診療放射線技師ニュース</h1><p>制度・学術・AI・画像診断・安全管理などを毎日チェック</p></div><span class="livebadge mono">● LIVE — 8:00 UPDATE</span></div></header>
 <main>
-  <div class="stats">
-    <div class="stat all" data-imp="all" onclick="setImp('all')"><div class="num mono" id="statAll">0</div><div class="lbl">総ニュース件数</div></div>
-    <div class="stat hi" data-imp="高" onclick="setImp('高')"><div class="num mono" id="statHi">0</div><div class="lbl">重要度 高</div></div>
-    <div class="stat mid" data-imp="中" onclick="setImp('中')"><div class="num mono" id="statMid">0</div><div class="lbl">重要度 中</div></div>
-    <div class="stat lo" data-imp="低" onclick="setImp('低')"><div class="num mono" id="statLo">0</div><div class="lbl">重要度 低</div></div>
-  </div>
+<div class="stats"><div class="stat all" data-imp="all" onclick="setImp('all')"><div class="num mono" id="statAll">0</div><div class="lbl">総ニュース件数</div></div><div class="stat hi" data-imp="高" onclick="setImp('高')"><div class="num mono" id="statHi">0</div><div class="lbl">重要度 高</div></div><div class="stat mid" data-imp="中" onclick="setImp('中')"><div class="num mono" id="statMid">0</div><div class="lbl">重要度 中</div></div><div class="stat lo" data-imp="低" onclick="setImp('低')"><div class="num mono" id="statLo">0</div><div class="lbl">重要度 低</div></div></div>
+<div class="notice" id="status">毎朝8:00にニュースDBを更新します。</div>
+<div class="toolbar"><div class="search-wrap"><input class="search" id="search" placeholder="AI、MRI、補助金、被ばく…"></div></div>
+<div id="impIndicator" style="display:none;margin-bottom:12px"><span class="tag" style="cursor:pointer;padding:6px 12px" onclick="setImp('all')" id="impIndicatorText">絞り込み中 ×</span></div>
+<div class="filters"><button class="active" data-cat="all">すべて</button><button data-cat="制度">制度</button><button data-cat="職能">職能</button><button data-cat="学術">学術</button><button data-cat="AI">AI</button><button data-cat="CT">CT</button><button data-cat="MRI">MRI</button><button data-cat="一般撮影">一般撮影</button><button data-cat="安全管理">安全管理</button><button data-cat="核医学">核医学</button><button data-cat="放射線治療">放射線治療</button><button data-cat="教育">教育</button><button data-cat="診療報酬・補助金">診療報酬・補助金</button></div>
+<div class="tabs"><button class="tabbtn active" data-tab="today">今日<span class="cnt mono" id="tabTodayCnt"></span></button><button class="tabbtn" data-tab="past" id="pastTab">過去<span class="cnt mono" id="tabPastCnt"></span></button></div>
 
-  <div class="notice" id="status">毎朝8:00にニュースDBを更新します。</div>
+<div id="todayView">
+  <section class="section"><div class="section-title"><h2>専門ニュース</h2><span class="badge">放射線・医療実務</span></div><div class="grid" id="todaySpecial"></div></section>
+  <section class="section general"><div class="section-title"><h2>一般ニュース</h2><span class="badge">一般メディア・周辺動向</span></div><div class="grid" id="todayGeneral"></div></section>
+</div>
 
-  <div class="toolbar">
-    <div class="search-wrap"><input class="search" id="search" placeholder="AI、MRI、補助金、被ばく…"></div>
-  </div>
-  <div id="impIndicator" style="display:none;margin-bottom:12px">
-    <span class="tag" style="cursor:pointer;padding:6px 12px" onclick="setImp('all')" id="impIndicatorText">絞り込み中 ×</span>
-  </div>
-  <div class="filters">
-    <button class="active" data-cat="all">すべて</button>
-    <button data-cat="制度">制度</button>
-    <button data-cat="職能">職能</button>
-    <button data-cat="学術">学術</button>
-    <button data-cat="AI">AI</button>
-    <button data-cat="CT">CT</button>
-    <button data-cat="MRI">MRI</button>
-    <button data-cat="一般撮影">一般撮影</button>
-    <button data-cat="安全管理">安全管理</button>
-    <button data-cat="核医学">核医学</button>
-    <button data-cat="放射線治療">放射線治療</button>
-    <button data-cat="教育">教育</button>
-    <button data-cat="診療報酬・補助金">診療報酬・補助金</button>
-  </div>
-
-  <div class="tabs">
-    <button class="tabbtn active" data-tab="today">今日<span class="cnt mono" id="tabTodayCnt"></span></button>
-    <button class="tabbtn" data-tab="past">過去ログ<span class="cnt mono" id="tabPastCnt"></span></button>
-    <button class="tabbtn" data-tab="general">一般ニュース<span class="cnt mono" id="tabGeneralCnt"></span></button>
-  </div>
-
-  <div id="todayView">
-    <div class="grid" id="todayGrid"></div>
-  </div>
-
-  <div id="pastView" hidden>
-    <div id="pastAccordion"></div>
-  </div>
-
-  <div id="generalView" hidden>
-    <div class="notice" style="border-left-color:var(--amber)">こちらは公式情報源以外(一般ニュースサイト・週刊誌等)からの記事です。内容の正確性は各情報源でご確認ください。</div>
-    <div id="generalAccordion"></div>
-  </div>
-</main>
-<footer>Radiology Technologist News</footer>
+<div id="pastView" hidden>
+  <div class="notice">過去ニュースは検索したときだけ表示します。検索欄にキーワードを入力してください。</div>
+  <section class="section"><div class="section-title"><h2>専門ニュース</h2><span class="badge">過去ログ</span></div><div id="pastSpecial"></div></section>
+  <section class="section general"><div class="section-title"><h2>一般ニュース</h2><span class="badge">過去ログ</span></div><div id="pastGeneral"></div></section>
+</div>
+</main><footer>Radiology Technologist News</footer>
 <script>
 const esc=s=>String(s??'').replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c]));
 let db=[],cat='all',q='',tab='today',imp='all';
 const today=new Date().toLocaleDateString('sv-SE',{timeZone:'Asia/Tokyo'});
-
-function matchesFilter(n){
-  const nImp=n.importance||'中';
-  return (cat==='all'||n.category===cat)&&(imp==='all'||nImp===imp)&&(!q||JSON.stringify(n).toLowerCase().includes(q.toLowerCase()));
-}
-
-function setImp(level){
-  imp = (imp===level) ? 'all' : level;
-  document.querySelectorAll('.stat').forEach(s=>s.classList.toggle('active', s.dataset.imp===imp));
-  const ind=document.getElementById('impIndicator');
-  if(imp==='all'){ind.style.display='none';}
-  else{ind.style.display='block';document.getElementById('impIndicatorText').textContent=`重要度「${imp}」で絞り込み中 ×`;}
-  render();
-}
-
-function relatedFor(n,pastList){
-  return pastList.filter(p=>p.category===n.category).sort((a,b)=>b.date.localeCompare(a.date)).slice(0,3);
-}
-
-function todayCard(n,pastList){
-  const imp=n.importance||'中';
-  const rel=relatedFor(n,pastList);
-  const relHtml = rel.length ? `<details class="related"><summary>関連する過去ニュース (${rel.length})</summary><ul>${rel.map(r=>`<li><span class="rdate">${esc(r.date)}</span><a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.headline)}</a></li>`).join('')}</ul></details>` : '';
-  return `<article class="card"><div class="meta"><span class="tag">${esc(n.category)}</span><span class="imp ${esc(imp)}" onclick="setImp('${esc(imp)}')" title="クリックで重要度「${esc(imp)}」のニュースだけ表示">重要度 ${esc(imp)}</span><span class="date-txt">${esc(n.date)}</span></div><h2 class="headline">${esc(n.headline)}</h2><p class="summary">${esc(n.summary)}</p><div class="why"><b>技師長目線</b>${esc(n.why)}</div><a class="source" href="${esc(n.url)}" target="_blank" rel="noopener">${esc(n.source||'公式情報')} ↗</a>${relHtml}</article>`;
-}
-
-function pastRow(n){
-  const imp=n.importance||'中';
-  return `<div class="dayrow"><span class="imp ${esc(imp)}" onclick="setImp('${esc(imp)}')" title="クリックで重要度「${esc(imp)}」のニュースだけ表示">${esc(imp)}</span><div class="rowtext"><a href="${esc(n.url)}" target="_blank" rel="noopener">${esc(n.headline)}</a><div class="rowmeta"><span class="tag" style="padding:2px 7px">${esc(n.category)}</span><span>${esc(n.source||'')}</span></div></div></div>`;
-}
-
-function groupByDateHtml(list, emptyMsg){
-  if(!list.length) return `<div class="empty">${emptyMsg}</div>`;
-  const byDate={};
-  list.forEach(n=>{(byDate[n.date]=byDate[n.date]||[]).push(n);});
-  const dates=Object.keys(byDate).sort((a,b)=>b.localeCompare(a));
-  return dates.map(d=>`<details class="daygroup" open><summary><span>${esc(d)}</span><span class="daycount">${byDate[d].length}件</span></summary><div class="daylist">${byDate[d].map(pastRow).join('')}</div></details>`).join('');
-}
-
-function render(){
-  const filtered=db.filter(matchesFilter);
-  const officialAll=db.filter(n=>(n.track||'official')==='official');
-  const officialFiltered=filtered.filter(n=>(n.track||'official')==='official');
-  const generalFiltered=filtered.filter(n=>n.track==='general');
-
-  const todays=officialFiltered.filter(n=>n.date===today);
-  const pastFiltered=officialFiltered.filter(n=>n.date!==today);
-  const allPastForRelated=officialAll.filter(n=>n.date!==today);
-
-  document.getElementById('todayGrid').innerHTML = todays.map(n=>todayCard(n,allPastForRelated)).join('') || '<div class="empty">本日のニュースはまだありません。</div>';
-  document.getElementById('tabTodayCnt').textContent = `(${todays.length})`;
-  document.getElementById('tabPastCnt').textContent = `(${pastFiltered.length})`;
-  document.getElementById('tabGeneralCnt').textContent = `(${generalFiltered.length})`;
-
-  document.getElementById('pastAccordion').innerHTML = groupByDateHtml(pastFiltered, '該当する過去ニュースはありません。');
-  document.getElementById('generalAccordion').innerHTML = groupByDateHtml(generalFiltered, '該当する一般ニュースはありません。');
-
-  document.getElementById('todayView').hidden = tab!=='today';
-  document.getElementById('pastView').hidden = tab!=='past';
-  document.getElementById('generalView').hidden = tab!=='general';
-}
-
+const isGeneral=n=>n.track==='general';
+const isSpecial=n=>!isGeneral(n);
+function matchesFilter(n){const nImp=n.importance||'中';return(cat==='all'||n.category===cat)&&(imp==='all'||nImp===imp)&&(!q||JSON.stringify(n).toLowerCase().includes(q.toLowerCase()));}
+function setImp(level){imp=(imp===level)?'all':level;document.querySelectorAll('.stat').forEach(s=>s.classList.toggle('active',s.dataset.imp===imp));const ind=document.getElementById('impIndicator');if(imp==='all')ind.style.display='none';else{ind.style.display='block';document.getElementById('impIndicatorText').textContent=`重要度「${imp}」で絞り込み中 ×`;}render();}
+function relatedFor(n,pastList){return pastList.filter(p=>p.category===n.category).sort((a,b)=>b.date.localeCompare(a.date)).slice(0,3);}
+function card(n,pastList){const impv=n.importance||'中',rel=relatedFor(n,pastList);const relHtml=rel.length?`<details class="related"><summary>関連する過去ニュース (${rel.length})</summary><ul>${rel.map(r=>`<li><span class="rdate">${esc(r.date)}</span><a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.headline)}</a></li>`).join('')}</ul></details>`:'';return `<article class="card"><div class="meta"><span class="tag">${esc(n.category)}</span><span class="imp ${esc(impv)}" onclick="setImp('${esc(impv)}')" title="クリックで重要度「${esc(impv)}」のニュースだけ表示">重要度 ${esc(impv)}</span><span class="date-txt">${esc(n.date)}</span></div><h2 class="headline">${esc(n.headline)}</h2><p class="summary">${esc(n.summary)}</p><div class="why"><b>技師長目線</b>${esc(n.why)}</div><a class="source" href="${esc(n.url)}" target="_blank" rel="noopener">${esc(n.source||'情報源')} ↗</a>${relHtml}</article>`;}
+function pastRow(n){const impv=n.importance||'中';return `<div class="dayrow"><span class="imp ${esc(impv)}" onclick="setImp('${esc(impv)}')">${esc(impv)}</span><div class="rowtext"><a href="${esc(n.url)}" target="_blank" rel="noopener">${esc(n.headline)}</a><div class="rowmeta"><span class="tag" style="padding:2px 7px">${esc(n.category)}</span><span>${esc(n.source||'')}</span></div></div></div>`;}
+function groupByDateHtml(list,emptyMsg){if(!list.length)return `<div class="empty">${emptyMsg}</div>`;const byDate={};list.forEach(n=>(byDate[n.date]=byDate[n.date]||[]).push(n));return Object.keys(byDate).sort((a,b)=>b.localeCompare(a)).map(d=>`<details class="daygroup" open><summary><span>${esc(d)}</span><span class="daycount">${byDate[d].length}件</span></summary><div class="daylist">${byDate[d].map(pastRow).join('')}</div></details>`).join('');}
+function render(){const filtered=db.filter(matchesFilter),specialFiltered=filtered.filter(isSpecial),generalFiltered=filtered.filter(isGeneral);const specialAll=db.filter(isSpecial),specialPastAll=specialAll.filter(n=>n.date!==today);const todaysSpecial=specialFiltered.filter(n=>n.date===today),todaysGeneral=generalFiltered.filter(n=>n.date===today);const pastSpecial=specialFiltered.filter(n=>n.date!==today),pastGeneral=generalFiltered.filter(n=>n.date!==today);document.getElementById('todaySpecial').innerHTML=todaysSpecial.map(n=>card(n,specialPastAll)).join('')||'<div class="empty">本日の専門ニュースはまだありません。</div>';document.getElementById('todayGeneral').innerHTML=todaysGeneral.map(n=>card(n,specialPastAll)).join('')||'<div class="empty">本日の一般ニュースはまだありません。</div>';document.getElementById('pastSpecial').innerHTML=groupByDateHtml(pastSpecial,'該当する過去の専門ニュースはありません。');document.getElementById('pastGeneral').innerHTML=groupByDateHtml(pastGeneral,'該当する過去の一般ニュースはありません。');document.getElementById('tabTodayCnt').textContent=`(${todaysSpecial.length+todaysGeneral.length})`;document.getElementById('tabPastCnt').textContent=`(${pastSpecial.length+pastGeneral.length})`;document.getElementById('pastTab').style.display=q?'':'none';document.getElementById('todayView').hidden=tab!=='today';document.getElementById('pastView').hidden=tab!=='past';}
 document.querySelectorAll('.tabbtn').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tabbtn').forEach(x=>x.classList.remove('active'));b.classList.add('active');tab=b.dataset.tab;render()});
 document.querySelectorAll('.filters button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.filters button').forEach(x=>x.classList.remove('active'));b.classList.add('active');cat=b.dataset.cat;render()});
-document.getElementById('search').oninput=e=>{q=e.target.value;render()};
-
-function updateStats(){
-  document.getElementById('statAll').textContent=db.length;
-  document.getElementById('statHi').textContent=db.filter(n=>n.importance==='高').length;
-  document.getElementById('statMid').textContent=db.filter(n=>n.importance==='中'||!n.importance).length;
-  document.getElementById('statLo').textContent=db.filter(n=>n.importance==='低').length;
-}
-
+document.getElementById('search').oninput=e=>{q=e.target.value.trim();if(!q&&tab==='past'){tab='today';document.querySelectorAll('.tabbtn').forEach(x=>x.classList.toggle('active',x.dataset.tab==='today'));}render()};
+function updateStats(){document.getElementById('statAll').textContent=db.length;document.getElementById('statHi').textContent=db.filter(n=>n.importance==='高').length;document.getElementById('statMid').textContent=db.filter(n=>n.importance==='中'||!n.importance).length;document.getElementById('statLo').textContent=db.filter(n=>n.importance==='低').length;}
 fetch('news.json?'+Date.now()).then(r=>r.json()).then(x=>{db=x;document.getElementById('status').textContent=`毎朝8:00に更新中。現在 ${db.length}件のニュースを蓄積しています。`;updateStats();render()}).catch(e=>{document.getElementById('status').textContent='ニュースDBの読み込みに失敗しました。';render()});
 </script>
 </body></html>
