@@ -37,10 +37,11 @@ def relevant(x):
     if any(k.lower() in text for k in OTHER_JOBS) or any(k.lower() in text for k in BAD_TERMS): return False
     direct=any(k.lower() in text for k in DIRECT_TERMS)
     modality=any(k.lower() in text for k in MODALITY_TERMS)
-    # 公式の放射線・画像診断系サイトは、具体的なモダリティ/ガイドライン等があれば採用。
+    # 公式サイトは放射線関連のモダリティ・制度等を幅広く採用。
     if is_official(x.get('url','')) and modality: return True
-    # 一般ニュースは医療・診療の文脈がある場合だけ。
-    if modality and any(k.lower() in text for k in ('医療','病院','診療','画像','放射線','検査','患者','装置','線量','被ばく')): return True
+    # 一般ニュースも、CT/MRI/PET/被ばく/AI等の放射線診療テーマなら採用。
+    # 「前の版」のように、医療・病院という語がなくてもテーマ自体が放射線関連なら拾う。
+    if modality: return True
     return direct
 def is_news_item(x):
     url=x.get('url',''); title=x.get('title','').strip()
