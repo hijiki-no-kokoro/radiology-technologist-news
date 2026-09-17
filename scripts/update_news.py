@@ -32,18 +32,15 @@ def dom(url):
 def is_official(url):
     d=dom(url); return any(d==z or d.endswith('.'+z) for z in OFFICIAL)
 def relevant(x):
-    text=(x.get('title','')+' '+x.get('description','')+' '+x.get('source','')).lower()
+    text=' '.join(str(x.get(k,'') or '') for k in ('title','headline','description','summary','source')).lower()
     if any(k.lower() in text for k in BAD_TERMS): return False
     direct=any(k.lower() in text for k in DIRECT_TERMS)
     modality=any(k.lower() in text for k in MODALITY_TERMS)
-    # 公式サイトは放射線関連のモダリティ・制度等を幅広く採用。
     if is_official(x.get('url','')) and modality: return True
-    # 一般ニュースは、放射線技師だけでなくCT/MRI/PET/被ばく/AI等の
-    # 放射線診療に関係する話題を拾う。看護師など他職種が記事内に登場しても除外しない。
     if modality: return True
     return direct
 def is_news_item(x):
-    url=x.get('url',''); title=x.get('title','').strip()
+    url=x.get('url',''); title=(x.get('title') or x.get('headline') or '').strip()
     if '/activity/lifelong-study' in url or '/seminar/' in url: return False
     if title in ('日本診療放射線技師会誌JART','みんなに知ってもらいたい診療放射線技師のこと','日本診療放射線技師会について','都道府県診療放射線技師会・放射線技師会','活動紹介','会誌・投稿','一般向け情報','技師会概要','医療被ばく個別相談センター'): return False
     if '受付期間：' in title or '開催日：' in title: return False
@@ -63,12 +60,12 @@ def direct_jart():
     except Exception as e: print('JART direct error:',e)
     return out
 def category(x):
-    t=(x.get('title','')+' '+x.get('description','')).lower(); rules=[('診療報酬・補助金',('診療報酬','補助金','助成金','加算')),('安全管理',('安全管理','安全','被ばく','線量管理','医療被ばく','線量','放射線安全')),('一般撮影',('一般撮影','FPD','マンモグラフィ','X線撮影')),('CT',('CT','computed tomography')),('MRI',('MRI','magnetic resonance')),('核医学',('核医学','SPECT','PET','MIBG','DAT','RI')),('放射線治療',('放射線治療','リニアック','陽子線','粒子線','IGRT')),('AI',('AI','人工知能','画像診断支援','読影支援')),('教育',('教育','国家試験','研修','認定','セミナー','講習')),('学術',('学術','研究','学会','ガイドライン','パブリックコメント')),('職能',('STAT','タスクシフト','タスクシェア','業務範囲','職能')),('制度',('制度','養成','確保','厚生労働省','医政'))]
+    t=' '.join(str(x.get(k,'') or '') for k in ('title','headline','description','summary')).lower(); rules=[('診療報酬・補助金',('診療報酬','補助金','助成金','加算')),('安全管理',('安全管理','安全','被ばく','線量管理','医療被ばく','線量','放射線安全')),('一般撮影',('一般撮影','FPD','マンモグラフィ','X線撮影')),('CT',('CT','computed tomography')),('MRI',('MRI','magnetic resonance')),('核医学',('核医学','SPECT','PET','MIBG','DAT','RI')),('放射線治療',('放射線治療','リニアック','陽子線','粒子線','IGRT')),('AI',('AI','人工知能','画像診断支援','読影支援')),('教育',('教育','国家試験','研修','認定','セミナー','講習')),('学術',('学術','研究','学会','ガイドライン','パブリックコメント')),('職能',('STAT','タスクシフト','タスクシェア','業務範囲','職能')),('制度',('制度','養成','確保','厚生労働省','医政'))]
     for cat,terms in rules:
         if any(k.lower() in t for k in terms): return cat
     return 'その他'
 def importance(x,official):
-    t=(x.get('title','')+' '+x.get('description','')).lower()
+    t=' '.join(str(x.get(k,'') or '') for k in ('title','headline','description','summary')).lower()
     if any(k.lower() in t for k in ('診療報酬','補助金','安全管理','被ばく','線量管理','装置更新','タスクシフト','タスクシェア','業務範囲','STAT','ガイドライン')): return '高'
     if official: return '中'
     return '低'
@@ -107,12 +104,14 @@ def main():
         if any(k.lower() in t for k in MODALITY_TERMS): s+=2
         return s
     fresh=sorted(candidates.values(),key=lambda x:(score(x),x.get('published','')),reverse=True); added=[]; titles=set()
-    # 本日は最大5件。少ない日はそのまま少なく出す。
     for x in fresh[:5]:
         k=norm(x['title'])
         if not k or k in titles: continue
         titles.add(k); official=is_official(x['url']) or x.get('source')=='JART'
         added.append({'date':x['published'][:10],'category':category(x),'importance':importance(x,official),'headline':x['title'],'summary':re.sub(r'\s+',' ',x.get('description','')).strip()[:220],'why':'公式情報のため、放射線部門の運用・教育・制度への影響を確認する価値があります。' if official else '放射線部門の実務への影響を確認する価値があります。','source':x.get('source') or dom(x['url']),'url':x['url'],'track':'official' if official else 'general'})
-    final=clean_db(added+db); NEWS_JSON.write_text(json.dumps(final[:200],ensure_ascii=False,indent=2),encoding='utf-8'); print(f'Added {len(added)} new items; database now has {len(final[:200])} items.')
+    final=clean_db(added+db)
+    if added and not final:
+        final=added+db
+    NEWS_JSON.write_text(json.dumps(final[:200],ensure_ascii=False,indent=2),encoding='utf-8'); print(f'Added {len(added)} new items; database now has {len(final[:200])} items.')
     for x in added: print(x['date'],x['track'],x['category'],x['headline'])
 if __name__=='__main__': main()
