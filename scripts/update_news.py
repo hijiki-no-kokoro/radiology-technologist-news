@@ -9,12 +9,11 @@ from urllib.request import Request, urlopen
 ROOT=Path(__file__).resolve().parents[1]
 NEWS_JSON=ROOT/'news.json'
 JST=timezone(timedelta(hours=9))
-QUERIES=['"診療放射線技師" OR "放射線技師"','"放射線部" CT MRI FPD','"放射線" 被ばく 線量管理 安全管理','核医学 SPECT PET "放射線技師"','放射線 AI 画像診断 読影支援','診療報酬 放射線 画像診断 補助金','site:jart.jp "診療放射線技師"','site:jsrt.or.jp "診療放射線技師" OR "放射線技術"','site:radiology.jp "診療放射線技師" OR "放射線"','site:jsnm.org 核医学 "放射線技師"','site:jastro.or.jp 放射線治療 "放射線技師"','site:mhlw.go.jp "診療放射線技師" 放射線','site:pmda.go.jp 放射線 CT MRI 医療機器']
+QUERIES=['"診療放射線技師" OR "放射線技師"','"放射線部" CT MRI FPD','"放射線" 被ばく 線量管理 安全管理','核医学 SPECT PET "放射線技師"','放射線 AI 画像診断 読影支援','診療報酬 放射線 画像診断 補助金','CT MRI 医療 画像診断 放射線','医用画像 AI CT MRI 病院','放射線 医療機器 CT MRI 最新','site:jart.jp "診療放射線技師"','site:jsrt.or.jp "診療放射線技師" OR "放射線技術"','site:radiology.jp "診療放射線技師" OR "放射線"','site:jsnm.org 核医学 "放射線技師"','site:jastro.or.jp 放射線治療 "放射線技師"','site:mhlw.go.jp "診療放射線技師" 放射線','site:pmda.go.jp 放射線 CT MRI 医療機器']
 OFFICIAL=('jart.jp','jsrt.or.jp','jrs.or.jp','radiology.jp','jsnm.org','jastro.or.jp','mhlw.go.jp','nra.go.jp','pmda.go.jp','mext.go.jp')
 CATEGORIES=('制度','職能','学術','AI','CT','MRI','一般撮影','安全管理','核医学','放射線治療','教育','診療報酬・補助金','その他')
 DIRECT_TERMS=('診療放射線技師','放射線技師','放射線部','放射線科','診療用放射線')
 MODALITY_TERMS=('CT','MRI','FPD','一般撮影','マンモグラフィ','核医学','SPECT','PET','放射線治療','被ばく','線量管理','画像診断','読影','STAT','X線撮影','タスクシフト','タスクシェア','放射線安全')
-OTHER_JOBS=('作業療法士','理学療法士','言語聴覚士','視能訓練士','臨床工学技士','臨床検査技師','歯科衛生士','歯科技工士','薬剤師','看護師','保健師','助産師','介護福祉士','社会福祉士','精神保健福祉士','柔道整復師','あん摩マッサージ指圧師','はり師','きゅう師','義肢装具士')
 BAD_TERMS=('漫画','マンガ','芸能','俳優','女優','アイドル','タレント','グラビア','写真集','求人','転職','保険')
 
 def fetch(url): return urlopen(Request(url,headers={'User-Agent':'Mozilla/5.0 radiology-technologist-news'}),timeout=30).read().decode('utf-8','ignore')
@@ -34,13 +33,13 @@ def is_official(url):
     d=dom(url); return any(d==z or d.endswith('.'+z) for z in OFFICIAL)
 def relevant(x):
     text=(x.get('title','')+' '+x.get('description','')+' '+x.get('source','')).lower()
-    if any(k.lower() in text for k in OTHER_JOBS) or any(k.lower() in text for k in BAD_TERMS): return False
+    if any(k.lower() in text for k in BAD_TERMS): return False
     direct=any(k.lower() in text for k in DIRECT_TERMS)
     modality=any(k.lower() in text for k in MODALITY_TERMS)
     # 公式サイトは放射線関連のモダリティ・制度等を幅広く採用。
     if is_official(x.get('url','')) and modality: return True
-    # 一般ニュースも、CT/MRI/PET/被ばく/AI等の放射線診療テーマなら採用。
-    # 「前の版」のように、医療・病院という語がなくてもテーマ自体が放射線関連なら拾う。
+    # 一般ニュースは、放射線技師だけでなくCT/MRI/PET/被ばく/AI等の
+    # 放射線診療に関係する話題を拾う。看護師など他職種が記事内に登場しても除外しない。
     if modality: return True
     return direct
 def is_news_item(x):
