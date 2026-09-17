@@ -13,8 +13,10 @@ QUERIES=['"診療放射線技師" OR "放射線技師"','"放射線部" CT MRI F
 OFFICIAL=('jart.jp','jsrt.or.jp','jrs.or.jp','radiology.jp','jsnm.org','jastro.or.jp','mhlw.go.jp','nra.go.jp','pmda.go.jp','mext.go.jp')
 CATEGORIES=('制度','職能','学術','AI','CT','MRI','一般撮影','安全管理','核医学','放射線治療','教育','診療報酬・補助金','その他')
 DIRECT_TERMS=('診療放射線技師','放射線技師','放射線部','放射線科','診療用放射線')
-MODALITY_TERMS=('CT','MRI','FPD','一般撮影','マンモグラフィ','核医学','SPECT','PET','放射線治療','被ばく','線量管理','画像診断','読影','STAT','X線撮影','タスクシフト','タスクシェア','放射線安全')
+STRONG_MODALITY_TERMS=('CT','MRI','FPD','一般撮影','マンモグラフィ','核医学','SPECT','PET','放射線治療','被ばく','線量管理','画像診断AI','画像診断支援','読影支援','STAT','X線撮影','タスクシフト','タスクシェア','放射線安全')
+BROAD_MODALITY_TERMS=('画像診断','読影','医用画像','放射線','医療画像')
 BAD_TERMS=('漫画','マンガ','芸能','俳優','女優','アイドル','タレント','グラビア','写真集','求人','転職','保険')
+NOISE_TITLE_TERMS=('受付期間：','開催日：','会誌・投稿','活動紹介','技師会概要')
 
 def fetch(url): return urlopen(Request(url,headers={'User-Agent':'Mozilla/5.0 radiology-technologist-news'}),timeout=30).read().decode('utf-8','ignore')
 def clean_html(s): return ' '.join(unescape(re.sub(r'<[^>]+>',' ',s or '')).split())
@@ -35,15 +37,16 @@ def relevant(x):
     text=' '.join(str(x.get(k,'') or '') for k in ('title','headline','description','summary','source')).lower()
     if any(k.lower() in text for k in BAD_TERMS): return False
     direct=any(k.lower() in text for k in DIRECT_TERMS)
-    modality=any(k.lower() in text for k in MODALITY_TERMS)
-    if is_official(x.get('url','')) and modality: return True
-    if modality: return True
-    return direct
+    strong=any(k.lower() in text for k in STRONG_MODALITY_TERMS)
+    broad=any(k.lower() in text for k in BROAD_MODALITY_TERMS)
+    if is_official(x.get('url','')):
+        return direct or strong or broad
+    return direct or strong or (broad and any(k in text for k in ('医療','病院','患者','診断','画像','放射線')))
 def is_news_item(x):
     url=x.get('url',''); title=(x.get('title') or x.get('headline') or '').strip()
     if '/activity/lifelong-study' in url or '/seminar/' in url: return False
     if title in ('日本診療放射線技師会誌JART','みんなに知ってもらいたい診療放射線技師のこと','日本診療放射線技師会について','都道府県診療放射線技師会・放射線技師会','活動紹介','会誌・投稿','一般向け情報','技師会概要','医療被ばく個別相談センター'): return False
-    if '受付期間：' in title or '開催日：' in title: return False
+    if any(k in title for k in NOISE_TITLE_TERMS): return False
     return True
 def parse_nearby_date(html,pos):
     dates=re.findall(r'(20\d{2})[/.年](\d{1,2})[/.月](\d{1,2})',clean_html(html[max(0,pos-1800):pos]))
@@ -101,7 +104,8 @@ def main():
         if any(k.lower() in t for k in DIRECT_TERMS): s+=10
         if is_official(x.get('url','')) or x.get('source')=='JART': s+=4
         if any(k.lower() in t for k in ('制度','診療報酬','補助金','安全管理','被ばく','線量管理','装置更新','タスクシフト','タスクシェア','ガイドライン')): s+=4
-        if any(k.lower() in t for k in MODALITY_TERMS): s+=2
+        if any(k.lower() in t for k in STRONG_MODALITY_TERMS): s+=2
+        if any(k.lower() in t for k in ('漫画','マンガ','芸能','俳優','女優','アイドル','タレント')): s-=10
         return s
     fresh=sorted(candidates.values(),key=lambda x:(score(x),x.get('published','')),reverse=True); added=[]; titles=set()
     for x in fresh[:5]:
@@ -110,8 +114,7 @@ def main():
         titles.add(k); official=is_official(x['url']) or x.get('source')=='JART'
         added.append({'date':x['published'][:10],'category':category(x),'importance':importance(x,official),'headline':x['title'],'summary':re.sub(r'\s+',' ',x.get('description','')).strip()[:220],'why':'公式情報のため、放射線部門の運用・教育・制度への影響を確認する価値があります。' if official else '放射線部門の実務への影響を確認する価値があります。','source':x.get('source') or dom(x['url']),'url':x['url'],'track':'official' if official else 'general'})
     final=clean_db(added+db)
-    if added and not final:
-        final=added+db
+    if added and not final: final=added+db
     NEWS_JSON.write_text(json.dumps(final[:200],ensure_ascii=False,indent=2),encoding='utf-8'); print(f'Added {len(added)} new items; database now has {len(final[:200])} items.')
     for x in added: print(x['date'],x['track'],x['category'],x['headline'])
 if __name__=='__main__': main()
