@@ -20,7 +20,7 @@ BAD_TERMS=('漫画','マンガ','芸能','俳優','女優','アイドル','タ�
 def fetch(url): return urlopen(Request(url,headers={'User-Agent':'Mozilla/5.0 radiology-technologist-news'}),timeout=30).read().decode('utf-8','ignore')
 def clean_html(s): return ' '.join(unescape(re.sub(r'<[^>]+>',' ',s or '')).split())
 def rss(q):
-    root=ET.fromstring(fetch('https://news.google.com/rss/search?q='+quote(q+' when:1d')+'&hl=ja&gl=JP&ceid=JP:ja')); out=[]
+    root=ET.fromstring(fetch('https://news.google.com/rss/search?q='+quote(q+' when:2d')+'&hl=ja&gl=JP&ceid=JP:ja')); out=[]
     for it in root.findall('./channel/item'):
         try: dt=parsedate_to_datetime(it.findtext('pubDate','')).astimezone(JST)
         except Exception: continue
@@ -37,7 +37,9 @@ def relevant(x):
     if any(k.lower() in text for k in OTHER_JOBS) or any(k.lower() in text for k in BAD_TERMS): return False
     direct=any(k.lower() in text for k in DIRECT_TERMS)
     modality=any(k.lower() in text for k in MODALITY_TERMS)
-    # CT/MRI/AI等の一般ニュースは、放射線診療への具体的な言及がない限り採用しない。
+    # 公式の放射線・画像診断系サイトは、具体的なモダリティ/ガイドライン等があれば採用。
+    if is_official(x.get('url','')) and modality: return True
+    # 一般ニュースは医療・診療の文脈がある場合だけ。
     if modality and any(k.lower() in text for k in ('医療','病院','診療','画像','放射線','検査','患者','装置','線量','被ばく')): return True
     return direct
 def is_news_item(x):
@@ -57,7 +59,7 @@ def direct_jart():
         html=fetch('https://www.jart.jp/')
         for m in re.finditer(r'<a[^>]+href=["\'](?P<href>[^"\']+)["\'][^>]*>\s*(?P<title>.*?)\s*</a>',html,re.I|re.S):
             title=clean_html(m.group('title')); href=urljoin('https://www.jart.jp/',m.group('href')); date=parse_nearby_date(html,m.start())
-            if title and date and '/news/info/' in href.lower() and relevant({'title':title,'source':'JART'}) and is_news_item({'title':title,'url':href}): out.append({'title':title,'url':href,'description':title,'source':'JART','published':date})
+            if title and date and '/news/info/' in href.lower() and relevant({'title':title,'source':'JART','url':href}) and is_news_item({'title':title,'url':href}): out.append({'title':title,'url':href,'description':title,'source':'JART','published':date})
     except Exception as e: print('JART direct error:',e)
     return out
 def category(x):
@@ -67,7 +69,7 @@ def category(x):
     return 'その他'
 def importance(x,official):
     t=(x.get('title','')+' '+x.get('description','')).lower()
-    if any(k.lower() in t for k in ('診療報酬','補助金','安全管理','被ばく','線量管理','装置更新','タスクシフト','タスクシェア','業務範囲','STAT')): return '高'
+    if any(k.lower() in t for k in ('診療報酬','補助金','安全管理','被ばく','線量管理','装置更新','タスクシフト','タスクシェア','業務範囲','STAT','ガイドライン')): return '高'
     if official: return '中'
     return '低'
 def load():
@@ -85,7 +87,7 @@ def clean_db(db):
         seen.add(k); x['category']=x.get('category') if x.get('category') in CATEGORIES else category(x); x['track']=x.get('track') or ('official' if is_official(x.get('url','')) else 'general'); out.append(x)
     return out
 def main():
-    cutoff=datetime.now(JST)-timedelta(hours=26); db=clean_db(load()); seen={norm(x.get('headline')) or x.get('url') for x in db}; candidates={}
+    cutoff=datetime.now(JST)-timedelta(hours=48); db=clean_db(load()); seen={norm(x.get('headline')) or x.get('url') for x in db}; candidates={}
     for x in direct_jart():
         if datetime.fromisoformat(x['published'])>=cutoff:
             k=norm(x['title']) or x['url']
@@ -101,7 +103,7 @@ def main():
         t=(x.get('title','')+' '+x.get('description','')).lower(); s=0
         if any(k.lower() in t for k in DIRECT_TERMS): s+=10
         if is_official(x.get('url','')) or x.get('source')=='JART': s+=4
-        if any(k.lower() in t for k in ('制度','診療報酬','補助金','安全管理','被ばく','線量管理','装置更新','タスクシフト','タスクシェア')): s+=4
+        if any(k.lower() in t for k in ('制度','診療報酬','補助金','安全管理','被ばく','線量管理','装置更新','タスクシフト','タスクシェア','ガイドライン')): s+=4
         if any(k.lower() in t for k in MODALITY_TERMS): s+=2
         return s
     fresh=sorted(candidates.values(),key=lambda x:(score(x),x.get('published','')),reverse=True); added=[]; titles=set()
