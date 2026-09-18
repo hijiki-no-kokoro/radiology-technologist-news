@@ -1,14 +1,25 @@
 [
   {
     "date": "2026-09-19",
-    "category": "その他",
+    "category": "CT",
     "importance": "低",
-    "headline": "ポケカ30周年記念「30th CELEBRATION」市場動向まとめ｜放射線技師の資産形成日記 - t.co",
-    "summary": "ポケカ30周年記念「30th CELEBRATION」市場動向まとめ｜放射線技師の資産形成日記 t.co",
+    "headline": "アリババ達磨院の汎用医療AIが「Science」に掲載 腹部CTで146種の疾患を識別、大多数の医師を上回る - finance.biggo.jp",
+    "summary": "アリババ達磨院の汎用医療AIが「Science」に掲載 腹部CTで146種の疾患を識別、大多数の医師を上回る finance.biggo.jp",
     "why": "放射線部門の実務への影響を確認する価値があります。",
-    "source": "t.co",
-    "url": "https://news.google.com/rss/articles/CBMiO0FVX3lxTE1hU1djM3hIekotSVdGLWNESkJKLTYwZVV2allVZXM1STFnNHptR1FvZnRSYXdaMWt5TVln?oc=5",
+    "source": "finance.biggo.jp",
+    "url": "https://news.google.com/rss/articles/CBMidEFVX3lxTE5Hb1N4V05XeE5RV0FNUmhhanFjR2hSY2Z3SWtnWmVNTEgwak9pNjNQNC1pZ3FiOWhlY3o2MTZlSmttbm90ZkdDbnFPSVJBdWNseEpPdDd4RVJtQklFSUJ6QzJSVzZaM0JqNU1Ea2h4VmlQenZ4?oc=5",
     "track": "official"
+  },
+  {
+    "date": "2026-09-18",
+    "category": "AI",
+    "importance": "低",
+    "headline": "AI医療画像解析チップの世界市場（2026年～2032年）、市場規模（GPUベースの画像解析チップ、ASICベースの画像解析チップ、FPGAベースの画像解析チップ）・分析レポートを発表 - アットプレス",
+    "summary": "AI医療画像解析チップの世界市場（2026年～2032年）、市場規模（GPUベースの画像解析チップ、ASICベースの画像解析チップ、FPGAベースの画像解析チップ）・分析レポートを発表 アットプレス",
+    "why": "放射線部門の実務への影響を確認する価値があります。",
+    "source": "アットプレス",
+    "url": "https://news.google.com/rss/articles/CBMiT0FVX3lxTE9WZVRoVjBfVk1abS1XdllZN1Q1WVNWWUZraDhYSk1WVWpIZlFEeHZmLWI1MXo5WERYWGVFalZCM0otWDEtelJIM2VpSVRVV1U?oc=5",
+    "track": "general"
   },
   {
     "date": "2026-09-19",
@@ -99,17 +110,6 @@
     "track": "general"
   },
   {
-    "date": "2026-09-17",
-    "category": "その他",
-    "importance": "低",
-    "headline": "画像14 / 49＞「折れてる」とは言えない放射線技師 vs「骨折してますか？」レントゲン結果を知りたい患者!!画像所見は、顔面で伝えるしかないよね【インタビュー】 - ウォーカープラス",
-    "summary": "画像14 / 49＞「折れてる」とは言えない放射線技師 vs「骨折してますか？」レントゲン結果を知りたい患者!!画像所見は、顔面で伝えるしかないよね【インタビュー】 ウォーカープラス",
-    "why": "放射線部門の実務への影響を確認する価値があります。",
-    "source": "ウォーカープラス",
-    "url": "https://news.google.com/rss/articles/CBMibkFVX3lxTE1lNGJFNVM0R3lXSXctZzdWRGJ6STE1WS1peFZiRnd6VVE3ODVLQzZsQm1fUkZ3OERpdGZ2M3lNdndnUU9WbFJ6X0JoUURTMmJWVzE4aXVOZ0NCTHlJSEZmM2RqTno5M3Zoc0VvbjdR?oc=5",
-    "track": "general"
-  },
-  {
     "date": "2026-09-18",
     "category": "AI",
     "importance": "低",
@@ -184,17 +184,6 @@
     "why": "放射線領域の学術動向として収集。",
     "source": "日本医学放射線学会",
     "url": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxQWTQ3OUdJM29fRVFiSC1iS3huOUJiS1dKaENNdzlBSmdETUNEM3ZWdTZwNWtEWWtndFhTcnQ1ZUtBSHViWjlQeXQ0NTB1RWRRX0VkZG9yaS14Q2dsNHRYRWNVd3hYZGVWT1ZCRmE2dlBuQ3FtYUZvaXA2WldVUFVMU2RSWUkwNTEy?oc=5",
-    "track": "general"
-  },
-  {
-    "date": "2026-09-16",
-    "category": "その他",
-    "importance": "低",
-    "headline": "画像4 / 49＞「折れてる」とは言えない放射線技師 vs「骨折してますか？」レントゲン結果を知りたい患者!!画像所見は、顔面で伝えるしかないよね【インタビュー】 - ウォーカープラス",
-    "summary": "放射線技師と患者を題材にした一般メディアの記事。",
-    "why": "放射線技師に関する一般メディアの話題として収集。",
-    "source": "ウォーカープラス",
-    "url": "https://news.google.com/rss/articles/CBMibkFVX3lxTFBuQ19qcE1aaHpEdzRZSEd0X3U0b3lFTHJzTU5lZnV1TzZRRlNMWHVlN0k2N2lIWVhEYXhQTzJaOXF0c1BkNFhlNEV5VjA4MUFJQnRnTmxHU3ZKbjhtUWtWWENKQUVyQkktVDFERWhn?oc=5",
     "track": "general"
   },
   {
