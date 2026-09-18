@@ -123,6 +123,16 @@ NOISE_TITLE_TERMS = (
     '会誌・投稿',
     '活動紹介',
     '技師会概要',
+    '画像',
+)
+
+NON_RADIOLOGY_TERMS = (
+    'ポケモン', 'ポケカ', '資産形成', '投資', '株式投資', '副業',
+    '競馬', '競輪', '競艇', 'ギャンブル', '仮想通貨', '暗号資産'
+)
+
+MARKET_REPORT_DOMAINS = (
+    'newscast.jp', 'atpress.ne.jp'
 )
 
 def fetch(url):
@@ -221,10 +231,10 @@ def article_text(x):
 def relevant(x):
     text = article_text(x)
 
-    if any(
-        k.lower() in text
-        for k in BAD_TERMS
-    ):
+    if any(k.lower() in text for k in BAD_TERMS):
+        return False
+
+    if any(k.lower() in text for k in NON_RADIOLOGY_TERMS):
         return False
 
     direct = any(
@@ -277,6 +287,9 @@ def is_news_item(x):
         return False
 
     if '/seminar/' in url:
+        return False
+
+    if re.search(r'^画像\s*\d+\s*/\s*\d+', title):
         return False
 
     if title in (
@@ -495,12 +508,31 @@ def is_specialist(x):
     """
 
     text = article_text(x)
+    title = (x.get('title') or x.get('headline') or '').lower()
+    domain = dom(x.get('url', ''))
 
-    if any(
-        k.lower() in text
-        for k in DIRECT_TERMS
+    if any(k.lower() in text for k in NON_RADIOLOGY_TERMS):
+        return False
+
+    if re.search(r'^画像\s*\d+\s*/\s*\d+', title):
+        return False
+
+    if domain in MARKET_REPORT_DOMAINS and any(
+        k in title for k in ('市場', '市場規模', '市場動向', 'シェア', '成長分析', '業界予測', '市場レポート')
     ):
-        return True
+        return False
+
+    direct_context = (
+        '業務', '業務範囲', 'タスクシフト', 'タスクシェア', '教育', '研修',
+        '国家試験', '資格', '認定', '職能', 'STAT', '学会', '病院',
+        '放射線部', '放射線科', '検査', '撮影', '被ばく', '線量', '画像',
+        'CT', 'MRI', '核医学', 'SPECT', 'PET', '放射線治療', '診療', '制度'
+    )
+
+    if any(k.lower() in text for k in DIRECT_TERMS):
+        # 「放射線技師」という語だけの一般記事は専門扱いしない
+        if any(k.lower() in text for k in direct_context):
+            return True
 
     specialist_terms = (
         'CT',
