@@ -285,9 +285,6 @@ def is_news_item(x):
     if '/activity/lifelong-study' in url:
         return False
 
-    if '/seminar/' in url:
-        return False
-
     if re.search(r'^画像\s*\d+\s*/\s*\d+', title):
         return False
 
@@ -525,7 +522,8 @@ def is_specialist(x):
         '業務', '業務範囲', 'タスクシフト', 'タスクシェア', '教育', '研修',
         '国家試験', '資格', '認定', '職能', 'STAT', '学会', '病院',
         '放射線部', '放射線科', '検査', '撮影', '被ばく', '線量', '画像',
-        'CT', 'MRI', '核医学', 'SPECT', 'PET', '放射線治療', '診療', '制度'
+        'CT', 'MRI', '核医学', 'SPECT', 'PET', '放射線治療', '診療', '制度',
+        '講習', '実習', '告示研修', '養成', '確保', 'アンケート', 'ガイドライン'
     )
 
     if any(k.lower() in text for k in DIRECT_TERMS):
@@ -767,7 +765,11 @@ def make_item(x):
 def main():
     cutoff = (
         datetime.now(JST)
-        - timedelta(hours=48)
+        - timedelta(hours=72)
+    )
+    ongoing_cutoff = (
+        datetime.now(JST)
+        - timedelta(days=30)
     )
 
     db = clean_db(load())
@@ -811,7 +813,8 @@ def main():
                     continue
 
                 if published < cutoff:
-                    continue
+                    if not (is_official(x.get('url','')) and any(k.lower() in article_text(x) for k in ('継続','アンケート','募集','受付','ガイドライン','研修','講習')) and published >= ongoing_cutoff):
+                        continue
 
                 if not relevant(x):
                     continue
