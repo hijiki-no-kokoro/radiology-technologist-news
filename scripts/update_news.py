@@ -123,7 +123,6 @@ NOISE_TITLE_TERMS = (
     '会誌・投稿',
     '活動紹介',
     '技師会概要',
-    '画像',
 )
 
 NON_RADIOLOGY_TERMS = (
