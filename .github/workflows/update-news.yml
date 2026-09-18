@@ -38,5 +38,9 @@ jobs:
             echo 'No news changes to commit.'
           else
             git commit -m 'Update daily radiology technologist news'
+            # スクリプト更新と同時刻に別の実行がmainへpushしても競合しないよう、
+            # push前に最新mainを取り込んでから再送する
+            git fetch origin main
+            git rebase origin/main
             git push
           fi
