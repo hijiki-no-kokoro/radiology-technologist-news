@@ -1,0 +1,1862 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>イオンと化学反応式 学習アプリ｜第26版・ダッシュボード詳細修正</title>
+<style>
+:root{
+  --bg:#fff7fc;--card:#ffffff;--ink:#35263f;--muted:#806f89;--line:#f0ddea;
+  --pink:#ff6fae;--pink2:#ff9ac6;--purple:#8b72e8;--mint:#57cdb0;--yellow:#ffd86b;
+  --blue:#72a9ff;--shadow:0 10px 28px rgba(170,105,160,.12)
+}
+*{box-sizing:border-box}
+body{
+  margin:0;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans JP","Yu Gothic",sans-serif;
+  background:linear-gradient(135deg,#fff8fc 0%,#f7f4ff 48%,#f1fffb 100%);
+  color:var(--ink);min-height:100vh
+}
+body:before,body:after{content:"";position:fixed;border-radius:50%;z-index:-1;pointer-events:none}
+body:before{width:260px;height:260px;background:#ffd8ea;opacity:.35;top:80px;right:-100px}
+body:after{width:220px;height:220px;background:#d8fff4;opacity:.4;bottom:-80px;left:-70px}
+header{
+  background:linear-gradient(135deg,#ff6fae,#a27cf3 58%,#6fd6c1);
+  color:white;padding:22px 18px 20px;position:sticky;top:0;z-index:10;
+  box-shadow:0 6px 20px rgba(130,82,150,.18)
+}
+header h1{margin:0 0 5px;font-size:24px;letter-spacing:.02em}
+header p{margin:0;opacity:.94;font-size:13px}
+nav{
+  display:flex;gap:8px;overflow:auto;padding:10px;background:rgba(255,255,255,.94);
+  border-bottom:1px solid var(--line);position:sticky;top:89px;z-index:9;
+  backdrop-filter:blur(10px)
+}
+nav button{
+  border:1px solid #eadff0;background:#fff;color:#654d70;padding:10px 14px;border-radius:999px;
+  white-space:nowrap;font-weight:800;cursor:pointer;transition:.18s
+}
+nav button.active{background:linear-gradient(135deg,#ff6fae,#a277ef);color:#fff;border-color:transparent;box-shadow:0 5px 14px rgba(184,99,166,.25)}
+main{max-width:1050px;margin:auto;padding:20px}.view{display:none}.view.active{display:block}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:15px}
+.card{
+  background:rgba(255,255,255,.95);border:1px solid var(--line);border-radius:22px;padding:18px;
+  box-shadow:var(--shadow);position:relative;overflow:hidden
+}
+.card:before{content:"";position:absolute;left:0;top:0;width:100%;height:4px;background:linear-gradient(90deg,#ff7db4,#9b7bed,#62d3b8)}
+.metric{font-size:31px;font-weight:900;margin:5px 0;color:#493351}
+.muted{color:var(--muted);font-size:13px}.small{font-size:12px}.pill{
+  display:inline-block;padding:5px 10px;border-radius:999px;background:#fff0f7;color:#d44c89;
+  font-size:12px;font-weight:900;border:1px solid #ffd2e5
+}
+h2{font-size:21px;margin:8px 0 15px}h3{margin:4px 0 10px}
+h2:after{content:" ✦";color:#ff78b3;font-size:16px}
+button.action{
+  border:0;border-radius:13px;background:linear-gradient(135deg,#ff6fae,#9a76ed);color:white;
+  padding:11px 16px;font-weight:900;cursor:pointer;box-shadow:0 6px 15px rgba(174,92,155,.2)
+}
+button.secondary{
+  border:1px solid #eaddea;background:#fff;color:#5a4764;border-radius:13px;padding:10px 14px;
+  font-weight:800;cursor:pointer
+}
+button.danger{background:#fff2f3;color:#b93852;border-color:#f5ccd4}
+button:disabled{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:9px;flex-wrap:wrap;align-items:center}.spacer{height:12px}
+.notice{padding:13px;border-radius:15px;background:#fff9e8;border:1px solid #f5dfa0;color:#765a1d}
+.success{background:#edfff8;border-color:#bfeedd;color:#176c54}.error{background:#fff0f4;border-color:#f3c2d3;color:#a52e55}
+.progress{height:11px;background:#f2e9f1;border-radius:999px;overflow:hidden}
+.progress>span{display:block;height:100%;width:0;background:linear-gradient(90deg,#ff70ad,#9a7cf0,#5ed1b4);border-radius:999px}
+.quiz-question{font-size:21px;font-weight:900;line-height:1.55;white-space:pre-wrap}
+.options{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-top:16px}
+.option{
+  border:2px solid #eee1eb;background:#fff;padding:15px;border-radius:15px;text-align:left;
+  font-size:16px;cursor:pointer;font-weight:700;transition:.16s
+}
+.option:hover{border-color:#ff9cc5;transform:translateY(-1px)}
+.option.correct{border-color:#35bd9a;background:#edfff8}.option.wrong{border-color:#ed7190;background:#fff1f5}
+.feedback{margin-top:14px;padding:13px;border-radius:13px;background:#f8f4fa}
+input,select{border:1px solid #e6d9e7;border-radius:11px;padding:10px;font-size:15px;background:#fff}
+.answerbox{width:100%;font-size:18px}
+.flash{
+  min-height:310px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;
+  border:0;background:linear-gradient(145deg,#fff,#fff3f9 55%,#f3f0ff);
+  box-shadow:0 12px 30px rgba(176,104,159,.13);position:relative
+}
+.flash:before{content:"✦  ✧  ✦";position:absolute;top:18px;color:#ff80b7;letter-spacing:12px;font-size:18px}
+.flash .big{font-size:45px;font-weight:950;margin:18px;color:#4d3557}
+.flash .answer{font-size:31px;font-weight:950;color:#7657d4}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{border-bottom:1px solid var(--line);padding:10px;text-align:left}
+th{color:#795d82;background:#fff8fc}
+@media(max-width:650px){
+  .options{grid-template-columns:1fr}.quiz-question{font-size:18px}
+  main{padding:12px}header h1{font-size:21px}nav{top:79px}
+  .card{border-radius:18px}.flash .big{font-size:38px}
+}
+
+.mission-card{background:linear-gradient(135deg,#fff7fb,#f6f0ff 55%,#effffc);border:2px solid #f1d7ee}
+.mission-box{margin:8px 0 14px}
+.mission-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.mission-grid>div{background:#fff;border-radius:14px;padding:10px 12px;box-shadow:0 4px 14px rgba(120,80,140,.08)}
+.streak{margin-top:10px;padding:10px 12px;border-radius:14px;background:#fff3c9;font-weight:700}
+@media(max-width:650px){.mission-grid{grid-template-columns:1fr}}
+
+.mission-grid button{min-height:72px;font-size:16px}.mission-grid small{font-weight:500;opacity:.8}.test-card{background:linear-gradient(135deg,#fff0f8,#fff8dc);border:2px solid #f3bfdc}.test-grade{font-size:20px;font-weight:800}.wrong-item{padding:10px;margin:8px 0;border-radius:12px;background:#fff1f4}
+.today-plan-card{background:linear-gradient(135deg,#fff8ef,#f8f0ff,#effffc);border:2px solid #ead7f4}
+.plan-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:10px 0}
+.plan-summary>div{background:#fff;border-radius:14px;padding:10px;text-align:center;box-shadow:0 4px 14px rgba(100,70,120,.08)}
+.plan-summary b{display:block;font-size:19px}.plan-summary span{font-size:12px;color:#777}
+@media(max-width:700px){.plan-summary{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+.hint-btn,.teacher-btn{margin:6px 6px 10px 0;border:0;border-radius:999px;padding:8px 13px;background:#fff0b8;cursor:pointer;font-weight:700}
+.teacher-btn{background:#e9dcff}
+.hint-box{display:none;margin:0 0 12px;padding:10px 12px;border-radius:12px;background:#f8f5ff}
+.hint-box.show{display:block}
+.weak-row{display:grid;grid-template-columns:1fr auto auto;gap:10px;padding:9px 0;border-bottom:1px solid #eee}
+.weak-row b{color:#d84b76}.weak-row small{color:#888}
+.badge-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.badge{padding:10px;border-radius:14px;background:#fff5c8;text-align:center;font-weight:700}
+
+.progress-ring-wrap{display:flex;align-items:center;gap:16px;margin:12px 0}
+.progress-ring{--p:0;width:78px;height:78px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(#ff78ad calc(var(--p)*1%),#f0e8f0 0)}
+.progress-ring>div{width:58px;height:58px;border-radius:50%;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.progress-ring b{font-size:16px}.progress-ring small{font-size:9px;color:#888}.progress-big{font-size:22px;font-weight:800}
+.badge.locked{filter:grayscale(1);opacity:.45}
+
+.balance-card{background:linear-gradient(135deg,#f4f0ff,#fff8e8);text-align:center}
+.balance-eq{font-size:26px;font-weight:800;padding:22px 8px;line-height:1.7}
+.balance-check{margin:14px 0;padding:12px;border-radius:14px;background:#fff;border:1px dashed #d7c9e8;text-align:left}
+
+/* 第8版改善版: quiz visibility safeguard */
+#quiz .quiz-card,
+#quiz .quiz-body,
+#quiz .choices,
+#quiz .quiz-question,
+#quiz .quiz-options,
+#quiz .question-area { visibility: visible; }
+#quiz .quiz-card[style*="display:none"],
+#quiz .quiz-body[style*="display:none"],
+#quiz .choices[style*="display:none"] { display: block !important; }
+
+
+/* 第9版: ion puzzle */
+.puzzle-wrap{max-width:760px;margin:0 auto}
+.puzzle-card{background:rgba(255,255,255,.96);border:1px solid #dbe5f2;border-radius:22px;padding:20px;box-shadow:0 8px 24px rgba(40,70,110,.10)}
+.puzzle-ions{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0}
+.puzzle-ion{border-radius:18px;padding:18px;text-align:center;border:2px solid #dce7f5;background:#f8fbff}
+.puzzle-ion .name{font-size:14px;font-weight:700}
+.puzzle-ion .formula{font-size:34px;font-weight:900;margin:8px 0}
+.puzzle-ion.cation{border-color:#b9d9ff;background:#f1f8ff}
+.puzzle-ion.anion{border-color:#d9c7ff;background:#faf5ff}
+.puzzle-controls{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0}
+.puzzle-control{background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:14px}
+.puzzle-stepper{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:10px}
+.puzzle-stepper button{width:42px;height:42px;border:0;border-radius:50%;font-size:22px;font-weight:900;cursor:pointer;background:#e9f2ff}
+.puzzle-count{font-size:30px;font-weight:900;min-width:34px;text-align:center}
+.puzzle-charge{text-align:center;padding:15px;border-radius:16px;background:#f7fafc;font-size:18px;font-weight:800;margin:14px 0}
+.puzzle-result{text-align:center;padding:18px;border-radius:18px;background:#eefbf3;border:2px solid #bce8cb;margin-top:14px}
+.puzzle-result .big{font-size:34px;font-weight:900;margin:8px 0}
+.puzzle-explain{text-align:left;background:#fff;padding:14px;border-radius:14px;margin-top:12px;line-height:1.7}
+.puzzle-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.puzzle-actions button{border:0;border-radius:14px;padding:12px 18px;font-weight:800;cursor:pointer}
+.puzzle-primary{background:#2563eb;color:white}
+.puzzle-secondary{background:#e8eef7;color:#1e293b}
+.puzzle-progress{font-size:13px;color:#64748b;text-align:center;margin-top:8px}
+@media(max-width:600px){.puzzle-ions,.puzzle-controls{grid-template-columns:1fr}}
+
+
+/* 第10版: balance input */
+.balance-input-wrap{max-width:820px;margin:0 auto}
+.balance-input-card{background:rgba(255,255,255,.97);border:1px solid #dbe5f2;border-radius:22px;padding:20px;box-shadow:0 8px 24px rgba(40,70,110,.10)}
+.balance-progress{text-align:center;color:#64748b;font-size:13px;margin-bottom:10px}
+.balance-equation{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin:18px 0;font-size:24px;font-weight:900}
+.balance-part{display:inline-flex;align-items:center;gap:5px}
+.balance-coef{width:54px;height:48px;border:2px solid #cbd5e1;border-radius:12px;text-align:center;font-size:22px;font-weight:900}
+.balance-coef:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.12)}
+.balance-species{white-space:nowrap}
+.balance-atom-table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px}
+.balance-atom-table th,.balance-atom-table td{border:1px solid #e2e8f0;padding:9px;text-align:center}
+.balance-atom-table th{background:#f8fafc}
+.balance-ok{font-weight:900}
+.balance-bad{font-weight:900}
+.balance-hint{background:#fff8e8;border:1px solid #f2d48a;border-radius:16px;padding:14px;margin-top:14px;line-height:1.7}
+.balance-result{background:#eefbf3;border:2px solid #bce8cb;border-radius:18px;padding:18px;margin-top:16px;text-align:center}
+.balance-result .big{font-size:30px;font-weight:900;margin:8px}
+.balance-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:14px}
+.balance-actions button{border:0;border-radius:14px;padding:12px 18px;font-weight:800;cursor:pointer}
+.balance-primary{background:#2563eb;color:#fff}
+.balance-secondary{background:#e8eef7;color:#1e293b}
+.balance-feedback{text-align:center;font-weight:800;margin-top:10px}
+
+
+/* 第11版: weak training */
+.weak-wrap{max-width:820px;margin:0 auto}.weak-card{background:rgba(255,255,255,.97);border:1px solid #dbe5f2;border-radius:22px;padding:20px;box-shadow:0 8px 24px rgba(40,70,110,.10)}
+.weak-hero{border-radius:18px;padding:18px;background:linear-gradient(135deg,#fff1f7,#eef4ff);margin-bottom:16px}.weak-rank{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}.weak-rank-item{background:#fff;border:1px solid #e5e7eb;border-radius:15px;padding:12px;text-align:center}.weak-rank-item .pct{font-size:25px;font-weight:900}
+.weak-question{font-size:22px;font-weight:900;line-height:1.55;margin:18px 0}.weak-choice{display:block;width:100%;text-align:left;border:2px solid #e2e8f0;background:#fff;border-radius:14px;padding:13px 15px;margin:8px 0;font-size:16px;cursor:pointer}.weak-choice:hover{border-color:#8b5cf6;background:#faf7ff}.weak-choice.correct{border-color:#22c55e;background:#effcf3}.weak-choice.wrong{border-color:#ef4444;background:#fff1f2}
+.weak-feedback{padding:14px;border-radius:15px;margin-top:12px;line-height:1.7}.weak-good{background:#effcf3;border:1px solid #b8e8c5}.weak-ng{background:#fff1f2;border:1px solid #fecaca}.weak-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:14px}.weak-actions button{border:0;border-radius:14px;padding:12px 18px;font-weight:800;cursor:pointer}.weak-primary{background:#7c3aed;color:#fff}.weak-secondary{background:#e8eef7;color:#1e293b}.weak-empty{text-align:center;padding:30px;color:#64748b}@media(max-width:650px){.weak-rank{grid-template-columns:1fr}}
+
+
+/* 第12版: test analysis */
+.test-result-wrap{max-width:900px;margin:0 auto}.test-result-card{background:rgba(255,255,255,.97);border:1px solid #dbe5f2;border-radius:22px;padding:20px;box-shadow:0 8px 24px rgba(40,70,110,.10)}
+.test-score{text-align:center;padding:20px;border-radius:20px;background:linear-gradient(135deg,#fff1f7,#eef4ff);margin-bottom:16px}.test-score .num{font-size:56px;font-weight:900;line-height:1}.test-score .sub{color:#64748b;margin-top:8px}
+.test-domains{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:15px 0}.test-domain{border:1px solid #e2e8f0;border-radius:16px;padding:13px;text-align:center;background:#fff}.test-domain .pct{font-size:25px;font-weight:900}.test-domain .bar{height:8px;border-radius:8px;background:#e5e7eb;margin-top:9px;overflow:hidden}.test-domain .fill{height:100%;border-radius:8px;background:#8b5cf6}
+.test-weak{background:#fff7ed;border:1px solid #fed7aa;border-radius:17px;padding:16px;margin-top:16px}.test-wrong{margin-top:16px}.test-wrong-item{padding:12px;border:1px solid #e5e7eb;border-radius:14px;margin:8px 0;background:#fff}.test-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:16px}.test-actions button{border:0;border-radius:14px;padding:12px 18px;font-weight:800;cursor:pointer}.test-primary{background:#7c3aed;color:#fff}.test-secondary{background:#e8eef7;color:#1e293b}
+@media(max-width:700px){.test-domains{grid-template-columns:repeat(2,1fr)}}
+
+
+/* 第13版: question variation */
+.var-wrap{max-width:860px;margin:0 auto}.var-card{background:rgba(255,255,255,.97);border:1px solid #dbe5f2;border-radius:22px;padding:20px;box-shadow:0 8px 24px rgba(40,70,110,.10)}
+.var-hero{border-radius:18px;padding:18px;background:linear-gradient(135deg,#eef4ff,#f8efff);margin-bottom:16px}
+.var-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}.var-stat{background:#fff;border:1px solid #e5e7eb;border-radius:15px;padding:12px;text-align:center}.var-stat .big{font-size:24px;font-weight:900}
+.var-question{font-size:23px;font-weight:900;line-height:1.6;margin:18px 0}.var-choice{display:block;width:100%;text-align:left;border:2px solid #e2e8f0;background:#fff;border-radius:14px;padding:13px 15px;margin:8px 0;font-size:16px;cursor:pointer}.var-choice:hover{border-color:#6366f1;background:#f8f7ff}.var-choice.correct{border-color:#22c55e;background:#effcf3}.var-choice.wrong{border-color:#ef4444;background:#fff1f2}
+.var-tag{display:inline-block;padding:5px 10px;border-radius:999px;background:#eef2ff;color:#4338ca;font-size:12px;font-weight:800}.var-feedback{padding:14px;border-radius:15px;margin-top:12px;line-height:1.75}.var-good{background:#effcf3;border:1px solid #b8e8c5}.var-ng{background:#fff1f2;border:1px solid #fecaca}.var-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:14px}.var-actions button{border:0;border-radius:14px;padding:12px 18px;font-weight:800;cursor:pointer}.var-primary{background:#4f46e5;color:#fff}.var-secondary{background:#e8eef7;color:#1e293b}
+@media(max-width:700px){.var-grid{grid-template-columns:1fr}}
+
+
+/* 第14版: adaptive difficulty */
+.adapt-wrap{max-width:860px;margin:0 auto}.adapt-card{background:rgba(255,255,255,.98);border:1px solid #dbe5f2;border-radius:22px;padding:20px;box-shadow:0 8px 24px rgba(40,70,110,.10)}
+.adapt-hero{border-radius:18px;padding:18px;background:linear-gradient(135deg,#eff6ff,#f5f3ff);margin-bottom:16px}.adapt-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0}.adapt-stat{background:#fff;border:1px solid #e5e7eb;border-radius:15px;padding:10px;text-align:center}.adapt-stat .big{font-size:22px;font-weight:900}.adapt-level{display:inline-block;padding:6px 12px;border-radius:999px;background:#ede9fe;color:#5b21b6;font-size:13px;font-weight:900}.adapt-q{font-size:22px;font-weight:900;line-height:1.6;margin:18px 0}.adapt-choice{display:block;width:100%;text-align:left;border:2px solid #e2e8f0;background:#fff;border-radius:14px;padding:13px 15px;margin:8px 0;font-size:16px;cursor:pointer}.adapt-choice:hover{border-color:#6366f1;background:#f8f7ff}.adapt-choice.correct{border-color:#22c55e;background:#effcf3}.adapt-choice.wrong{border-color:#ef4444;background:#fff1f2}.adapt-feedback{padding:14px;border-radius:15px;margin-top:12px;line-height:1.75}.adapt-good{background:#effcf3;border:1px solid #b8e8c5}.adapt-ng{background:#fff1f2;border:1px solid #fecaca}.adapt-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:14px}.adapt-actions button{border:0;border-radius:14px;padding:12px 18px;font-weight:800;cursor:pointer}.adapt-primary{background:#4f46e5;color:#fff}.adapt-secondary{background:#e8eef7;color:#1e293b}.adapt-note{font-size:13px;color:#64748b;line-height:1.7}
+@media(max-width:700px){.adapt-grid{grid-template-columns:repeat(2,1fr)}}
+
+
+/* 第15版: 本番型定期テスト */
+.exam15-wrap{max-width:900px;margin:auto}.exam15-head{background:linear-gradient(135deg,#fff7ed,#eff6ff);border:1px solid #dbe5f2;border-radius:20px;padding:18px;margin-bottom:14px}.exam15-bar{height:10px;background:#e5e7eb;border-radius:99px;overflow:hidden;margin:10px 0}.exam15-bar>span{display:block;height:100%;background:#6366f1;border-radius:99px}.exam15-meta{display:flex;gap:8px;flex-wrap:wrap}.exam15-pill{padding:5px 10px;border-radius:999px;background:#fff;border:1px solid #dbe5f2;font-size:12px;font-weight:800}.exam15-q{font-size:21px;font-weight:900;line-height:1.65;margin:18px 0}.exam15-choice{width:100%;text-align:left;border:2px solid #e2e8f0;background:#fff;border-radius:14px;padding:13px 15px;margin:7px 0;font-size:16px;cursor:pointer}.exam15-choice:hover{background:#f8fafc;border-color:#6366f1}.exam15-choice.sel{border-color:#6366f1;background:#eef2ff}.exam15-nav{display:flex;justify-content:space-between;gap:8px;margin-top:16px}.exam15-nav button,.exam15-result button{border:0;border-radius:13px;padding:11px 16px;font-weight:800;cursor:pointer}.exam15-primary{background:#4f46e5;color:#fff}.exam15-secondary{background:#e8eef7;color:#1e293b}.exam15-danger{background:#fee2e2;color:#991b1b}.exam15-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-top:15px}.exam15-num{border:1px solid #dbe5f2;background:#fff;border-radius:10px;padding:8px;text-align:center;font-weight:800;cursor:pointer}.exam15-num.done{background:#eef2ff}.exam15-num.current{outline:2px solid #6366f1}.exam15-num.unanswered{opacity:.6}.exam15-result{background:#fff;border:1px solid #dbe5f2;border-radius:20px;padding:20px}.exam15-score{font-size:42px;font-weight:950;text-align:center}.exam15-section{margin-top:18px}.exam15-section h3{margin-bottom:8px}.exam15-row{display:grid;grid-template-columns:120px 1fr 70px;gap:8px;align-items:center;margin:8px 0}.exam15-mini{height:9px;background:#e5e7eb;border-radius:99px;overflow:hidden}.exam15-mini span{display:block;height:100%;background:#818cf8}.exam15-review{border-left:4px solid #f59e0b;padding:10px 12px;background:#fffbeb;border-radius:8px;margin:7px 0}.exam15-note{font-size:13px;color:#64748b;line-height:1.7}
+@media(max-width:700px){.exam15-grid{grid-template-columns:repeat(5,1fr)}.exam15-q{font-size:18px}.exam15-row{grid-template-columns:90px 1fr 55px}}
+
+
+/* 第16版: 誤答分析 */
+.analysis16-wrap{max-width:920px;margin:auto}.analysis16-hero{background:linear-gradient(135deg,#fefce8,#eff6ff);border:1px solid #dbe5f2;border-radius:22px;padding:20px;margin-bottom:15px}.analysis16-card{background:#fff;border:1px solid #dbe5f2;border-radius:18px;padding:17px;margin:10px 0}.analysis16-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.analysis16-stat{text-align:center;background:#f8fafc;border-radius:14px;padding:12px}.analysis16-stat b{display:block;font-size:24px;margin-top:3px}.analysis16-tag{display:inline-block;border-radius:999px;padding:5px 10px;font-size:12px;font-weight:900;background:#eef2ff;color:#4338ca}.analysis16-bar{height:9px;background:#e5e7eb;border-radius:99px;overflow:hidden}.analysis16-bar span{display:block;height:100%;background:#818cf8}.analysis16-reason{border-left:4px solid #6366f1;background:#f8fafc;border-radius:8px;padding:10px 12px;margin-top:9px;line-height:1.7}.analysis16-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}.analysis16-actions button{border:0;border-radius:13px;padding:11px 16px;font-weight:800;cursor:pointer}.analysis16-primary{background:#4f46e5;color:#fff}.analysis16-secondary{background:#e8eef7;color:#1e293b}.analysis16-small{font-size:13px;color:#64748b;line-height:1.7}@media(max-width:700px){.analysis16-grid{grid-template-columns:1fr 1fr}}
+
+
+/* 第17版: 学力ダッシュボード */
+.dashboard17{max-width:960px;margin:0 auto}.dash-hero{background:linear-gradient(135deg,#eef2ff,#ecfeff 55%,#fefce8);border:1px solid #dbe5f2;border-radius:24px;padding:20px;margin-bottom:15px}.dash-title{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}.dash-level{font-size:30px;font-weight:950}.dash-sub{color:#64748b;line-height:1.7}.dash-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:15px}.dash-stat{background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:13px;text-align:center}.dash-stat small{color:#64748b}.dash-stat b{display:block;font-size:25px;margin-top:4px}.dash-section{background:#fff;border:1px solid #dbe5f2;border-radius:20px;padding:17px;margin:12px 0}.dash-domain{display:grid;grid-template-columns:110px 1fr 55px;gap:10px;align-items:center;margin:12px 0}.dash-bar{height:11px;background:#e5e7eb;border-radius:99px;overflow:hidden}.dash-bar span{display:block;height:100%;background:#6366f1}.dash-tag{display:inline-block;padding:5px 10px;border-radius:999px;font-size:12px;font-weight:900;background:#eef2ff;color:#4338ca}.dash-plan{display:flex;gap:10px;align-items:center;padding:12px;border-radius:14px;background:#f8fafc;margin:8px 0}.dash-plan strong{min-width:72px}.dash-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}.dash-actions button{border:0;border-radius:13px;padding:11px 16px;font-weight:850;cursor:pointer}.dash-primary{background:#4f46e5;color:#fff}.dash-secondary{background:#e8eef7;color:#1e293b}.dash-warn{background:#fff7ed;color:#9a3412}.dash-foot{font-size:12px;color:#64748b;line-height:1.7}@media(max-width:700px){.dash-grid{grid-template-columns:repeat(2,1fr)}.dash-domain{grid-template-columns:85px 1fr 45px}}
+
+
+/* 第18版: ホーム統合・自動難易度修正 */
+.dash-home18{margin:14px 0}.dash-home18-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.dash-home18-title{font-size:20px;font-weight:950}.dash-home18-sub{font-size:13px;color:#64748b}.dash-home18-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:12px}.dash-home18-stat{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:10px;text-align:center}.dash-home18-stat b{display:block;font-size:20px;margin-top:3px}.dash-home18-bar{height:9px;background:#e5e7eb;border-radius:99px;overflow:hidden;margin:7px 0}.dash-home18-bar span{display:block;height:100%;background:#6366f1}.dash-home18-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.dash-home18-actions button{border:0;border-radius:12px;padding:9px 13px;font-weight:800;cursor:pointer}.dash-home18-primary{background:#4f46e5;color:#fff}.dash-home18-secondary{background:#e8eef7;color:#1e293b}
+@media(max-width:700px){.dash-home18-grid{grid-template-columns:repeat(2,1fr)}}
+
+
+/* 第19版: 自動難易度ボタン動作安定化 */
+.adapt-launch{max-width:860px;margin:24px auto}.adapt-launch-card{background:#fff;border:1px solid #dbe5f2;border-radius:22px;padding:22px;text-align:center;box-shadow:0 8px 24px rgba(40,70,110,.08)}.adapt-launch-card h2{margin:0 0 8px}.adapt-launch-card p{color:#64748b}.adapt-launch-btn{border:0;border-radius:16px;padding:14px 24px;background:linear-gradient(135deg,#ff6fae,#8b72e8);color:#fff;font-size:18px;font-weight:900;cursor:pointer;box-shadow:0 8px 20px rgba(139,114,232,.2)}
+
+
+/* 第21版: 学習履歴・成長グラフ */
+.growth21{max-width:950px;margin:0 auto}.growth21-head{background:linear-gradient(135deg,#eef2ff,#ecfeff);border:1px solid #dbe5f2;border-radius:22px;padding:20px;margin-bottom:14px}.growth21-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.growth21-tab{border:1px solid #dbe5f2;background:#fff;border-radius:999px;padding:8px 14px;font-weight:800;cursor:pointer}.growth21-tab.active{background:#4f46e5;color:#fff}.growth21-card{background:#fff;border:1px solid #dbe5f2;border-radius:18px;padding:17px;margin:10px 0}.growth21-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.growth21-stat{text-align:center;background:#f8fafc;border-radius:14px;padding:12px}.growth21-stat small{color:#64748b}.growth21-stat b{display:block;font-size:23px;margin-top:4px}.growth21-chart{width:100%;overflow-x:auto}.growth21-chart svg{display:block;width:100%;min-width:620px;height:260px}.growth21-legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:#475569}.growth21-legend span{display:inline-flex;align-items:center;gap:5px}.growth21-dot{width:10px;height:10px;border-radius:50%;display:inline-block}.growth21-domain{display:grid;grid-template-columns:90px 1fr 60px;gap:10px;align-items:center;margin:11px 0}.growth21-bar{height:10px;background:#e5e7eb;border-radius:99px;overflow:hidden}.growth21-bar span{display:block;height:100%;background:#818cf8}.growth21-history{display:grid;grid-template-columns:120px 1fr 70px 70px;gap:8px;padding:9px 0;border-bottom:1px solid #eef2f7;align-items:center}.growth21-note{font-size:12px;color:#64748b;line-height:1.7}@media(max-width:700px){.growth21-grid{grid-template-columns:repeat(2,1fr)}.growth21-history{grid-template-columns:90px 1fr 55px 55px}}
+
+
+/* 第22版: ホームダッシュボード固定 */
+.dash-home22{margin:14px 0}.dash-home22-card{background:linear-gradient(135deg,#f8fbff,#f5f3ff);border:1px solid #dbe5f2;border-radius:20px;padding:17px}.dash-home22-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}.dash-home22-title{font-size:20px;font-weight:950}.dash-home22-sub{font-size:13px;color:#64748b}.dash-home22-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:12px}.dash-home22-stat{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:10px;text-align:center}.dash-home22-stat b{display:block;font-size:20px;margin-top:3px}.dash-home22-bar{height:9px;background:#e5e7eb;border-radius:99px;overflow:hidden;margin:7px 0}.dash-home22-bar span{display:block;height:100%;background:#6366f1}.dash-home22-btn{border:0;border-radius:12px;padding:9px 13px;font-weight:850;cursor:pointer;background:#4f46e5;color:#fff}@media(max-width:700px){.dash-home22-grid{grid-template-columns:repeat(2,1fr)}}
+
+
+/* 第23版: ホーム表示確実化 */
+#dashHome22{display:block;visibility:visible;opacity:1}
+
+</style>
+</head>
+<body>
+<header>
+  <h1>イオン・化学反応式 学習アプリ</h1>
+  <p>中学理科向け｜問題演習・1対1単語帳・間隔反復・学習記録</p>
+</header>
+<nav id="nav"></nav>
+<main>
+<section id="home" class="view active"></section>
+<section id="balance" class="view">
+<div class="balance-input-wrap">
+<div class="balance-input-card">
+<h2>⚗️ 反応式バランス・入力トレーニング</h2>
+<p>「反応式バランス」を押すと、ここに問題が表示されます。</p>
+<button class="balance-primary" onclick="startBalanceInput()">反応式バランスを開始</button>
+</div>
+</div>
+</section>
+
+<section id="ionPuzzle" class="view">
+  <div class="puzzle-wrap">
+    <div class="puzzle-card">
+      <h2>🧩 イオン組み立てパズル</h2>
+      <p>イオンの個数を調整して、電荷の合計を0にしよう。</p>
+      <button class="puzzle-primary" onclick="startIonPuzzle()">パズルを開始</button>
+    </div>
+  </div>
+</section>
+<section id="quiz" class="view"></section>
+<section id="adaptive" class="view"><div class="adapt-launch"><div class="adapt-launch-card"><h2>📈 自動難易度トレーニング</h2><p>正解が続くと難しくなり、間違えるとやさしくなります。</p><button class="adapt-launch-btn" onclick="window.startAdaptiveTraining()">トレーニングを開始</button></div></div></section>
+<section id="exam15" class="view"></section>
+<section id="analysis16" class="view"></section>
+<section id="variation" class="view"></section>
+<section id="weakTraining" class="view"></section>
+<section id="flash" class="view"></section>
+<section id="review" class="view"></section>
+<section id="stats" class="view"></section>
+<section id="settings" class="view"></section>
+</main>
+<script>
+const IONS=[
+["水素イオン","H⁺"],["ナトリウムイオン","Na⁺"],["カリウムイオン","K⁺"],["アンモニウムイオン","NH₄⁺"],
+["マグネシウムイオン","Mg²⁺"],["カルシウムイオン","Ca²⁺"],["銅(II)イオン","Cu²⁺"],["亜鉛イオン","Zn²⁺"],
+["塩化物イオン","Cl⁻"],["水酸化物イオン","OH⁻"],["酸化物イオン","O²⁻"],["硫酸イオン","SO₄²⁻"],
+["炭酸イオン","CO₃²⁻"],["硝酸イオン","NO₃⁻"]
+];
+const FORMULAS=[
+["水","H₂O"],["二酸化炭素","CO₂"],["塩化ナトリウム","NaCl"],["酸化マグネシウム","MgO"],
+["酸化銅(II)","CuO"],["塩化水素","HCl"],["水酸化ナトリウム","NaOH"],["水酸化カルシウム","Ca(OH)₂"],
+["炭酸カルシウム","CaCO₃"],["硫酸","H₂SO₄"],["硫酸銅(II)","CuSO₄"],["塩化カルシウム","CaCl₂"]
+];
+const REACTIONS=[
+["水素の燃焼","2H₂ + O₂ → 2H₂O"],["マグネシウムの燃焼","2Mg + O₂ → 2MgO"],
+["鉄と硫黄の化合","Fe + S → FeS"],["亜鉛と塩酸","Zn + 2HCl → ZnCl₂ + H₂"],
+["塩酸と水酸化ナトリウム","HCl + NaOH → NaCl + H₂O"],
+["炭酸カルシウムと塩酸","CaCO₃ + 2HCl → CaCl₂ + H₂O + CO₂"],
+["酸化銅(II)と炭素","2CuO + C → 2Cu + CO₂"],
+["炭酸水素ナトリウムの熱分解","2NaHCO₃ → Na₂CO₃ + H₂O + CO₂"]
+];
+
+const KEY="ionChemStudyV1";
+let state=JSON.parse(localStorage.getItem(KEY)||"null")||{
+  cards:{},sessions:[],quiz:{},settings:{notify:true,notifyHour:20},lastNotice:""
+};
+let mode="quiz", quizSet=[], qi=0, answered=false, flashList=[], fi=0, flashRevealed=false, timerStart=null, timer=null, testMode=false, testAnswers=[];
+
+function save(){localStorage.setItem(KEY,JSON.stringify(state))}
+function esc(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+function today(){return new Date().toISOString().slice(0,10)}
+function fmtDate(ts){return new Date(ts).toLocaleString("ja-JP",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"})}
+function dueCount(){return Object.values(state.cards).filter(c=>c.due<=Date.now()).length}
+function cardKey(kind,a,b){return kind+"|"+a+"|"+b}
+function card(kind,a,b){let k=cardKey(kind,a,b);return state.cards[k]||(state.cards[k]={kind,a,b,box:0,due:Date.now(),seen:0,correct:0,wrong:0,last:null});}
+function reviewAfter(c,ok){
+  const intervals=[1,3,7,14,30,60];
+  if(ok){c.box=Math.min(c.box+1,intervals.length); c.correct++; c.due=Date.now()+intervals[Math.max(0,c.box-1)]*86400000}
+  else {c.box=0;c.wrong++;c.due=Date.now()+10*60*1000}
+  c.seen++;c.last=Date.now();save();
+}
+function adaptiveReviewAfter(c,ok){
+ const base=[1,3,7,14,30,60];
+ c.seen=(c.seen||0)+1;
+ if(ok){
+   c.correct=(c.correct||0)+1;c.wrong=c.wrong||0;
+   c.streak=(c.streak||0)+1;
+   const idx=Math.min(base.length-1,Math.max(0,c.box||0));
+   const boost=c.streak>=2?1.5:1;
+   c.box=Math.min(c.box+1,base.length);
+   const days=base[Math.max(0,c.box-1)]*boost;
+   c.due=Date.now()+days*86400000;
+ }else{
+   c.wrong=(c.wrong||0)+1;c.streak=0;c.box=0;
+   const mins=c.wrong>=3?5:10;
+   c.due=Date.now()+mins*60000;
+ }
+ c.last=Date.now();save();
+}
+function hintFor(x){
+ const q=x.q||"";
+ if(x.kind==="ion") return "💡 ヒント：陽イオンと陰イオンの電荷に注目。＋と－、数字の位置を確認しよう。";
+ if(x.kind==="formula") return "💡 ヒント：元素記号の大文字・小文字と、右下の数字に注目。";
+ if(x.kind==="reaction") return "💡 ヒント：反応物は「→」の左、生成物は右。原子の数が左右で同じになるように係数を考えよう。";
+ return "💡 ヒント：まず問題文のキーワードを1つ拾って、分かるところから考えよう。";
+}
+function getWeakRank(){
+ const rows=[];
+ Object.entries(state.quiz||{}).forEach(([k,v])=>{
+   if(v.n) rows.push({name:k.split("|")[0],acc:Math.round(v.ok/v.n*100),n:v.n});
+ });
+ return rows.sort((a,b)=>a.acc-b.acc);
+}
+function getAchievements(){
+ const total=Object.values(state.quiz||{}).reduce((a,v)=>a+v.n,0);
+ const ok=Object.values(state.quiz||{}).reduce((a,v)=>a+v.ok,0);
+ const p=getProgress();
+ const badges=[
+  ["🌱","はじめの一歩",total>=1],
+  ["🧪","イオン挑戦者",total>=20],
+  ["⚗️","化学式マスター",total>=50],
+  ["🔬","反応式マスター",total>=100],
+  ["🔥","3日連続",p.streak>=3],
+  ["🏆","7日連続",p.streak>=7],
+  ["👑","化学マスター",total>=200 && ok/Math.max(1,total)>=.8]
+ ];
+ return badges;
+}
+function progressToday(){
+ const todayKey=today();
+ const sec=(state.sessions||[]).filter(x=>new Date(x.ts).toISOString().slice(0,10)===todayKey).reduce((a,x)=>a+x.sec,0);
+ const done=(state.quizToday||{})[todayKey]||0;
+ return {sec,done};
+}
+function addTodayQuestions(n){state.quizToday??={};const k=today();state.quizToday[k]=(state.quizToday[k]||0)+n;}
+
+
+function startSession(){if(!timerStart){timerStart=Date.now();timer=setInterval(()=>renderHome(),1000)}}
+function stopSession(){
+ if(timerStart){let sec=Math.max(1,Math.round((Date.now()-timerStart)/1000));state.sessions.push({ts:Date.now(),sec,mode});save();clearInterval(timer);timer=null;timerStart=null}
+}
+function totalMinutes(){return Math.round(state.sessions.reduce((a,s)=>a+s.sec,0)/60)}
+
+function getProgress(){
+ const s=state.sessions||[];
+ const days=new Set(s.map(x=>new Date(x.ts).toISOString().slice(0,10)));
+ let streak=0, d=new Date();
+ while(days.has(d.toISOString().slice(0,10))){
+  streak++; d.setDate(d.getDate()-1);
+ }
+ const xp=state.xp||0, level=Math.floor(xp/500)+1;
+ return {streak,xp,level,next:level*500};
+}
+function addXP(n){state.xp=(state.xp||0)+n;save();}
+
+function buildTodayPlan(){
+ const now=Date.now();
+ const due=Object.values(state.cards||{}).filter(c=>c.due<=now).sort((a,b)=>a.due-b.due);
+ const wrong=(state.wrongQuestions||[]).slice().sort((a,b)=>(b.miss||0)-(a.miss||0));
+ const used=new Set();
+ const plan=[];
+ const pushUnique=(item)=>{
+   const k=item.key||item.kind+"|"+item.a+"|"+item.b;
+   if(!used.has(k)){used.add(k);plan.push(item);}
+ };
+ // 1) due cards: prioritize overdue
+ due.slice(0,5).forEach(pushUnique);
+ // 2) weak questions
+ wrong.slice(0,5).forEach(w=>pushUnique(w));
+ // 3) add a small new mix so the learner progresses
+ const fresh=shuffle(makeQuestions()).filter(q=>{
+   const k=questionKey(q);
+   return !wrong.some(w=>w.key===k);
+ });
+ fresh.slice(0,7).forEach(q=>pushUnique(q));
+ return plan.slice(0,17);
+}
+
+function renderTodayProgress(){
+ const el=document.getElementById("todayProgress");if(!el)return;
+ const p=progressToday(),target=17,pct=Math.min(100,Math.round(p.done/target*100));
+ const mins=Math.floor(p.sec/60);
+ el.innerHTML=`<div class="progress-ring-wrap">
+  <div class="progress-ring" style="--p:${pct}"><div><b>${pct}%</b><small>今日の進捗</small></div></div>
+  <div><div class="progress-big">${p.done} / ${target} 問</div><div class="muted">今日 ${mins}分 学習</div></div>
+ </div>`;
+}
+function startTodayPlan(){
+ const plan=buildTodayPlan();
+ if(!plan.length){alert("今日はすべて完了しています。すごい！🎉");return;}
+ quizSet=plan;qi=0;answered=false;testMode=false;setView("quiz");
+}
+function startFiveMinute(){
+ const plan=shuffle(buildTodayPlan()).slice(0,8);
+ quizSet=plan;qi=0;answered=false;testMode=false;mode="five";setView("quiz");
+}
+let balanceIndex=0,balanceData=null,balanceStep=0;
+
+/* 第10版：反応式バランス入力式 */
+const BALANCE_INPUT_PROBLEMS=[
+  {
+    name:"マグネシウムの燃焼",
+    react:[["Mg","Mg"],["O₂","O₂"]],
+    prod:[["MgO","MgO"]],
+    answer:[2,1,2],
+    atoms:["Mg","O"]
+  },
+  {
+    name:"水素の燃焼",
+    react:[["H₂","H₂"],["O₂","O₂"]],
+    prod:[["H₂O","H₂O"]],
+    answer:[2,1,2],
+    atoms:["H","O"]
+  },
+  {
+    name:"亜鉛と塩酸",
+    react:[["Zn","Zn"],["HCl","HCl"]],
+    prod:[["ZnCl₂","ZnCl₂"],["H₂","H₂"]],
+    answer:[1,2,1,1],
+    atoms:["Zn","H","Cl"]
+  },
+  {
+    name:"塩酸と水酸化ナトリウム",
+    react:[["HCl","HCl"],["NaOH","NaOH"]],
+    prod:[["NaCl","NaCl"],["H₂O","H₂O"]],
+    answer:[1,1,1,1],
+    atoms:["H","Cl","Na","O"]
+  },
+  {
+    name:"炭酸カルシウムと塩酸",
+    react:[["CaCO₃","CaCO₃"],["HCl","HCl"]],
+    prod:[["CaCl₂","CaCl₂"],["H₂O","H₂O"],["CO₂","CO₂"]],
+    answer:[1,2,1,1,1],
+    atoms:["Ca","C","O","H","Cl"]
+  },
+  {
+    name:"酸化銅(II)と炭素",
+    react:[["CuO","CuO"],["C","C"]],
+    prod:[["Cu","Cu"],["CO₂","CO₂"]],
+    answer:[2,1,2,1],
+    atoms:["Cu","O","C"]
+  }
+];
+let balanceInputIndex=0;
+let balanceInputValues=[];
+
+function balanceFormulaAtoms(f){
+  const clean=f.replace(/[₀₁₂₃₄₅₆₇₈₉]/g,m=>"0123456789"["₀₁₂₃₄₅₆₇₈₉".indexOf(m)])
+    .replace(/²/g,"2").replace(/³/g,"3").replace(/⁴/g,"4").replace(/⁵/g,"5")
+    .replace(/⁶/g,"6").replace(/⁷/g,"7").replace(/⁸/g,"8").replace(/⁹/g,"9");
+  const result={};
+  function parsePart(s,mult=1){
+    const re=/([A-Z][a-z]?)(\d*)/g; let m;
+    while((m=re.exec(s))){
+      const el=m[1], n=m[2]?parseInt(m[2]):1;
+      result[el]=(result[el]||0)+n*mult;
+    }
+  }
+  // Middle-school set used here has Ca(OH)2 as the only parenthesized formula.
+  const par=/^\s*([A-Z][a-z]?)(\((?:[A-Z][a-z]?)(?:\d*)\))(\d+)\s*$/.exec(clean);
+  if(par){
+    const outer=par[1], inside=par[2].slice(1,-1), mult=parseInt(par[3]);
+    parsePart(outer); parsePart(inside,mult); return result;
+  }
+  parsePart(clean); return result;
+}
+function getBalanceCounts(p, vals){
+  const left={}, right={};
+  const add=(target,formula,coef)=>{
+    const a=balanceFormulaAtoms(formula);
+    Object.keys(a).forEach(e=>target[e]=(target[e]||0)+a[e]*coef);
+  };
+  p.react.forEach((x,i)=>add(left,x[0],Number(vals[i])||0));
+  p.prod.forEach((x,i)=>add(right,x[0],Number(vals[p.react.length+i])||0));
+  return {left,right};
+}
+function balanceIsSolved(p,vals){
+  if(vals.some(v=>!Number.isInteger(Number(v))||Number(v)<1)) return false;
+  const c=getBalanceCounts(p,vals);
+  const atoms=p.atoms;
+  return atoms.every(e=>(c.left[e]||0)===(c.right[e]||0));
+}
+function startBalanceInput(){
+  balanceInputIndex=0;
+  balanceInputValues=[];
+  setView("balance");
+  renderBalanceInput();
+}
+function renderBalanceInput(){
+  const el=document.getElementById("balance");
+  if(!el) return;
+  const p=BALANCE_INPUT_PROBLEMS[balanceInputIndex];
+  if(balanceInputValues.length!==p.answer.length) balanceInputValues=p.answer.map(()=>1);
+  const nR=p.react.length;
+  const values=balanceInputValues;
+  const eqParts=[];
+  p.react.forEach((x,i)=>{
+    eqParts.push(`<span class="balance-part"><input class="balance-coef" inputmode="numeric" min="1" max="99" value="${values[i]}" onchange="setBalanceCoef(${i},this.value)"><span class="balance-species">${x[0]}</span></span>`);
+    if(i<p.react.length-1) eqParts.push("<span>＋</span>");
+  });
+  eqParts.push("<span>→</span>");
+  p.prod.forEach((x,i)=>{
+    const idx=nR+i;
+    eqParts.push(`<span class="balance-part"><input class="balance-coef" inputmode="numeric" min="1" max="99" value="${values[idx]}" onchange="setBalanceCoef(${idx},this.value)"><span class="balance-species">${x[0]}</span></span>`);
+    if(i<p.prod.length-1) eqParts.push("<span>＋</span>");
+  });
+  const counts=getBalanceCounts(p,values);
+  const rows=p.atoms.map(e=>{
+    const l=counts.left[e]||0,r=counts.right[e]||0;
+    return `<tr><th>${e}</th><td>${l}</td><td>${r}</td><td class="${l===r?'balance-ok':'balance-bad'}">${l===r?'✅':'❌'}</td></tr>`;
+  }).join("");
+  el.innerHTML=`
+  <div class="balance-input-wrap">
+    <div class="balance-input-card">
+      <h2>⚗️ 反応式バランス・入力トレーニング</h2>
+      <div class="balance-progress">${balanceInputIndex+1} / ${BALANCE_INPUT_PROBLEMS.length}　${p.name}</div>
+      <p>それぞれの物質の前に係数を入力して、左右の原子数をそろえよう。</p>
+      <div class="balance-equation">${eqParts.join("")}</div>
+      <table class="balance-atom-table"><thead><tr><th>元素</th><th>左</th><th>右</th><th>判定</th></tr></thead><tbody>${rows}</tbody></table>
+      <div class="balance-actions">
+        <button class="balance-primary" onclick="checkBalanceInput()">答えを確認</button>
+        <button class="balance-secondary" onclick="showBalanceInputHint()">💡 ヒント</button>
+        <button class="balance-secondary" onclick="resetBalanceInput()">↩ リセット</button>
+      </div>
+      <div id="balanceFeedback" class="balance-feedback"></div>
+    </div>
+  </div>`;
+}
+function setBalanceCoef(i,v){
+  let n=parseInt(v,10); if(!Number.isFinite(n)||n<1)n=1; if(n>99)n=99;
+  balanceInputValues[i]=n; renderBalanceInput();
+}
+function resetBalanceInput(){
+  const p=BALANCE_INPUT_PROBLEMS[balanceInputIndex];
+  balanceInputValues=p.answer.map(()=>1);
+  renderBalanceInput();
+}
+function showBalanceInputHint(){
+  const p=BALANCE_INPUT_PROBLEMS[balanceInputIndex];
+  const box=document.getElementById("balanceFeedback");
+  const idx=p.answer.findIndex((v,i)=>balanceInputValues[i]!==v);
+  if(box) box.innerHTML=`<div class="balance-hint">💡 まず<strong>${p.atoms[0]}</strong>の原子数を左右でそろえてみよう。<br>全部をいきなり合わせるのではなく、<strong>1種類ずつ</strong>確認するのがコツ。</div>`;
+}
+function checkBalanceInput(){
+  const p=BALANCE_INPUT_PROBLEMS[balanceInputIndex];
+  const ok=balanceIsSolved(p,balanceInputValues);
+  const box=document.getElementById("balanceFeedback");
+  if(ok){
+    if(typeof state!=="undefined"){state.xp=(state.xp||0)+20;state.balanceToday=(state.balanceToday||0)+1;save();}
+    const equation=p.react.map((x,i)=>`${balanceInputValues[i]===1?"":balanceInputValues[i]}${x[0]}`).join(" + ")
+      +" → "+p.prod.map((x,i)=>{const v=balanceInputValues[p.react.length+i];return `${v===1?"":v}${x[0]}`}).join(" + ");
+    box.innerHTML=`<div class="balance-result"><div>🎉 正解！</div><div class="big">${equation}</div><div>左右の原子数がすべて一致しています。</div><div class="balance-actions"><button class="balance-primary" onclick="nextBalanceInput()">次の問題</button></div></div>`;
+  }else{
+    box.innerHTML=`<div>まだそろっていません。下の表で ❌ の元素を確認しよう。</div>`;
+  }
+}
+function nextBalanceInput(){
+  balanceInputIndex=(balanceInputIndex+1)%BALANCE_INPUT_PROBLEMS.length;
+  balanceInputValues=[];
+  renderBalanceInput();
+}
+window.startBalanceInput=startBalanceInput;
+window.renderBalanceInput=renderBalanceInput;
+
+function startBalanceMode(){
+ const items=[
+  ["マグネシウムの燃焼","Mg + O₂ → MgO",["Mg","O"],["2","1","2"]],
+  ["水素の燃焼","H₂ + O₂ → H₂O",["H","O"],["2","1","2"]],
+  ["亜鉛と塩酸","Zn + HCl → ZnCl₂ + H₂",["Zn","Cl","H"],["1","2","1","1"]]
+ ];
+ balanceData=items[balanceIndex%items.length]; balanceIndex++; balanceStep=0;
+ setView("balance"); renderBalance();
+}
+function renderBalance(){
+ const el=document.getElementById("balance"); if(!el)return;
+ const [name,eq,elements,answer]=balanceData;
+ const parts=eq.split(" → ");
+ let shown=eq;
+ if(balanceStep===0) shown=eq;
+ if(balanceStep===1) shown=`${parts[0]} → <b>？</b>`;
+ if(balanceStep===2) shown=`<b>？</b> ${parts[0]} → ${parts[1]}`;
+ if(balanceStep===3) shown=`係数をそろえよう：<b>${parts[0]}</b> → <b>${parts[1]}</b>`;
+ el.innerHTML=`<h2>⚗️ 化学反応式バランス練習</h2>
+ <div class="card balance-card">
+  <div class="pill">STEP ${balanceStep+1} / 4</div>
+  <h3>${esc(name)}</h3>
+  <div class="balance-eq">${shown}</div>
+  ${balanceStep===0?`<p>まず「→」の左が反応物、右が生成物だと確認しよう。</p><button class="action" onclick="balanceStep=1;renderBalance()">次へ</button>`:""}
+  ${balanceStep===1?`<p>生成物側の原子数を数えてみよう。左側と右側で同じになるように考えるよ。</p>
+   <div class="balance-check"><b>ヒント</b><br>O₂は酸素原子が2個。MgOは1個ずつだよ。</div>
+   <button class="action" onclick="balanceStep=2;renderBalance()">次へ</button>`:""}
+  ${balanceStep===2?`<p>今度は係数を付けて、左右の原子数をそろえよう。</p>
+   <div class="balance-check"><b>考え方</b><br>MgOを2個にすると酸素が2個になる。するとMgも2個必要だね。</div>
+   <button class="action" onclick="balanceStep=3;renderBalance()">答えを確認</button>`:""}
+  ${balanceStep===3?`<div class="answer">${esc(answer.length?answer.join(" : "):"")}</div>
+   <div class="balance-check"><b>完成形</b><br>${esc(name==="マグネシウムの燃焼"?"2Mg + O₂ → 2MgO":name==="水素の燃焼"?"2H₂ + O₂ → 2H₂O":"Zn + 2HCl → ZnCl₂ + H₂")}</div>
+   <button class="action" onclick="startBalanceInput()">次の問題</button>
+   <button class="secondary" onclick="setView('home')">ホームへ</button>`:""}
+ </div>`;
+}
+
+
+function renderTodayPlan(){
+ const el=document.getElementById("todayPlan"); if(!el)return;
+ const plan=buildTodayPlan();
+ const due=plan.filter(x=>x.due).length;
+ const weak=Math.min(5,(state.wrongQuestions||[]).length);
+ el.innerHTML=`<div class="plan-summary">
+   <div><b>${plan.length}問</b><span>今日のおすすめ</span></div>
+   <div><b>約10～15分</b><span>目安時間</span></div>
+   <div><b>${due}問</b><span>期限の復習</span></div>
+   <div><b>${weak}問</b><span>苦手から</span></div>
+  </div>
+  <p class="muted">「期限の復習 → 苦手問題 → 新しい問題」の順で自動的に組みます。</p>`;
+}
+
+function getDailyMission(){
+ const due=Object.values(state.cards||{}).filter(c=>c.due&&c.due<=Date.now()).length;
+ const wrong=(state.wrongQuestions||[]).length;
+ return {flash:Math.min(5,due),quiz:5,reaction:3,minutes:10,wrong,p:getProgress()};
+}
+function renderMission(){
+ const el=document.getElementById("missionBox"); if(!el)return;
+ const m=getDailyMission(),p=m.p;
+ el.innerHTML=`<div class="mission-grid">
+  <div>🧪 イオン・化学式 <b>${m.quiz}問</b></div>
+  <div>⚗️ 化学反応式 <b>${m.reaction}問</b></div>
+  <div>📚 今日の復習 <b>${m.flash}問</b></div>
+  <div>❌ 苦手問題 <b>${m.wrong}問</b></div>
+  <div>⏱ 目安 <b>${m.minutes}分</b></div>
+ </div><div class="streak">🔥 ${p.streak}日連続　⭐ Lv.${p.level}　XP ${p.xp}</div>`;
+}
+function startDailyMission(){startTodayPlan();}
+
+function notifyIfDue(){
+ if(!state.settings.notify || !("Notification" in window)) return;
+ const d=dueCount(), h=new Date().getHours();
+ if(d && h>=Number(state.settings.notifyHour) && state.lastNotice!==today()){
+   if(Notification.permission==="granted") new Notification("化学の復習時間です", {body:`復習カードが ${d} 枚あります。10分だけでも取り組みましょう。`});
+   state.lastNotice=today();save();
+ }
+}
+async function requestNotify(){
+ if(!("Notification" in window)){alert("このブラウザでは通知機能に対応していません。");return}
+ const p=await Notification.requestPermission(); state.settings.notify=p==="granted"; save(); renderSettings();
+}
+function testNotification(){
+ if(!("Notification" in window)){alert("このブラウザでは通知機能に対応していません。");return}
+ if(Notification.permission==="granted"){
+   new Notification("化学の復習通知テスト",{body:"通知は正常に設定されています。復習時刻になると今日の復習枚数を知らせます。",tag:"ion-chem-test"});
+ }else{
+   alert("先に「通知を許可する」を押してください。");
+ }
+}
+function setView(id){
+ stopSession();
+ document.querySelectorAll(".view").forEach(x=>x.classList.remove("active"));
+ const target=document.getElementById(id);
+ if(!target) return;
+ target.classList.add("active");
+ document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("active",b.dataset.v===id));
+
+ const renderers={
+   home:renderHome,
+   dashboard17:renderDashboard17,
+   quiz:renderQuiz,
+   adaptive:renderAdaptiveTraining,
+   exam15:renderExam15,
+   analysis16:renderAnalysis16,
+   variation:renderVariationTraining,
+   weakTraining:renderWeakTraining,
+   flash:renderFlash,
+   balance:renderBalanceInput,
+   ionPuzzle:renderIonPuzzle,
+   review:renderReview,
+   stats:renderGrowth21,
+   settings:renderSettings
+ };
+ if(typeof renderers[id]==="function") renderers[id]();
+ if(id==="home" && typeof ensureHomeDashboard22==="function") ensureHomeDashboard22();
+ if(id==="home" && typeof renderHomeDashboard18==="function") renderHomeDashboard18();
+ if(id!=="home") startSession();
+}
+function navInit(){
+ const items=[["home","ホーム"],["flash","1対1単語帳"],["quiz","問題演習"],["adaptive","📈 自動難易度"],["variation","🧠 問題トレーニング"],["weakTraining","🎯 苦手集中"],["balance","反応式バランス"],["ionPuzzle","🧩 イオン組み立て"],["review","復習予定"],["stats","学習記録"],["settings","設定"]];
+ document.getElementById("nav").innerHTML=items.map(x=>x[0]==="adaptive"?`<button data-v="adaptive" onclick="window.startAdaptiveTraining();return false;">${x[1]}</button>`:`<button data-v="${x[0]}" onclick="setView('${x[0]}')">${x[1]}</button>`).join("");
+ document.querySelector("nav button").classList.add("active");
+}
+function renderHome(){
+ const d=dueCount(), mins=totalMinutes(), sess=state.sessions.length;
+ document.getElementById("home").innerHTML=`
+ <div class="notice success" style="margin-bottom:14px"><b>🌷 今日もコツコツ、化学を覚えよう！</b><br><span class="small">少しずつ復習すると、あとでラクになります。</span></div>
+ <h2>今日の学習</h2>
+ <div class="grid">
+  <div class="card today-plan-card">
+ <div class="section-title">🎯 今日やること</div>
+ <div id="todayPlan"></div>
+ <div id="todayProgress" class="today-progress"></div>
+ <button class="action" onclick="startTodayPlan()">▶ 今日のおすすめを始める</button><button class="secondary" onclick="startFiveMinute()">⏱ 5分だけやる</button><button class="secondary" onclick="startBalanceInput()">⚗️ 反応式を理解する</button>
+</div>
+<div class="card mission-card">
+ <div class="section-title">🌷 今日のミッション</div>
+ <div id="missionBox" class="mission-box"></div>
+ <button class="primary" onclick="startDailyMission()">▶ 今日の学習をスタート</button>
+</div>
+<div class="card"><div class="muted">復習待ち</div><div class="metric">${d}枚</div><button class="action" onclick="setView('review')">復習する</button></div>
+  <div class="card"><div class="muted">累計学習時間</div><div class="metric">${mins}分</div><div class="small">学習セッション ${sess}回</div></div>
+  <div class="card"><div class="muted">登録カード</div><div class="metric">${Object.keys(state.cards).length}枚</div><div class="small">イオン・化学式を1対1で記憶</div></div>
+ </div>
+ <div class="spacer"></div>
+<div class="spacer"></div>
+ <div class="card">
+  <h3>今日のスタート</h3>
+  <div class="row"><button class="action" onclick="startQuiz()">10問クイズ</button><button class="secondary" onclick="startFlash()">単語帳を開始</button></div>
+ </div>`;
+ ensureHomeDashboard22();
+ notifyIfDue();
+}
+function shuffle(a){return [...a].sort(()=>Math.random()-.5)}
+function makeQuestions(){
+ let qs=[];
+
+ // =========================
+ // イオン：基本＋逆向き＋電荷
+ // =========================
+ IONS.forEach(([n,f])=>{
+   const ionNames=IONS.filter(x=>x[0]!==n).map(x=>x[0]);
+   const ionForms=IONS.filter(x=>x[1]!==f).map(x=>x[1]);
+   qs.push({type:"choice",q:`「${n}」のイオン式はどれ？`,ans:f,choices:shuffle([f,...shuffle(ionForms).slice(0,3)]),kind:"ion"});
+   qs.push({type:"choice",q:`「${f}」が表すイオン名はどれ？`,ans:n,choices:shuffle([n,...shuffle(ionNames).slice(0,3)]),kind:"ion"});
+   qs.push({type:"choice",q:`「${n}」の電荷はどれ？`,ans:(f.match(/[⁺⁻²³⁴⁵]/g)||[]).join(""),choices:shuffle([
+     (f.match(/[⁺⁻²³⁴⁵]/g)||[]).join(""),
+     "＋","－","2＋"
+   ]),kind:"ion"});
+   qs.push({type:"tf",q:`「${n}」は「${f}」で表される。`,ans:"正しい",choices:["正しい","誤り"],kind:"ion"});
+   qs.push({type:"tf",q:`「${f}」は「${n}」を表す。`,ans:"正しい",choices:["正しい","誤り"],kind:"ion"});
+   qs.push({type:"text",q:`「${n}」のイオン式を書いて。`,ans:f,kind:"ion"});
+ });
+
+ // =========================
+ // 化学式：基本＋逆向き＋正誤
+ // =========================
+ FORMULAS.forEach(([n,f])=>{
+   const names=FORMULAS.filter(x=>x[0]!==n).map(x=>x[0]);
+   const forms=FORMULAS.filter(x=>x[1]!==f).map(x=>x[1]);
+   qs.push({type:"choice",q:`「${n}」の化学式はどれ？`,ans:f,choices:shuffle([f,...shuffle(forms).slice(0,3)]),kind:"formula"});
+   qs.push({type:"choice",q:`「${f}」は何という物質？`,ans:n,choices:shuffle([n,...shuffle(names).slice(0,3)]),kind:"formula"});
+   qs.push({type:"tf",q:`「${n}」の化学式は「${f}」である。`,ans:"正しい",choices:["正しい","誤り"],kind:"formula"});
+   qs.push({type:"text",q:`「${n}」の化学式を書いて。`,ans:f,kind:"formula"});
+ });
+
+ // =========================
+ // 化学反応式：正誤・記述・係数・生成物
+ // =========================
+ REACTIONS.forEach(([n,f])=>{
+   qs.push({type:"tf",q:`次の化学反応式は正しい？\n${f}`,ans:"正しい",choices:shuffle(["正しい","誤り"]),kind:"reaction"});
+
+   const bad=f.replace(/(^|[ +])2(?=[A-Z])/,"$13");
+   if(bad!==f){
+     qs.push({type:"tf",q:`次の化学反応式は正しい？\n${bad}`,ans:"誤り",choices:shuffle(["正しい","誤り"]),kind:"reaction"});
+   }
+
+   qs.push({type:"text",q:`次の反応を化学反応式で表して。\n${n}`,ans:f,kind:"reaction"});
+
+   const parts=f.split(" → ");
+   if(parts.length===2){
+     const lhs=parts[0],rhs=parts[1];
+     const firstR=rhs.split(" + ")[0];
+     qs.push({type:"choice",q:`「${n}」で、生成物のうち最初に書かれている物質は？`,
+       ans:firstR,choices:shuffle([firstR,...REACTIONS.filter(x=>x[0]!==n).map(x=>x[1].split(" → ")[1].split(" + ")[0]).slice(0,3)]),kind:"reaction"});
+     const firstL=lhs.split(" + ")[0];
+     qs.push({type:"choice",q:`「${n}」で、反応物のうち最初に書かれている物質は？`,
+       ans:firstL,choices:shuffle([firstL,...REACTIONS.filter(x=>x[0]!==n).map(x=>x[1].split(" → ")[0].split(" + ")[0]).slice(0,3)]),kind:"reaction"});
+     qs.push({type:"text",q:`「${n}」の化学反応式を完成させて。\n${lhs} → ？`,ans:f,kind:"reaction"});
+   }
+ });
+
+ // 総合問題：イオン・化学式・反応式を混ぜる
+ IONS.slice(0,10).forEach(([n,f])=>{
+   qs.push({type:"choice",q:`総合：${n}を表す式として正しいものは？`,ans:f,
+     choices:shuffle([f,...shuffle(IONS.filter(x=>x[1]!==f).map(x=>x[1])).slice(0,3)]),kind:"総合"});
+ });
+ FORMULAS.slice(0,10).forEach(([n,f])=>{
+   qs.push({type:"choice",q:`総合：${f}という化学式の物質名は？`,ans:n,
+     choices:shuffle([n,...shuffle(FORMULAS.filter(x=>x[0]!==n).map(x=>x[0])).slice(0,3)]),kind:"総合"});
+ });
+
+ return shuffle(qs);
+}
+
+/* 第9版：イオン組み立てパズル */
+const ION_PUZZLES=[
+  {cat:["ナトリウムイオン","Na⁺",1],an:["塩化物イオン","Cl⁻",-1],formula:"NaCl",n1:"Na",n2:"Cl",c1:1,c2:1},
+  {cat:["マグネシウムイオン","Mg²⁺",2],an:["塩化物イオン","Cl⁻",-1],formula:"MgCl₂",n1:"Mg",n2:"Cl",c1:1,c2:2},
+  {cat:["カルシウムイオン","Ca²⁺",2],an:["塩化物イオン","Cl⁻",-1],formula:"CaCl₂",n1:"Ca",n2:"Cl",c1:1,c2:2},
+  {cat:["カルシウムイオン","Ca²⁺",2],an:["水酸化物イオン","OH⁻",-1],formula:"Ca(OH)₂",n1:"Ca",n2:"OH",c1:1,c2:2},
+  {cat:["ナトリウムイオン","Na⁺",1],an:["硫酸イオン","SO₄²⁻",-2],formula:"Na₂SO₄",n1:"Na",n2:"SO₄",c1:2,c2:1},
+  {cat:["マグネシウムイオン","Mg²⁺",2],an:["酸化物イオン","O²⁻",-2],formula:"MgO",n1:"Mg",n2:"O",c1:1,c2:1},
+  {cat:["アルミニウムイオン","Al³⁺",3],an:["酸化物イオン","O²⁻",-2],formula:"Al₂O₃",n1:"Al",n2:"O",c1:2,c2:3}
+];
+let ionPuzzleIndex=0, ionPuzzleA=1, ionPuzzleB=1;
+
+function startIonPuzzle(){
+  ionPuzzleIndex=0;
+  ionPuzzleA=1; ionPuzzleB=1;
+  setView("ionPuzzle");
+  renderIonPuzzle();
+}
+function changeIonCount(which,delta){
+  if(which==="a") ionPuzzleA=Math.max(1,Math.min(6,ionPuzzleA+delta));
+  else ionPuzzleB=Math.max(1,Math.min(6,ionPuzzleB+delta));
+  renderIonPuzzle();
+}
+function renderIonPuzzle(){
+  const el=document.getElementById("ionPuzzle");
+  if(!el) return;
+  const p=ION_PUZZLES[ionPuzzleIndex];
+  const total=(p.cat[2]*ionPuzzleA)+(p.an[2]*ionPuzzleB);
+  const neutral=total===0;
+  const formula=(ionPuzzleA===p.c1&&ionPuzzleB===p.c2)?p.formula:null;
+  el.innerHTML=`
+  <div class="puzzle-wrap">
+    <div class="puzzle-card">
+      <h2>🧩 イオン組み立てパズル</h2>
+      <p>プラスとマイナスの電荷が<strong>0</strong>になるように、イオンの個数を決めよう。</p>
+      <div class="puzzle-ions">
+        <div class="puzzle-ion cation">
+          <div class="name">${p.cat[0]}</div>
+          <div class="formula">${p.cat[1]}</div>
+          <div>電荷 ${p.cat[2]>0?"+":""}${p.cat[2]}</div>
+        </div>
+        <div class="puzzle-ion anion">
+          <div class="name">${p.an[0]}</div>
+          <div class="formula">${p.an[1]}</div>
+          <div>電荷 ${p.an[2]}</div>
+        </div>
+      </div>
+      <div class="puzzle-controls">
+        <div class="puzzle-control">
+          <strong>${p.cat[0]}</strong>
+          <div class="puzzle-stepper">
+            <button onclick="changeIonCount('a',-1)">−</button>
+            <div class="puzzle-count">${ionPuzzleA}</div>
+            <button onclick="changeIonCount('a',1)">＋</button>
+          </div>
+        </div>
+        <div class="puzzle-control">
+          <strong>${p.an[0]}</strong>
+          <div class="puzzle-stepper">
+            <button onclick="changeIonCount('b',-1)">−</button>
+            <div class="puzzle-count">${ionPuzzleB}</div>
+            <button onclick="changeIonCount('b',1)">＋</button>
+          </div>
+        </div>
+      </div>
+      <div class="puzzle-charge">
+        合計の電荷：
+        <span>${total>0?"+":""}${total}</span>
+        ${neutral?"　✅ 中和できています":"　→ まだ0ではありません"}
+      </div>
+      <div class="puzzle-actions">
+        <button class="puzzle-primary" onclick="checkIonPuzzle()">答えを確認</button>
+        <button class="puzzle-secondary" onclick="showIonPuzzleHint()">💡 ヒント</button>
+      </div>
+      <div id="ionPuzzleFeedback"></div>
+      <div class="puzzle-progress">${ionPuzzleIndex+1} / ${ION_PUZZLES.length} 問</div>
+    </div>
+  </div>`;
+}
+function showIonPuzzleHint(){
+  const p=ION_PUZZLES[ionPuzzleIndex];
+  const box=document.getElementById("ionPuzzleFeedback");
+  if(box) box.innerHTML=`<div class="puzzle-explain">💡 ${p.cat[0]}は <strong>${p.cat[2]}</strong> のプラス、${p.an[0]}は <strong>${Math.abs(p.an[2])}</strong> のマイナス。<br>「プラスの合計＝マイナスの合計」になる個数を考えよう。</div>`;
+}
+function checkIonPuzzle(){
+  const p=ION_PUZZLES[ionPuzzleIndex];
+  const ok=(ionPuzzleA===p.c1&&ionPuzzleB===p.c2);
+  const box=document.getElementById("ionPuzzleFeedback");
+  if(ok){
+    if(typeof state!=="undefined"){
+      state.xp=(state.xp||0)+15;
+      state.ionPuzzleToday=(state.ionPuzzleToday||0)+1;
+      save();
+    }
+    box.innerHTML=`<div class="puzzle-result"><div>🎉 正解！</div><div class="big">${p.formula}</div><div class="puzzle-explain">${p.cat[1]} × ${p.c1} と ${p.an[1]} × ${p.c2} なら、<strong>電荷の合計が0</strong>になります。<br>${p.cat[2]} × ${p.c1} ＋ (${p.an[2]}) × ${p.c2} ＝ 0</div><div class="puzzle-actions"><button class="puzzle-primary" onclick="nextIonPuzzle()">次の問題</button></div></div>`;
+  }else{
+    box.innerHTML=`<div class="puzzle-explain">❌ まだ違います。<br>今の組み合わせでは電荷が <strong>${p.cat[2]*ionPuzzleA + p.an[2]*ionPuzzleB}</strong> です。電荷が0になる組み合わせを作ってみよう。</div>`;
+  }
+}
+window.renderIonPuzzle=renderIonPuzzle;
+window.startIonPuzzle=startIonPuzzle;
+function nextIonPuzzle(){
+  ionPuzzleIndex=(ionPuzzleIndex+1)%ION_PUZZLES.length;
+  ionPuzzleA=1; ionPuzzleB=1;
+  renderIonPuzzle();
+}
+
+
+/* 第11版：苦手集中トレーニング */
+const WEAK_TRAINING_SIZE=10;
+let weakSet=[], weakIndex=0, weakAnswered=false;
+function buildWeakTraining(){
+  const all=makeQuestions();
+  const ranked=typeof getWeakRank==="function"?getWeakRank():[];
+  const scoreMap={}; ranked.forEach(x=>scoreMap[x.category]=x);
+  const cats=["イオン","化学式","反応式","総合"].sort((a,b)=>(scoreMap[a]?.acc??100)-(scoreMap[b]?.acc??100));
+  const picked=[];
+  cats.forEach(cat=>all.filter(q=>q.cat===cat).forEach(q=>{if(picked.length<WEAK_TRAINING_SIZE)picked.push(q);}));
+  all.forEach(q=>{if(picked.length<WEAK_TRAINING_SIZE&&!picked.includes(q))picked.push(q);});
+  return picked.slice(0,WEAK_TRAINING_SIZE);
+}
+function startWeakTraining(){weakSet=buildWeakTraining();weakIndex=0;weakAnswered=false;setView("weakTraining");renderWeakTraining();}
+function renderWeakTraining(){
+  const el=document.getElementById("weakTraining"); if(!el)return;
+  const ranked=typeof getWeakRank==="function"?getWeakRank():[];
+  const top=ranked.slice().sort((a,b)=>(a.acc??100)-(b.acc??100)).slice(0,3);
+  if(!weakSet.length){el.innerHTML='<div class="weak-wrap"><div class="weak-card"><div class="weak-empty">今のところ集中トレーニングできる問題がありません。</div></div></div>';return;}
+  const q=weakSet[weakIndex], choices=q.choices||[];
+  el.innerHTML=`<div class="weak-wrap"><div class="weak-card"><div class="weak-hero"><h2>🎯 苦手集中トレーニング</h2><p>正答率の低い分野を優先して、10問だけ集中練習します。</p><div class="weak-rank">${top.map((x,i)=>`<div class="weak-rank-item"><div>${i+1}位</div><div>${x.category}</div><div class="pct">${x.acc}%</div></div>`).join("")}</div></div><div>第 ${weakIndex+1} 問 / ${weakSet.length}　｜　${q.cat||"総合"}</div><div class="weak-question">${q.q}</div><div id="weakChoices">${choices.map((c,i)=>`<button class="weak-choice" onclick="answerWeak(${i})">${c}</button>`).join("")}</div><div id="weakFeedback"></div></div></div>`;
+}
+function answerWeak(i){
+  if(weakAnswered)return; weakAnswered=true;
+  const q=weakSet[weakIndex],ok=i===q.a,buttons=document.querySelectorAll("#weakChoices .weak-choice");
+  buttons.forEach((b,j)=>{if(j===q.a)b.classList.add("correct");if(j===i&&!ok)b.classList.add("wrong");});
+  if(typeof recordQuiz==="function")recordQuiz(q,ok);
+  const box=document.getElementById("weakFeedback");
+  const explanation=q.exp||(ok?"正解です。":`正解は「${q.choices?.[q.a]||q.ans||""}」です。`);
+  box.innerHTML=`<div class="weak-feedback ${ok?"weak-good":"weak-ng"}">${ok?"🎉 正解！":"❌ もう一度確認しよう。"}<br>${explanation}</div><div class="weak-actions"><button class="weak-primary" onclick="nextWeak()">次の問題</button></div>`;
+}
+function nextWeak(){
+  weakIndex++;
+  if(weakIndex>=weakSet.length){document.getElementById("weakTraining").innerHTML=`<div class="weak-wrap"><div class="weak-card"><div class="weak-hero"><h2>🎉 苦手集中トレーニング終了！</h2><p>10問の集中練習が終わりました。</p></div><div class="weak-actions"><button class="weak-primary" onclick="startWeakTraining()">もう一度10問</button><button class="weak-secondary" onclick="setView('home')">ホームへ</button></div></div></div>`;return;}
+  weakAnswered=false;renderWeakTraining();
+}
+window.startWeakTraining=startWeakTraining;
+
+
+/* 第13版：問題バリエーション強化 */
+const VARIATION_BANK=[
+ {cat:"イオン",base:"Na⁺",name:"ナトリウムイオン",make:[
+  {q:"ナトリウムイオンの化学式は？",choices:["Na⁺","Na²⁺","N⁺","Na⁻"],a:0,exp:"ナトリウムイオンは1価の陽イオンなのでNa⁺です。"},
+  {q:"Na⁺の電荷は？",choices:["+1","+2","−1","0"],a:0,exp:"Na⁺は＋1の電荷をもつ陽イオンです。"},
+  {q:"Na⁺について正しいものは？",choices:["陽イオンである","陰イオンである","電荷をもたない","2価の陰イオンである"],a:0,exp:"＋の電荷をもつので陽イオンです。"}
+ ]},
+ {cat:"イオン",base:"Mg²⁺",name:"マグネシウムイオン",make:[
+  {q:"マグネシウムイオンの化学式は？",choices:["Mg⁺","Mg²⁺","Mg⁻","Mg²⁻"],a:1,exp:"マグネシウムは2個の電子を失ってMg²⁺になります。"},
+  {q:"Mg²⁺とCl⁻からできる化合物の化学式は？",choices:["MgCl","MgCl₂","Mg₂Cl","Mg₂Cl₂"],a:1,exp:"＋2を打ち消すにはCl⁻が2個必要なのでMgCl₂です。"},
+  {q:"Mg²⁺1個とCl⁻2個の電荷の合計は？",choices:["+4","+2","0","−2"],a:2,exp:"+2 + (−1)×2 = 0です。"}
+ ]}, {cat:"化学式",base:"CaCl₂",name:"塩化カルシウム",make:[
+  {q:"Ca²⁺とCl⁻からできる化学式は？",choices:["CaCl","CaCl₂","Ca₂Cl","Ca₂Cl₂"],a:1,exp:"Ca²⁺を打ち消すためCl⁻が2個必要です。"},
+  {q:"CaCl₂に含まれるCl⁻は何個？",choices:["1個","2個","3個","4個"],a:1,exp:"下付きの2はClが2個あることを示します。"},
+  {q:"CaCl₂で、CaとClの個数比は？",choices:["1:1","1:2","2:1","2:2"],a:1,exp:"Caが1個、Clが2個なので1:2です。"}
+ ]},
+ {cat:"化学式",base:"Ca(OH)₂",name:"水酸化カルシウム",make:[
+  {q:"Ca²⁺とOH⁻からできる化学式は？",choices:["CaOH","CaOH₂","Ca(OH)₂","Ca₂OH"],a:2,exp:"OH⁻が2個必要なのでCa(OH)₂です。"},
+  {q:"Ca(OH)₂に含まれるOH⁻は何個？",choices:["1個","2個","3個","4個"],a:1,exp:"(OH)の外側の2が、OH全体が2個あることを示します。"}
+ ]},
+ {cat:"反応式",base:"H₂+O₂→H₂O",name:"水素の燃焼",make:[
+  {q:"H₂ + O₂ → H₂O を原子数がそろうようにすると？",choices:["H₂ + O₂ → H₂O","2H₂ + O₂ → 2H₂O","H₂ + 2O₂ → 2H₂O","2H₂ + 2O₂ → H₂O"],a:1,exp:"左のOが2個なのでH₂Oを2個にし、Hも2H₂にします。"},
+  {q:"2H₂ + O₂ → 2H₂O で、右側のH原子は何個？",choices:["2個","3個","4個","6個"],a:2,exp:"H₂Oが2個あるのでH原子は2×2=4個です。"},
+  {q:"水素の燃焼で係数を変えるとき、化学式の下付き数字を変えてはいけない理由は？",choices:["物質そのものが変わるから","数字が小さいから","計算できないから","特に理由はない"],a:0,exp:"下付き数字を変えると別の物質になるため、反応式では前の係数だけを変えます。"}
+ ]},
+ {cat:"反応式",base:"Zn+HCl→ZnCl₂+H₂",name:"亜鉛と塩酸",make:[
+  {q:"Zn + HCl → ZnCl₂ + H₂ の係数は？",choices:["1,1,1,1","1,2,1,1","2,1,2,1","2,2,1,2"],a:1,exp:"Clを2個そろえるためHClを2個にするとHも2個になります。"},
+  {q:"Zn + 2HCl → ZnCl₂ + H₂ でCl原子は左右何個ずつ？",choices:["1個ずつ","2個ずつ","3個ずつ","4個ずつ"],a:1,exp:"左はHClが2個、右はZnCl₂にClが2個です。"}
+ ]},
+ {cat:"総合",base:"mix",name:"総合",make:[
+  {q:"化学反応式で、物質の化学式の前につける数字を何という？",choices:["係数","指数","原子番号","電荷"],a:0,exp:"反応式の前につけて物質の個数を表す数字を係数といいます。"},
+  {q:"イオンから化合物の化学式を作るとき、最も大切なことは？",choices:["見た目をそろえる","電荷の合計を0にする","文字数をそろえる","大きい数字を使う"],a:1,exp:"化合物全体では正負の電荷の合計が0になります。"}
+ ]}
+];
+
+let variationSet=[],variationIndex=0,variationAnswered=false,variationScore=0;
+
+function buildVariationSet(){
+  const all=[];
+  VARIATION_BANK.forEach(g=>g.make.forEach(q=>all.push({...q,cat:g.cat,base:g.base,name:g.name})));
+  // Shuffle while keeping category variety.
+  for(let i=all.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[all[i],all[j]]=[all[j],all[i]];}
+  return all.slice(0,10);
+}
+function startVariationTraining(){
+  variationSet=buildVariationSet();variationIndex=0;variationAnswered=false;variationScore=0;
+  setView("variation");renderVariationTraining();
+}
+function renderVariationTraining(){
+  const el=document.getElementById("variation");if(!el)return;
+  if(!variationSet.length){el.innerHTML='<div class="var-wrap"><div class="var-card">問題を準備できませんでした。</div></div>';return;}
+  const q=variationSet[variationIndex];
+  el.innerHTML=`<div class="var-wrap"><div class="var-card">
+    <div class="var-hero"><h2>🧠 問題トレーニング</h2><p>同じ知識を、違う聞き方で確認します。</p>
+      <div class="var-grid"><div class="var-stat"><div>進行</div><div class="big">${variationIndex+1}/10</div></div><div class="var-stat"><div>正解</div><div class="big">${variationScore}</div></div><div class="var-stat"><div>分野</div><div class="big" style="font-size:18px">${q.cat}</div></div></div>
+    </div>
+    <span class="var-tag">${q.cat}｜${q.name}</span>
+    <div class="var-question">${q.q}</div>
+    <div id="variationChoices">${q.choices.map((c,i)=>`<button class="var-choice" onclick="answerVariation(${i})">${c}</button>`).join("")}</div>
+    <div id="variationFeedback"></div>
+  </div></div>`;
+}
+function answerVariation(i){
+  if(variationAnswered)return;
+  variationAnswered=true;
+  const q=variationSet[variationIndex],ok=i===q.a;
+  if(ok)variationScore++;
+  document.querySelectorAll("#variationChoices .var-choice").forEach((b,j)=>{if(j===q.a)b.classList.add("correct");if(j===i&&!ok)b.classList.add("wrong");});
+  if(typeof recordQuiz==="function")recordQuiz(q,ok);
+  const box=document.getElementById("variationFeedback");
+  box.innerHTML=`<div class="var-feedback ${ok?"var-good":"var-ng"}">${ok?"🎉 正解！":"❌ 不正解"}<br>${q.exp}</div><div class="var-actions"><button class="var-primary" onclick="nextVariation()">次の問題</button></div>`;
+}
+function nextVariation(){
+  variationIndex++;
+  if(variationIndex>=variationSet.length){
+    const el=document.getElementById("variation");
+    el.innerHTML=`<div class="var-wrap"><div class="var-card"><div class="var-hero"><h2>🎉 10問終了</h2><p>同じ知識を違う角度から確認しました。</p><div class="var-grid"><div class="var-stat"><div>正解</div><div class="big">${variationScore}/10</div></div><div class="var-stat"><div>正答率</div><div class="big">${variationScore*10}%</div></div></div></div><div class="var-actions"><button class="var-primary" onclick="startVariationTraining()">もう10問</button><button class="var-secondary" onclick="setView('home')">ホームへ</button></div></div></div>`;
+    return;
+  }
+  variationAnswered=false;renderVariationTraining();
+}
+window.startVariationTraining=startVariationTraining;
+
+
+/* 第14版：自動難易度調整 */
+
+const ADAPTIVE_QUESTION_BANK=[
+ {cat:"イオン",levels:[
+  {level:1,q:"ナトリウムイオンの化学式は？",c:["Na⁺","Na²⁺","Na⁻","N⁺"],a:0,e:"ナトリウムイオンはNa⁺です。"},
+  {level:1,q:"Mg²⁺は陽イオン・陰イオンのどちら？",c:["陽イオン","陰イオン","どちらでもない","分子"],a:0,e:"＋の電荷をもつので陽イオンです。"},
+  {level:2,q:"Na⁺とCl⁻からできる化学式は？",c:["NaCl","Na₂Cl","NaCl₂","Na₂Cl₂"],a:0,e:"＋1と−1が1:1で打ち消し合います。"},
+  {level:2,q:"Mg²⁺とCl⁻からできる化学式は？",c:["MgCl","MgCl₂","Mg₂Cl","Mg₂Cl₂"],a:1,e:"Mg²⁺を打ち消すにはCl⁻が2個必要です。"},
+  {level:3,q:"Ca²⁺とOH⁻からできる化学式は？",c:["CaOH","CaOH₂","Ca(OH)₂","Ca₂OH"],a:2,e:"OH⁻が2個必要なのでCa(OH)₂です。"},
+  {level:4,q:"Al³⁺とO²⁻からできる化学式は？",c:["AlO","Al₂O₃","Al₃O₂","AlO₃"],a:1,e:"＋6と−6になるようAl₂O₃です。"}
+ ]},
+ {cat:"化学式",levels:[
+  {level:1,q:"水の化学式は？",c:["H₂O","HO₂","H₂O₂","OH"],a:0,e:"水はH₂Oです。"},
+  {level:1,q:"CaCl₂に含まれるClは何個？",c:["1個","2個","3個","4個"],a:1,e:"下付きの2はClが2個あることを表します。"},
+  {level:2,q:"酸化マグネシウムの化学式は？",c:["MgO","MgO₂","Mg₂O","Mg₂O₂"],a:0,e:"MgとOが1:1なのでMgOです。"},
+  {level:2,q:"炭酸カルシウムの化学式は？",c:["CaCO₃","Ca₂CO₃","Ca(CO₃)₂","Ca₂(CO₃)₃"],a:0,e:"Ca²⁺とCO₃²⁻が1:1です。"},
+  {level:3,q:"Ca(OH)₂に含まれるO原子は何個？",c:["1","2","3","4"],a:1,e:"OH全体が2個なのでOも2個です。"},
+  {level:4,q:"Al³⁺とSO₄²⁻からできる化学式は？",c:["AlSO₄","Al₂(SO₄)₃","Al₃(SO₄)₂","Al(SO₄)₂"],a:1,e:"＋6と−6になるAl₂(SO₄)₃です。"}
+ ]},
+ {cat:"反応式",levels:[
+  {level:1,q:"化学反応式で化学式の前につける数字は？",c:["係数","指数","電荷","原子番号"],a:0,e:"化学式の前につける数字を係数といいます。"},
+  {level:1,q:"反応式では原子数をそろえるために何を変える？",c:["下付き数字","係数","元素記号","物質名"],a:1,e:"化学式を変えず、係数で原子数をそろえます。"},
+  {level:2,q:"H₂ + O₂ → H₂O をそろえると？",c:["H₂ + O₂ → H₂O","2H₂ + O₂ → 2H₂O","H₂ + 2O₂ → 2H₂O","2H₂ + 2O₂ → H₂O"],a:1,e:"Oを2個にそろえるためH₂Oを2個にします。"},
+  {level:2,q:"Zn + HCl → ZnCl₂ + H₂ の係数は？",c:["1,1,1,1","1,2,1,1","2,1,2,1","2,2,1,2"],a:1,e:"Clを2個にするためHClは2です。"},
+  {level:3,q:"CaCO₃ + HCl → CaCl₂ + H₂O + CO₂ の係数は？",c:["1,1,1,1,1","1,2,1,1,1","2,1,2,2,1","1,2,2,1,1"],a:1,e:"Clを2個にするためHClが2です。"},
+  {level:4,q:"2NaHCO₃ → Na₂CO₃ + H₂O + CO₂ の係数は？",c:["1,1,1,1","2,1,1,1","2,2,1,1","1,2,2,1"],a:1,e:"Naを2個にそろえるため左の係数は2です。"}
+ ]},
+ {cat:"総合",levels:[
+  {level:1,q:"化合物全体の電荷の合計は？",c:["0","+1","−1","+2"],a:0,e:"正負の電荷が打ち消し合い0になります。"},
+  {level:2,q:"MgOのMgとOの個数比は？",c:["1:1","1:2","2:1","2:2"],a:0,e:"MgOはMgが1個、Oが1個です。"},
+  {level:3,q:"2H₂ + O₂ → 2H₂O の左右のO原子数は？",c:["1と1","2と2","2と4","4と2"],a:1,e:"左O₂が2個、右H₂Oが2個です。"},
+  {level:3,q:"2CuO + C → 2Cu + CO₂ の左右のCu原子数は？",c:["1と1","2と2","2と1","4と2"],a:1,e:"左は2CuOでCuが2個、右も2Cuで2個です。"},
+  {level:4,q:"Al³⁺とSO₄²⁻を組み合わせるとき必要な最小のAlとSO₄の個数は？",c:["1と1","2と3","3と2","3と3"],a:1,e:"＋6と−6になる2:3です。"}
+ ]}
+];
+
+let adaptiveLevel=1,adaptiveStreak=0,adaptiveMax=1,adaptiveIndex=0,adaptiveScore=0,adaptiveAnswered=false,adaptiveSet=[];
+
+function adaptiveBuildQuestion(){
+  const g=ADAPTIVE_QUESTION_BANK[Math.floor(Math.random()*ADAPTIVE_QUESTION_BANK.length)];
+  const target=Math.max(1,Math.min(4,adaptiveLevel));
+  const pool=g.levels.filter(x=>x.level===target);
+  const fallback=g.levels.filter(x=>x.level<=target);
+  const src=pool.length?pool:fallback;
+  const q=src[Math.floor(Math.random()*src.length)];
+  return {...q,cat:g.cat};
+}
+function startAdaptiveTraining(){
+  adaptiveLevel=1;adaptiveStreak=0;adaptiveMax=1;adaptiveIndex=0;adaptiveScore=0;adaptiveAnswered=false;
+  adaptiveSet=Array.from({length:12},()=>null);
+  adaptiveSet[0]=adaptiveBuildQuestion();
+  setView("adaptive");
+  renderAdaptiveTraining();
+}
+function renderAdaptiveTraining(){
+  const el=document.getElementById("adaptive");if(!el)return;
+  if(!adaptiveSet.length)startAdaptiveTraining();
+  const q=adaptiveSet[adaptiveIndex]||adaptiveBuildQuestion();adaptiveSet[adaptiveIndex]=q;
+  el.innerHTML=`<div class="adapt-wrap"><div class="adapt-card">
+    <div class="adapt-hero"><h2>📈 自動難易度トレーニング</h2>
+      <p>正解が続くと少し難しくなり、間違えると一段階やさしくなります。</p>
+      <div class="adapt-grid">
+       <div class="adapt-stat"><div>問題</div><div class="big">${adaptiveIndex+1}/12</div></div>
+       <div class="adapt-stat"><div>正解</div><div class="big">${adaptiveScore}</div></div>
+       <div class="adapt-stat"><div>現在レベル</div><div class="big">${adaptiveLevel}</div></div>
+       <div class="adapt-stat"><div>連続正解</div><div class="big">${adaptiveStreak}</div></div>
+      </div><span class="adapt-level">LEVEL ${q.level}｜${q.cat}</span>
+    </div>
+    <div class="adapt-q">${q.q}</div>
+    <div id="adaptiveChoices">${q.c.map((x,i)=>`<button class="adapt-choice" onclick="answerAdaptive(${i})">${String.fromCharCode(65+i)}．${x}</button>`).join("")}</div>
+    <div id="adaptiveFeedback"></div>
+    <p class="adapt-note">レベル1＝基礎、2＝標準、3＝応用、4＝発展です。実際の正答状況に合わせて次の問題の難易度を調整します。</p>
+  </div></div>`;
+}
+function answerAdaptive(i){
+  if(adaptiveAnswered)return;
+  adaptiveAnswered=true;
+  const q=adaptiveSet[adaptiveIndex],ok=i===q.a;
+  if(ok){
+    adaptiveScore++;adaptiveStreak++;
+    if(adaptiveStreak>=2 && adaptiveLevel<4)adaptiveLevel++;
+    adaptiveMax=Math.max(adaptiveMax,adaptiveLevel);
+  }else{
+    adaptiveStreak=0;
+    if(adaptiveLevel>1)adaptiveLevel--;
+  }
+  document.querySelectorAll("#adaptiveChoices .adapt-choice").forEach((b,j)=>{if(j===q.a)b.classList.add("correct");if(j===i&&!ok)b.classList.add("wrong");});
+  document.getElementById("adaptiveFeedback").innerHTML=`<div class="adapt-feedback ${ok?"adapt-good":"adapt-ng"}">${ok?"🎉 正解！":"❌ 不正解"}<br>${q.e}<br><b>${ok?(adaptiveLevel<4?"次は少し難しくします。":"最高レベルをキープします。"):(adaptiveLevel>1?"次は一段階やさしくします。":"まずは基礎を固めましょう。")}</b></div><div class="adapt-actions"><button class="adapt-primary" onclick="nextAdaptive()">次の問題</button></div>`;
+}
+function nextAdaptive(){
+  adaptiveIndex++;
+  if(adaptiveIndex>=12){
+    const el=document.getElementById("adaptive");
+    el.innerHTML=`<div class="adapt-wrap"><div class="adapt-card"><div class="adapt-hero"><h2>🎉 トレーニング終了</h2><p>回答状況に合わせて難易度を調整しました。</p><div class="adapt-grid"><div class="adapt-stat"><div>正解</div><div class="big">${adaptiveScore}/12</div></div><div class="adapt-stat"><div>正答率</div><div class="big">${Math.round(adaptiveScore/12*100)}%</div></div><div class="adapt-stat"><div>最高レベル</div><div class="big">${adaptiveMax}</div></div><div class="adapt-stat"><div>最終レベル</div><div class="big">${adaptiveLevel}</div></div></div></div><div class="adapt-actions"><button class="adapt-primary" onclick="startAdaptiveTraining()">もう一度</button><button class="adapt-secondary" onclick="setView('home')">ホームへ</button></div></div></div>`;
+    return;
+  }
+  adaptiveAnswered=false;
+  adaptiveSet[adaptiveIndex]=adaptiveBuildQuestion();
+  renderAdaptiveTraining();
+}
+window.startAdaptiveTraining=startAdaptiveTraining;
+
+
+
+/* 第15版：本番型定期テストモード */
+const EXAM15_BANK=[
+ {cat:"イオン",qs:[
+  ["ナトリウムイオンの化学式は？",["Na⁺","Na²⁺","Na⁻","N⁺"],0],
+  ["Mg²⁺は陽イオン・陰イオンのどちら？",["陽イオン","陰イオン","どちらでもない","分子"],0],
+  ["Mg²⁺とCl⁻からできる化学式は？",["MgCl","MgCl₂","Mg₂Cl","Mg₂Cl₂"],1],
+  ["Ca²⁺とOH⁻からできる化学式は？",["CaOH","CaOH₂","Ca(OH)₂","Ca₂OH"],2],
+  ["Al³⁺とO²⁻からできる化学式は？",["AlO","Al₂O₃","Al₃O₂","AlO₃"],1],
+  ["化合物全体の電荷の合計は？",["0","+1","−1","+2"],0]
+ ]},
+ {cat:"化学式",qs:[
+  ["水の化学式は？",["H₂O","HO₂","H₂O₂","OH"],0],
+  ["CaCl₂に含まれるClは何個？",["1個","2個","3個","4個"],1],
+  ["水酸化カルシウムの化学式は？",["CaOH","CaOH₂","Ca(OH)₂","Ca₂OH"],2],
+  ["硫酸銅(II)の化学式は？",["CuSO₃","Cu₂SO₄","CuSO₄","Cu(SO₄)₂"],2],
+  ["炭酸カルシウムの化学式は？",["CaCO₃","Ca₂CO₃","Ca(CO₃)₂","Ca₂(CO₃)₃"],0],
+  ["化学式の下付き数字が表すものは？",["係数","原子の個数","電荷だけ","物質の質量"],1]
+ ]},
+ {cat:"反応式",qs:[
+  ["化学反応式で化学式の前につける数字は？",["係数","指数","電荷","原子番号"],0],
+  ["H₂ + O₂ → H₂O をそろえると？",["H₂ + O₂ → H₂O","2H₂ + O₂ → 2H₂O","H₂ + 2O₂ → 2H₂O","2H₂ + 2O₂ → H₂O"],1],
+  ["Zn + HCl → ZnCl₂ + H₂ の係数は？",["1,1,1,1","1,2,1,1","2,1,2,1","2,2,1,2"],1],
+  ["HCl + NaOH → NaCl + H₂O の係数は？",["1,1,1,1","2,1,2,1","1,2,1,2","2,2,1,1"],0],
+  ["CaCO₃ + HCl → CaCl₂ + H₂O + CO₂ の係数は？",["1,1,1,1,1","1,2,1,1,1","2,1,2,2,1","1,2,2,1,1"],1],
+  ["2CuO + C → 2Cu + CO₂ で左右のO原子数は？",["1と1","2と2","2と4","4と2"],1],
+  ["2NaHCO₃ → Na₂CO₃ + H₂O + CO₂ の係数は？",["1,1,1,1","2,1,1,1","2,2,1,1","1,2,2,1"],1]
+ ]},
+ {cat:"総合",qs:[
+  ["反応式をつくるとき、原子数をそろえるために変えるのは？",["化学式の下付き数字","係数","元素記号","物質名"],1],
+  ["2H₂ + O₂ → 2H₂O のH原子数は左右それぞれ何個？",["2と2","4と4","4と2","2と4"],1],
+  ["MgOのMgとOの個数比は？",["1:1","1:2","2:1","2:2"],0],
+  ["Ca(OH)₂に含まれるO原子は何個？",["1","2","3","4"],1],
+  ["イオンから化合物を作るとき基本的に目指す電荷合計は？",["+1","−1","0","+2"],2]
+ ]}
+];
+
+let exam15=[],exam15i=0,exam15Answers=[],exam15Start=0,exam15Timer=null,exam15Finished=false;
+
+function exam15Make(){
+  let pool=[];
+  EXAM15_BANK.forEach(g=>g.qs.forEach((x,idx)=>pool.push({cat:g.cat,q:x[0],c:x[1],a:x[2],key:g.cat+"-"+idx})));
+  // 分野ごとの偏りを避けつつ、50問に到達するまで巡回
+  pool.sort(()=>Math.random()-.5);
+  const selected=[];
+  const used={};
+  while(selected.length<50){
+    for(const q of pool){
+      if(selected.length>=50)break;
+      const n=used[q.key]||0;
+      if(n<2){selected.push({...q});used[q.key]=n+1;}
+    }
+    if(Object.keys(used).length===pool.length && selected.length<50) break;
+  }
+  while(selected.length<50) selected.push({...pool[Math.floor(Math.random()*pool.length)]});
+  // 基礎→標準→応用の並び。各問題に難易度を付与
+  exam15=selected.map((q,i)=>({...q,diff:i<15?"基礎":i<40?"標準":"応用",pts:i<15?1:i<40?2:3}));
+  exam15Answers=Array(50).fill(null);exam15i=0;exam15Finished=false;
+}
+function startExam15(){
+  exam15Make();exam15Start=Date.now();
+  clearInterval(exam15Timer);
+  exam15Timer=setInterval(renderExam15Timer,1000);
+  setView("exam15");renderExam15();
+}
+function renderExam15Timer(){
+  const t=document.getElementById("exam15Timer");if(!t)return;
+  const sec=Math.floor((Date.now()-exam15Start)/1000);
+  const mm=String(Math.floor(sec/60)).padStart(2,"0"),ss=String(sec%60).padStart(2,"0");
+  t.textContent=mm+":"+ss;
+}
+function renderExam15(){
+  const el=document.getElementById("exam15");if(!el)return;
+  const q=exam15[exam15i],answered=exam15Answers[exam15i]!==null;
+  const pct=Math.round((exam15i+1)/50*100);
+  el.innerHTML=`<div class="exam15-wrap"><div class="exam15-head">
+    <h2>📝 本番型・定期テスト</h2>
+    <div class="exam15-meta"><span class="exam15-pill">${exam15i+1} / 50問</span><span class="exam15-pill">${q.cat}</span><span class="exam15-pill">${q.diff} ${q.pts}点</span><span class="exam15-pill">⏱ <b id="exam15Timer">00:00</b></span></div>
+    <div class="exam15-bar"><span style="width:${pct}%"></span></div>
+  </div>
+  <div class="adapt-card"><div class="exam15-q">${q.q}</div>
+    <div>${q.c.map((x,i)=>`<button class="exam15-choice ${answered&&exam15Answers[exam15i]===i?"sel":""}" onclick="exam15Choose(${i})">${String.fromCharCode(65+i)}．${x}</button>`).join("")}</div>
+    <div class="exam15-nav"><button class="exam15-secondary" onclick="exam15Prev()">← 前へ</button><button class="exam15-primary" onclick="exam15Next()">${exam15i===49?"採点する":"次へ →"}</button></div>
+    <div class="exam15-grid">${exam15.map((_,i)=>`<button class="exam15-num ${exam15Answers[i]!==null?"done":"unanswered"} ${i===exam15i?"current":""}" onclick="exam15Go(${i})">${i+1}</button>`).join("")}</div>
+    <p class="exam15-note">※問題番号を押して自由に移動できます。最後にまとめて採点します。</p>
+  </div></div>`;
+  renderExam15Timer();
+}
+function exam15Choose(i){exam15Answers[exam15i]=i;renderExam15();}
+function exam15Go(i){exam15i=i;renderExam15();}
+function exam15Prev(){if(exam15i>0){exam15i--;renderExam15();}}
+function exam15Next(){if(exam15i<49){exam15i++;renderExam15();}else finishExam15();}
+function finishExam15(){
+  if(exam15Finished)return;
+  exam15Finished=true;clearInterval(exam15Timer);
+  let score=0,correct=0;
+  const domains={};
+  exam15.forEach((q,i)=>{
+    const ok=exam15Answers[i]===q.a;
+    if(ok){correct++;score+=q.pts;}
+    if(!domains[q.cat])domains[q.cat]={c:0,t:0};
+    domains[q.cat].t++;if(ok)domains[q.cat].c++;
+    if(typeof recordQuiz==="function"){
+      const qq={type:"exam15-"+q.cat,q:q.q,a:q.c[q.a],choices:q.c,cat:q.cat};
+      recordQuiz(qq,ok);
+    }
+  });
+  renderExam15Result(score,correct,domains);
+}
+function renderExam15Result(score,correct,domains){
+  const el=document.getElementById("exam15");
+  const max=15+25*2+10*3,rate=Math.round(score/max*100);
+  const rows=Object.entries(domains).map(([k,v])=>`<div class="exam15-row"><b>${k}</b><div class="exam15-mini"><span style="width:${Math.round(v.c/v.t*100)}%"></span></div><b>${v.c}/${v.t}</b></div>`).join("");
+  const wrong=exam15.map((q,i)=>({q,i})).filter(x=>exam15Answers[x.i]!==x.q.a).slice(0,12);
+  const wr=wrong.length?wrong.map(x=>`<div class="exam15-review"><b>問${x.i+1}</b> ${x.q.q}<br>正解：${x.q.c[x.q.a]}</div>`).join(""):"<p>全問正解です！</p>";
+  el.innerHTML=`<div class="exam15-wrap"><div class="exam15-result"><h2>📊 テスト結果</h2>
+    <div class="exam15-score">${score} / ${max}点</div><p style="text-align:center;font-weight:800">正答 ${correct}/50（${Math.round(correct/50*100)}%）・得点率 ${rate}%</p>
+    <div class="exam15-section"><h3>分野別結果</h3>${rows}</div>
+    <div class="exam15-section"><h3>🔎 要復習問題</h3>${wr}</div>
+    <div class="exam15-actions"><button class="exam15-primary" onclick="startExam15()">もう一度受ける</button><button class="exam15-secondary" onclick="startAnalysis16()">🔎 誤答を分析</button><button class="exam15-secondary" onclick="setView('weakTraining')">弱点10問へ</button><button class="exam15-secondary" onclick="setView('home')">ホームへ</button></div>
+    <p class="exam15-note">基礎15問＝1点、標準25問＝2点、応用10問＝3点の100点満点です。正答率だけでなく、得点と分野別結果を確認できます。</p>
+  </div></div>`;
+}
+window.startExam15=startExam15;
+
+
+/* 第16版：誤答分析・なぜ間違えたか */
+const ERROR_PATTERNS16={
+ "イオン":[
+  ["電荷の向きを混同","＋なら陽イオン、−なら陰イオンという基本を確認しましょう。"],
+  ["電荷の数を読み違え","Mg²⁺の「2」は電荷の大きさです。化学式の下付き数字とは意味が違います。"],
+  ["電荷のつり合い不足","化合物全体の電荷が0になるようにイオンの個数を決めます。"]
+ ],
+ "化学式":[
+  ["下付き数字と係数を混同","CaCl₂の2はClの個数。2CaCl₂の2は物質の個数です。"],
+  ["括弧の扱い","Ca(OH)₂ではOH全体が2個。OもHも2個ずつあります。"],
+  ["イオンの比を決められていない","＋と−の電荷が打ち消し合う最小の整数比を考えます。"]
+ ],
+ "反応式":[
+  ["係数と下付き数字を混同","反応式では化学式そのものを変えず、前の係数で原子数を調整します。"],
+  ["片側だけ数えている","左辺と右辺の各元素について、原子数を両方数えます。"],
+  ["係数を最小整数比にしていない","すべての係数を同じ数で割れるなら、最小の整数比にします。"]
+ ],
+ "総合":[
+  ["知識は合っているが計算でミス","原子数・電荷を一つずつ書き出して確認しましょう。"],
+  ["似たルールを混同","化学式は物質の表し方、係数は反応式で原子数をそろえる数字です。"],
+  ["基礎事項の確認が必要","まずイオンの電荷→化学式→原子数の順で復習しましょう。"]
+ ]
+};
+let analysis16Data=null;
+
+function analyzeWrong16(q,userIndex){
+  const cat=q.cat||"総合";
+  const patterns=ERROR_PATTERNS16[cat]||ERROR_PATTERNS16["総合"];
+  let idx=0;
+  const s=String(q.q||"");
+  if(cat==="イオン"){
+    if(/Mg|Ca|Al|Cu|Zn|電荷|陽|陰/.test(s)) idx=1;
+    if(/化学式|できる/.test(s)) idx=2;
+  }else if(cat==="化学式"){
+    if(/Ca\\(OH\\)|OH/.test(s)) idx=1;
+    else if(/個数|下付き/.test(s)) idx=0;
+    else idx=2;
+  }else if(cat==="反応式"){
+    if(/係数|下付き/.test(s)) idx=0;
+    else if(/原子数/.test(s)) idx=1;
+    else idx=2;
+  }else{
+    idx=userIndex%patterns.length;
+  }
+  return {label:patterns[idx][0],text:patterns[idx][1]};
+}
+function startAnalysis16(){
+  const source=(typeof lastTestAnalysis==="object"&&lastTestAnalysis)?lastTestAnalysis:null;
+  const wrong=[];
+  if(source && source.wrong) source.wrong.forEach(x=>wrong.push(x));
+  if(!wrong.length && Array.isArray(exam15)){
+    exam15.forEach((q,i)=>{if(exam15Answers&&exam15Answers[i]!==q.a)wrong.push({q:q.q,cat:q.cat,answer:q.c[q.a],user:exam15Answers[i]==null?"未回答":q.c[exam15Answers[i]]});});
+  }
+  const domain={};
+  wrong.forEach((x,i)=>{const c=x.cat||"総合";if(!domain[c])domain[c]=0;domain[c]++;});
+  analysis16Data={wrong,domain};
+  setView("analysis16");renderAnalysis16();
+}
+function renderAnalysis16(){
+  const el=document.getElementById("analysis16");if(!el)return;
+  const d=analysis16Data||{wrong:[],domain:{}};
+  if(!d.wrong.length){
+    el.innerHTML=`<div class="analysis16-wrap"><div class="analysis16-hero"><h2>🎉 誤答分析</h2><p>今回のテストでは誤答がありませんでした。とても良い仕上がりです。</p><div class="analysis16-actions"><button class="analysis16-primary" onclick="setView('home')">ホームへ</button></div></div></div>`;
+    return;
+  }
+  const top=Object.entries(d.domain).sort((a,b)=>b[1]-a[1]);
+  const max=top[0][1];
+  const domainHtml=top.map(([k,v])=>`<div class="analysis16-card"><div style="display:flex;justify-content:space-between"><b>${k}</b><b>${v}問</b></div><div class="analysis16-bar"><span style="width:${Math.round(v/max*100)}%"></span></div></div>`).join("");
+  const list=d.wrong.slice(0,20).map((x,i)=>{
+    const q={q:x.q,cat:x.cat};const r=analyzeWrong16(q,i);
+    return `<div class="analysis16-card"><span class="analysis16-tag">${x.cat||"総合"}</span><h3>問${i+1}：${x.q}</h3><p>正解：<b>${x.answer||"—"}</b></p><div class="analysis16-reason"><b>💡 間違えた可能性が高いポイント：${r.label}</b><br>${r.text}</div></div>`;
+  }).join("");
+  el.innerHTML=`<div class="analysis16-wrap"><div class="analysis16-hero"><h2>🔎 誤答分析レポート</h2><p>「何問間違えたか」だけでなく、<b>どの知識・考え方でつまずいた可能性があるか</b>を整理します。</p><div class="analysis16-grid"><div class="analysis16-stat">誤答<b>${d.wrong.length}問</b></div><div class="analysis16-stat">最多分野<b>${top[0][0]}</b></div><div class="analysis16-stat">優先復習<b>${Math.min(d.wrong.length,5)}問</b></div></div></div>
+    <h3>📊 分野別つまずき</h3>${domainHtml}
+    <h3>🧠 問題別・つまずきポイント</h3>${list}
+    <div class="analysis16-actions"><button class="analysis16-primary" onclick="setView('weakTraining')">弱点10問を解く</button><button class="analysis16-secondary" onclick="startAdaptiveTraining()">自動難易度で復習</button><button class="analysis16-secondary" onclick="setView('home')">ホームへ</button></div>
+    <p class="analysis16-small">※「間違えた可能性が高いポイント」は、回答内容と問題カテゴリから機械的に整理した学習上のチェックポイントです。実際の原因を断定するものではありません。</p>
+  </div>`;
+}
+window.startAnalysis16=startAnalysis16;
+
+
+/* 第17版：学力ダッシュボード */
+function dash17LocalDate(ts){
+  const d=new Date(ts);
+  if(isNaN(d)) return "";
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+}
+function dashboard17Data(){
+  const cats=["イオン","化学式","反応式","総合"];
+  const qlog=Object.values((state&&state.quiz)||{});
+  const domain={};
+  cats.forEach(c=>domain[c]={correct:0,total:0});
+  qlog.forEach(x=>{
+    const c=x.cat||"総合";
+    if(!domain[c])domain[c]={correct:0,total:0};
+    const total=Number(x.total)||0,correct=Number(x.correct)||0;
+    domain[c].total+=total;domain[c].correct+=correct;
+  });
+  // wrongQuestionsから現在の弱点数を集計
+  const wrong=Object.values((state&&state.wrongQuestions)||{});
+  const wrongCat={};
+  wrong.forEach(x=>{const c=x.cat||"総合";wrongCat[c]=(wrongCat[c]||0)+1;});
+  const accs=cats.map(c=>domain[c].total?Math.round(domain[c].correct/domain[c].total*100):0);
+  const active=accs.filter(x=>x>0);
+  const overall=active.length?Math.round(active.reduce((a,b)=>a+b,0)/active.length):0;
+  let level="学習スタート",desc="まずは基礎問題を少し解いて、現在地を作りましょう。";
+  if(overall>=90){level="発展チャレンジ";desc="基礎が安定しています。応用・反応式の複合問題へ進みましょう。";}
+  else if(overall>=80){level="標準クリア";desc="標準問題がかなり安定。応用問題を増やす段階です。";}
+  else if(overall>=70){level="基礎安定";desc="基本は身についてきています。苦手分野を重点的に復習しましょう。";}
+  else if(overall>=50){level="土台づくり";desc="まず基礎問題を固めると、得点が伸びやすい段階です。";}
+  const weakest=cats.slice().sort((a,b)=>{
+    const aa=domain[a].total?domain[a].correct/domain[a].total:0;
+    const bb=domain[b].total?domain[b].correct/domain[b].total:0;
+    return aa-bb;
+  })[0];
+  const strongest=cats.slice().sort((a,b)=>{
+    const aa=domain[a].total?domain[a].correct/domain[a].total:0;
+    const bb=domain[b].total?domain[b].correct/domain[b].total:0;
+    return bb-aa;
+  })[0];
+  const today=dash17LocalDate(Date.now());
+  let todayQ=0;
+  if(state&&Array.isArray(state.sessions)){
+    state.sessions.forEach(s=>{if(dash17LocalDate(s.ts)===today)todayQ+=Number(s.questions)||0;});
+  }
+  return {cats,domain,wrongCat,overall,level,desc,weakest,strongest,todayQ,wrongCount:wrong.length,xp:Number(state.xp||0)};
+}
+function renderDashboard17(){
+  const el=document.getElementById("dashboard17");if(!el)return;
+  const d=dashboard17Data();
+  const domainHtml=d.cats.map(c=>{
+    const v=d.domain[c],rate=v.total?Math.round(v.correct/v.total*100):0;
+    return `<div class="dash-domain"><b>${c}</b><div class="dash-bar"><span style="width:${rate}%"></span></div><b>${v.total?rate+"%":"—"}</b></div>`;
+  }).join("");
+  const plans=[];
+  if(d.wrongCount)plans.push(["最優先","間違えた問題を復習",`現在 ${d.wrongCount}問`]);
+  if(d.weakest)plans.push(["重点","「"+d.weakest+"」を10問",d.domain[d.weakest].total?`正答率 ${Math.round(d.domain[d.weakest].correct/d.domain[d.weakest].total*100)}%`:"未測定"]);
+  plans.push(["仕上げ","自動難易度トレーニング","実力に合わせて出題"]);
+  const planHtml=plans.map(p=>`<div class="dash-plan"><strong>${p[0]}</strong><div><b>${p[1]}</b><br><span class="dash-foot">${p[2]}</span></div></div>`).join("");
+  el.innerHTML=`<div class="dashboard17">
+    <div class="dash-hero"><div class="dash-title"><div><span class="dash-tag">CURRENT LEVEL</span><div class="dash-level">${d.level}</div><div class="dash-sub">${d.desc}</div></div><div class="dash-stat"><small>総合正答率</small><b>${d.overall}%</b></div></div>
+      <div class="dash-grid"><div class="dash-stat"><small>今日の学習</small><b>${d.todayQ}問</b></div><div class="dash-stat"><small>弱点問題</small><b>${d.wrongCount}問</b></div><div class="dash-stat"><small>得意分野</small><b>${d.strongest}</b></div><div class="dash-stat"><small>重点分野</small><b>${d.weakest}</b></div></div>
+    </div>
+    <div class="dash-section"><h3>📊 分野別の理解度</h3>${domainHtml}<p class="dash-foot">正答率はこれまでの記録から算出しています。未測定の分野は「—」表示です。</p></div>
+    
+    <div class="dash-section"><h3>📈 学習の見方</h3><p class="dash-sub">「総合正答率」だけでなく、分野別の正答率と弱点問題の数を一緒に見ることで、次に何を勉強するか判断しやすくしています。</p><p class="dash-foot">このレベル表示は学習アプリ内の目安です。学校の定期テストの点数を直接予測するものではありません。</p></div>
+  </div>`;
+}
+function openDashboard17(){
+  let el=document.getElementById("dashboard17");
+  if(!el){
+    el=document.createElement("section");
+    el.id="dashboard17";
+    el.className="view";
+    document.querySelector("main")?.appendChild(el);
+  }
+  setView("dashboard17");
+}
+window.openDashboard17=openDashboard17;
+
+
+/* 第18版：ホーム画面へのダッシュボード統合 */
+function renderHomeDashboard18(){
+  const home=document.getElementById("home");if(!home)return;
+  // 既存ホームの内容を消さず、末尾にダッシュボードを追加
+  const old=document.getElementById("dashHome18");if(old)old.remove();
+  const d=typeof dashboard17Data==="function"?dashboard17Data():{overall:0,level:"学習スタート",desc:"まずは問題を解いて現在地を作りましょう。",wrongCount:0,weakest:"—",strongest:"—"};
+  const weakest=d.weakest||"—";
+  const weakRate=d.domain&&d.domain[weakest]&&d.domain[weakest].total?Math.round(d.domain[weakest].correct/d.domain[weakest].total*100):0;
+  const box=document.createElement("div");box.id="dashHome18";box.className="dash-home18";
+  box.innerHTML=`<div class="dash-section"><div class="dash-home18-head"><div><div class="dash-home18-title">📊 今日の学力ダッシュボード</div><div class="dash-home18-sub">${d.level}｜${d.desc}</div></div><button class="dash-home18-actions dash-home18-primary" onclick="openDashboard17()">詳しく見る</button></div>
+    <div class="dash-home18-grid">
+      <div class="dash-home18-stat"><small>総合正答率</small><b>${d.overall}%</b></div>
+      <div class="dash-home18-stat"><small>弱点問題</small><b>${d.wrongCount}問</b></div>
+      <div class="dash-home18-stat"><small>重点分野</small><b>${weakest}</b></div>
+      <div class="dash-home18-stat"><small>得意分野</small><b>${d.strongest||"—"}</b></div>
+    </div>
+    <div style="margin-top:10px"><b>重点分野 ${weakest}：${weakRate?weakRate+"%":"まだ未測定"}</b><div class="dash-home18-bar"><span style="width:${weakRate}%"></span></div></div>
+    <div class="dash-home18-actions">
+      <button class="dash-home18-primary" onclick="startWeakTraining()">弱点10問</button>
+      <button class="dash-home18-secondary" onclick="startAdaptiveTraining()">自動難易度トレーニング</button>
+      ${d.wrongCount?'<button class="dash-home18-secondary" onclick="startWrongQuiz()">間違い問題</button>':""}
+    </div>
+  </div>`;
+  home.appendChild(box);
+}
+
+
+function openAdaptiveTraining19(){
+  try{
+    if(typeof startAdaptiveTraining==="function"){startAdaptiveTraining();return;}
+    const el=document.getElementById("adaptive");
+    if(el)el.innerHTML='<div class="adapt-launch"><div class="adapt-launch-card"><h2>📈 自動難易度トレーニング</h2><p>ページを再読み込みして、もう一度お試しください。</p></div></div>';
+  }catch(e){
+    console.error(e);
+    const el=document.getElementById("adaptive");
+    if(el)el.innerHTML='<div class="adapt-launch"><div class="adapt-launch-card"><h2>📈 自動難易度トレーニング</h2><p>起動時にエラーが発生しました。ページを再読み込みしてください。</p></div></div>';
+  }
+}
+window.openAdaptiveTraining19=openAdaptiveTraining19;
+
+
+/* 第21版：学習履歴・成長グラフ */
+let growth21Range=7;
+
+function growth21DateKey(d){
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+}
+function growth21Short(d){
+  return (d.getMonth()+1)+"/"+d.getDate();
+}
+function growth21Build(){
+  const days=[],now=new Date();
+  for(let i=growth21Range-1;i>=0;i--){const d=new Date(now);d.setHours(0,0,0,0);d.setDate(d.getDate()-i);days.push(d);}
+  const cats=["イオン","化学式","反応式","総合"];
+  const byDay={};
+  days.forEach(d=>byDay[growth21DateKey(d)]={total:0,correct:0,cats:{}});
+  cats.forEach(c=>days.forEach(d=>byDay[growth21DateKey(d)].cats[c]={total:0,correct:0}));
+  const qlog=Object.values((state&&state.quiz)||{});
+  qlog.forEach(x=>{
+    const ts=Number(x.ts||x.last||Date.now()),d=new Date(ts),k=growth21DateKey(d);
+    if(!byDay[k])return;
+    const total=Number(x.total)||0,correct=Number(x.correct)||0,c=x.cat||"総合";
+    byDay[k].total+=total;byDay[k].correct+=correct;
+    if(!byDay[k].cats[c])byDay[k].cats[c]={total:0,correct:0};
+    byDay[k].cats[c].total+=total;byDay[k].cats[c].correct+=correct;
+  });
+  // セッションも学習量として補助的に集計
+  const sessions=Array.isArray(state.sessions)?state.sessions:[];
+  sessions.forEach(s=>{
+    const k=growth21DateKey(new Date(s.ts||Date.now()));
+    if(byDay[k] && !byDay[k].total)byDay[k].total+=Number(s.questions)||0;
+  });
+  const points=days.map(d=>{
+    const x=byDay[growth21DateKey(d)],rate=x.total?Math.round(x.correct/x.total*100):null;
+    return {d,total:x.total,correct:x.correct,rate,cats:x.cats};
+  });
+  const measured=points.filter(x=>x.rate!==null);
+  const avg=measured.length?Math.round(measured.reduce((a,b)=>a+b.rate,0)/measured.length):0;
+  const totalQ=points.reduce((a,b)=>a+b.total,0);
+  const best=measured.length?Math.max(...measured.map(x=>x.rate)):0;
+  return {points,avg,totalQ,best,cats};
+}
+function growth21Svg(data){
+  const pts=data.points,w=760,h=250,pad={l:45,r:18,t:18,b:38};
+  const x=i=>pad.l+(pts.length===1?0:i*(w-pad.l-pad.r)/(pts.length-1));
+  const y=v=>pad.t+(100-v)*(h-pad.t-pad.b)/100;
+  const grid=[0,25,50,75,100].map(v=>`<line x1="${pad.l}" x2="${w-pad.r}" y1="${y(v)}" y2="${y(v)}" stroke="#e5e7eb"/><text x="${pad.l-8}" y="${y(v)+4}" text-anchor="end" font-size="11" fill="#64748b">${v}</text>`).join("");
+  let path="",circles="";
+  pts.forEach((p,i)=>{if(p.rate===null)return;path+=(path?" L ":"M ")+x(i)+" "+y(p.rate);circles+=`<circle cx="${x(i)}" cy="${y(p.rate)}" r="4" fill="#6366f1"><title>${growth21Short(p.d)}：${p.rate}%</title></circle>`;});
+  const labels=pts.map((p,i)=>`<text x="${x(i)}" y="${h-13}" text-anchor="middle" font-size="10" fill="#64748b">${growth21Short(p.d)}</text>`).join("");
+  return `<div class="growth21-chart"><svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">${grid}<path d="${path}" fill="none" stroke="#6366f1" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>${circles}${labels}</svg></div>`;
+}
+function renderGrowth21(){
+  const el=document.getElementById("stats");if(!el)return;
+  const d=growth21Build(),p=d.points;
+  const domain=p.reduce((acc,x)=>{d.cats.forEach(c=>{acc[c].total+=x.cats[c].total;acc[c].correct+=x.cats[c].correct;});return acc;},Object.fromEntries(d.cats.map(c=>[c,{total:0,correct:0}])));
+  const domainHtml=d.cats.map(c=>{const v=domain[c],r=v.total?Math.round(v.correct/v.total*100):0;return `<div class="growth21-domain"><b>${c}</b><div class="growth21-bar"><span style="width:${r}%"></span></div><b>${v.total?r+"%":"—"}</b></div>`}).join("");
+  const history=p.slice().reverse().map(x=>`<div class="growth21-history"><b>${growth21Short(x.d)}</b><span>${x.total?x.correct+"/"+x.total+"問":"—"}</span><b>${x.rate===null?"—":x.rate+"%"}</b><span>${x.total?"学習":"未記録"}</span></div>`).join("");
+  el.innerHTML=`<div class="growth21">
+    <div class="growth21-head"><h2>📈 学習履歴・成長グラフ</h2><p class="growth21-note">学習した記録を日ごとに整理して、正答率と学習量の変化を確認できます。</p>
+      <div class="growth21-tabs"><button class="growth21-tab ${growth21Range===7?"active":""}" onclick="setGrowth21Range(7)">7日間</button><button class="growth21-tab ${growth21Range===30?"active":""}" onclick="setGrowth21Range(30)">30日間</button></div>
+      <div class="growth21-grid"><div class="growth21-stat"><small>期間平均</small><b>${d.avg}%</b></div><div class="growth21-stat"><small>学習問題</small><b>${d.totalQ}問</b></div><div class="growth21-stat"><small>最高正答率</small><b>${d.best}%</b></div><div class="growth21-stat"><small>記録日数</small><b>${p.filter(x=>x.total).length}日</b></div></div>
+    </div>
+    <div class="growth21-card"><h3>📊 正答率の推移</h3>${growth21Svg(d)}<div class="growth21-legend"><span><i class="growth21-dot" style="background:#6366f1"></i>総合正答率</span></div><p class="growth21-note">学習していない日はグラフをつなげず、実際に記録がある日のみ表示します。</p></div>
+    <div class="growth21-card"><h3>🧪 分野別の理解度</h3>${domainHtml}</div>
+    <div class="growth21-card"><h3>📅 学習履歴</h3>${history}</div>
+    <p class="growth21-note">※正答率はこのアプリ内で記録された問題演習の結果から算出しています。学校の成績やテスト結果を直接予測するものではありません。</p>
+  </div>`;
+}
+function setGrowth21Range(n){growth21Range=n;setView("stats");}
+
+
+/* 第22版：ホーム画面にダッシュボードを常設 */
+function ensureHomeDashboard22(){
+  const home=document.getElementById("home");
+  if(!home)return;
+  const old=document.getElementById("dashHome22");
+  if(old)old.remove();
+  const d=typeof dashboard17Data==="function"?dashboard17Data():{
+    overall:0,level:"学習スタート",desc:"まずは問題を解いて現在地を確認しましょう。",
+    wrongCount:0,weakest:"—",strongest:"—",domain:{}
+  };
+  const weak=d.weakest||"—";
+  const weakObj=d.domain&&d.domain[weak]?d.domain[weak]:{total:0,correct:0};
+  const weakRate=weakObj.total?Math.round(weakObj.correct/weakObj.total*100):0;
+  const box=document.createElement("div");
+  box.id="dashHome22";
+  box.className="dash-home22";
+  box.innerHTML=`<div class="dash-home22-card">
+    <div class="dash-home22-head">
+      <div><div class="dash-home22-title">📊 学力ダッシュボード</div><div class="dash-home22-sub">${d.level}｜${d.desc}</div></div>
+      <button class="dash-home22-btn" onclick="openDashboard17()">詳細を見る</button>
+    </div>
+    <div class="dash-home22-grid">
+      <div class="dash-home22-stat"><small>総合正答率</small><b>${d.overall}%</b></div>
+      <div class="dash-home22-stat"><small>弱点問題</small><b>${d.wrongCount}問</b></div>
+      <div class="dash-home22-stat"><small>重点分野</small><b>${weak}</b></div>
+      <div class="dash-home22-stat"><small>得意分野</small><b>${d.strongest||"—"}</b></div>
+    </div>
+    <div style="margin-top:10px"><b>重点分野：${weak} ${weakRate?weakRate+"%":"未測定"}</b><div class="dash-home22-bar"><span style="width:${weakRate}%"></span></div></div>
+  </div>`;
+  home.appendChild(box);
+}
+
+function startQuiz(count=0, isTest=false){
+ mode="quiz"; testMode=!!isTest; testAnswers=[];
+ if(!count){quizSet=[];qi=0;answered=false;setView("quiz");return;}
+ quizSet=makeQuestions().slice(0,count);
+ qi=0;answered=false;setView("quiz");
+}
+
+/* 第12版：定期テスト結果分析 */
+let lastTestAnalysis=null;
+
+function domainLabel(cat){
+  return cat==="イオン"?"イオン":cat==="化学式"?"化学式":cat==="反応式"?"反応式":"総合";
+}
+function analyzeTestResult(){
+  const answers=Array.isArray(testAnswers)?testAnswers:[];
+  const qs=Array.isArray(quizSet)?quizSet:[];
+  const rows=qs.map((q,i)=>({q,ok:answers[i]===q.a,ans:answers[i]}));
+  const cats=["イオン","化学式","反応式","総合"];
+  const domains=cats.map(cat=>{
+    const r=rows.filter(x=>domainLabel(x.q.cat)===cat);
+    const correct=r.filter(x=>x.ok).length;
+    return {cat,total:r.length,correct,acc:r.length?Math.round(correct/r.length*100):0};
+  });
+  const wrong=rows.filter(x=>!x.ok);
+  const weakest=domains.filter(x=>x.total).sort((a,b)=>a.acc-b.acc)[0]||domains[0];
+  lastTestAnalysis={rows,domains,wrong,weakest,score:rows.filter(x=>x.ok).length};
+  return lastTestAnalysis;
+}
+function renderTestAnalysis(){
+  const el=document.getElementById("quiz");
+  if(!el)return;
+  const a=lastTestAnalysis||analyzeTestResult();
+  const weak=a.weakest;
+  const domainHtml=a.domains.map(d=>`<div class="test-domain"><div>${d.cat}</div><div class="pct">${d.acc}%</div><div>${d.correct} / ${d.total}問</div><div class="bar"><div class="fill" style="width:${d.acc}%"></div></div></div>`).join("");
+  const wrongHtml=a.wrong.length?a.wrong.slice(0,12).map((x,i)=>`<div class="test-wrong-item"><strong>${i+1}. ${x.q.q}</strong><br><span>正解：${x.q.choices?.[x.q.a]||x.q.ans||"—"}</span></div>`).join(""):"<div class=\"test-wrong-item\">🎉 全問正解です！</div>";
+  el.innerHTML=`<div class="test-result-wrap"><div class="test-result-card">
+    <h2>📊 定期テスト結果分析</h2>
+    <div class="test-score"><div class="num">${a.score}<span style="font-size:24px"> / ${a.rows.length}</span></div><div class="sub">正答率 ${a.rows.length?Math.round(a.score/a.rows.length*100):0}%</div></div>
+    <h3>分野別成績</h3><div class="test-domains">${domainHtml}</div>
+    <div class="test-weak"><strong>🎯 重点復習：${weak.cat}</strong><br>正答率 ${weak.acc}%。この分野を中心に復習すると効果的です。</div>
+    <div class="test-wrong"><h3>❌ 間違えた問題</h3>${wrongHtml}</div>
+    <div class="test-actions">
+      <button class="test-primary" onclick="startWeakTraining()">🎯 苦手10問へ</button>
+      <button class="test-secondary" onclick="startTest()">もう一度50問</button>
+      <button class="test-secondary" onclick="setView('home')">ホームへ</button>
+    </div>
+  </div></div>`;
+}
+function finishTestWithAnalysis(){
+  testMode=false;
+  analyzeTestResult();
+  if(typeof save==="function")save();
+  renderTestAnalysis();
+}
+
+function startTest(){
+ testMode=true; testAnswers=[];
+ const pool=makeQuestions();
+ // 定期テストは分野を偏らせないように混ぜて構成
+ const ions=shuffle(pool.filter(q=>q.kind==="ion")).slice(0,10);
+ const formulas=shuffle(pool.filter(q=>q.kind==="formula")).slice(0,10);
+ const reactions=shuffle(pool.filter(q=>q.kind==="reaction")).slice(0,20);
+ const total=shuffle(pool.filter(q=>q.kind==="総合")).slice(0,10);
+ quizSet=shuffle([...ions,...formulas,...reactions,...total]).slice(0,50);
+ qi=0;answered=false;setView("quiz");
+}
+function renderQuiz(){
+ const el=document.getElementById("quiz");
+ if(!quizSet.length){
+ el.innerHTML=`<div class="card">
+ <h2>問題演習 🧪</h2>
+ <div class="card test-card"><h3>🎯 定期テストモード</h3><p>50問・100点満点。イオン・化学式・化学反応式・総合問題を本番形式でチェックします。</p><button class="action" onclick="startTest()">🔥 定期テストを開始</button></div>
+ <p class="muted">今日はどれくらい解く？　時間に合わせて選べます。</p>
+ <div class="mission-grid">
+  <button class="action" onclick="startQuiz(10)">🌱 10問<br><small>約5分</small></button>
+  <button class="action" onclick="startQuiz(20)">🌼 20問<br><small>約10分</small></button>
+  <button class="action" onclick="startQuiz(30)">🌸 30問<br><small>約15分</small></button>
+  <button class="action" onclick="startQuiz(50)">🔥 50問<br><small>しっかり練習</small></button>
+ </div>
+ <div class="spacer"></div>
+ <button class="secondary" onclick="startWrongQuiz()">❌ 間違えた問題だけ</button>
+ </div>`;return}
+ if(qi>=quizSet.length){
+ if(testMode){
+  const score=testAnswers.filter(x=>x&&x.ok).length*2;
+  const wrong=testAnswers.map((x,i)=>x&&!x.ok?{q:quizSet[i].q,ans:quizSet[i].ans,chosen:x.chosen}:null).filter(Boolean);
+  const kinds={ion:[0,0],formula:[0,0],reaction:[0,0],"総合":[0,0]};
+  quizSet.forEach((q,i)=>{if(!kinds[q.kind])kinds[q.kind]=[0,0]; kinds[q.kind][1]++; if(testAnswers[i]?.ok)kinds[q.kind][0]++;});
+  testMode=false;
+  el.innerHTML=`<div class="card"><h2>🎉 定期テスト終了</h2>
+   <div class="metric">${score}<small> / 100点</small></div>
+   <p class="test-grade">${score>=90?"🌟 すばらしい！":score>=70?"👍 もう一歩！":"🌱 ここから伸ばそう！"}</p>
+   <div class="card"><h3>分野別</h3>
+   ${Object.entries(kinds).map(([k,v])=>`<div class="row" style="justify-content:space-between"><span>${k}</span><b>${v[1]?Math.round(v[0]/v[1]*100):0}%</b></div>`).join("")}</div>
+   <div class="card"><h3>❌ 間違えた問題 ${wrong.length}問</h3>
+   ${wrong.slice(0,8).map(w=>`<div class="wrong-item"><b>${esc(w.q)}</b><br>正答：${esc(w.ans)}<br>あなた：${esc(w.chosen||"未回答")}</div>`).join("") || "<p>全問正解です！🎊</p>"}</div>
+   <button class="action" onclick="startTest()">もう一度テスト</button>
+   <button class="secondary" onclick="startWrongQuiz()">❌ 間違えた問題だけ復習</button>
+   <button class="secondary" onclick="setView('stats')">学習記録を見る</button></div>`;
+  return;
+ }
+ el.innerHTML=`<div class="card"><h2>${quizSet.length}問終了 🎉</h2><p>お疲れさまでした。学習記録に結果を保存しました。</p><button class="action" onclick="startQuiz(10)">もう一度</button>
+  <button class="secondary" onclick="startWrongQuiz()">❌ 間違えた問題だけ</button>
+  <button class="secondary" onclick="setView('stats')">学習記録を見る</button></div>`;
+ return;
+}
+ const x=quizSet[qi], pct=Math.round(qi/quizSet.length*100);
+ let body="";
+ if(x.type==="choice"||x.type==="tf") body=`<div class="options">${x.choices.map((c,i)=>`<button class="option" onclick="answerQuiz(${i})">${esc(c)}</button>`).join("")}</div>`;
+ else body=`<div class="spacer"></div><input id="textAns" class="answerbox" placeholder="化学反応式を入力（例：H₂ + O₂ → …）"><div class="spacer"></div><button class="action" onclick="answerText()">回答する</button>`;
+ el.innerHTML=`<h2>問題演習 <span class="pill">${qi+1} / ${quizSet.length}</span></h2>
+ <div class="progress"><span style="width:${pct}%"></span></div><div class="spacer"></div>
+ <div class="card"><div class="quiz-question">${esc(x.q)}</div>
+ <button class="hint-btn" onclick="showHint()">💡 ヒント</button><button class="teacher-btn" onclick="teacherExplain()">🧑‍🏫 先生モード</button>
+ <div id="hintBox" class="hint-box"></div>${body}<div id="fb"></div></div>`;
+}
+
+function teacherExplain(){
+ const x=quizSet[qi]; if(!x)return;
+ let msg="";
+ if(x.kind==="ion") msg="イオンは、電気を帯びた粒子です。式の右上にある＋・－と数字を確認すると整理しやすいよ。";
+ else if(x.kind==="formula") msg="化学式は、元素記号と原子の個数を表しています。右下の数字はその元素の原子数です。";
+ else if(x.kind==="reaction") msg="化学反応式では、反応前の物質と反応後の物質を「→」でつなぎ、左右の原子数が同じになるよう係数をそろえます。";
+ else msg="問題文の条件を1つずつ整理して、分かる部分から答えを組み立てよう。";
+ alert("🧪 先生モード\\n\\n"+msg);
+}
+function showHint(){const el=document.getElementById("hintBox");if(el){el.textContent=hintFor(quizSet[qi]);el.classList.add("show");}}
+function norm(s){return String(s).replace(/\s+/g,"").replace(/→/g,"->").replace(/＝/g,"=")}
+function answerQuiz(i){
+ if(answered)return; answered=true; const x=quizSet[qi], chosen=x.choices[i], ok=chosen===x.ans; if(testMode)testAnswers[qi]={ok,chosen,correct:x.ans};
+ document.querySelectorAll(".option").forEach((b,j)=>{if(x.choices[j]===x.ans)b.classList.add("correct");if(j===i&&!ok)b.classList.add("wrong")});
+ const fb=document.getElementById("fb"); fb.className="feedback "+(ok?"success":"error");
+ fb.innerHTML=`<b>${ok?"正解":"不正解"}</b><br>正答：${esc(x.ans)}${!ok?`<br>あなたの答え：${esc(chosen)}`:""}`;
+ recordQuiz(x,ok); setTimeout(()=>{qi++;answered=false;renderQuiz()},900);
+}
+function answerText(){
+ if(answered)return; answered=true; const x=quizSet[qi], v=document.getElementById("textAns").value.trim(), ok=norm(v)===norm(x.ans); if(testMode)testAnswers[qi]={ok,chosen:v,correct:x.ans};
+ const fb=document.getElementById("fb");fb.className="feedback "+(ok?"success":"error");
+ fb.innerHTML=`<b>${ok?"正解":"不正解"}</b><br>正答：${esc(x.ans)}${!ok?`<br>入力：${esc(v||"（未入力）")}`:""}`;
+ recordQuiz(x,ok); setTimeout(()=>{qi++;answered=false;renderQuiz()},1400);
+}
+
+function questionKey(x){return [x.kind||"",x.type||"",x.q||"",x.ans||""].join("¦")}
+function rememberWrongQuestion(x){
+ const k=questionKey(x);
+ state.wrongQuestions??=[];
+ const old=state.wrongQuestions.find(w=>w.key===k);
+ if(old){old.miss=(old.miss||0)+1;old.last=Date.now();}
+ else{state.wrongQuestions.push({key:k,type:x.type,kind:x.kind,q:x.q,ans:x.ans,choices:x.choices||[],miss:1,last:Date.now()});}
+}
+function forgetWrongQuestion(x){
+ const k=questionKey(x);
+ state.wrongQuestions=(state.wrongQuestions||[]).filter(w=>w.key!==k);
+}
+function startWrongQuiz(){
+ const ws=(state.wrongQuestions||[]).sort((a,b)=>(b.miss||0)-(a.miss||0));
+ if(!ws.length){alert("今は間違えた問題がありません。いい調子です！");return;}
+ quizSet=shuffle(ws).slice(0,10).map(w=>({...w}));
+ qi=0;answered=false;setView("quiz");
+}
+
+function recordQuiz(x,ok){
+ const k=x.kind+"|quiz";
+ state.quiz[k]??={n:0,ok:0};state.quiz[k].n++;if(ok)state.quiz[k].ok++;
+ const c=card("quiz",x.q,x.ans);
+ adaptiveReviewAfter(c,ok);
+ if(ok) forgetWrongQuestion(x); else rememberWrongQuestion(x);
+ addXP(ok?10:2); addTodayQuestions(1);
+ save();
+}
+function startFlash(){
+ flashList=shuffle([...IONS.map(x=>["イオン",...x]),...FORMULAS.map(x=>["化学式",...x])]);
+ fi=0;flashRevealed=false;setView("flash");
+}
+function renderFlash(){
+ const el=document.getElementById("flash");
+ if(!flashList.length){el.innerHTML=`<div class="card"><h2>1対1単語帳</h2><button class="action" onclick="startFlash()">開始</button></div>`;return}
+ const [kind,a,b]=flashList[fi];
+ el.innerHTML=`<h2>1対1単語帳 <span class="pill">${fi+1} / ${flashList.length}</span></h2>
+ <div class="card flash"><div class="pill">${kind}</div><div class="big">${esc(a)}</div>
+ ${flashRevealed?`<div class="answer">${esc(b)}</div>`:`<button class="action" onclick="revealFlash()">答えを見る</button>`}</div>
+ ${flashRevealed?`<div class="row" style="justify-content:center;margin-top:12px"><button class="secondary" onclick="gradeFlash(false)">もう一回！</button><button class="action" onclick="gradeFlash(true)">覚えた！</button></div>`:""}`;
+}
+function revealFlash(){flashRevealed=true;renderFlash()}
+function gradeFlash(ok){
+ const [kind,a,b]=flashList[fi];reviewAfter(card(kind,a,b),ok);fi++;
+ if(fi>=flashList.length){alert("単語帳1周完了！");flashList=[];setView("home")}else{flashRevealed=false;renderFlash()}
+}
+function renderReview(){
+ const due=Object.values(state.cards).filter(c=>c.due<=Date.now()).sort((a,b)=>a.due-b.due);
+ const upcoming=Object.values(state.cards).filter(c=>c.due>Date.now()).sort((a,b)=>a.due-b.due).slice(0,12);
+ document.getElementById("review").innerHTML=`<h2>復習予定</h2>
+ <div class="grid"><div class="card"><div class="muted">今すぐ復習</div><div class="metric">${due.length}枚</div><button class="action" onclick="startDue()">復習開始</button></div>
+ <div class="card"><div class="muted">次の復習</div><div class="metric">${upcoming[0]?fmtDate(upcoming[0].due):"—"}</div></div></div>
+ <div class="spacer"></div><div class="card"><h3>今日の復習カード</h3>
+ ${due.length?`<table><tr><th>内容</th><th>段階</th><th>前回</th></tr>${due.slice(0,30).map(c=>`<tr><td>${esc(c.a)} → ${esc(c.b)}</td><td>${c.box}</td><td>${c.last?fmtDate(c.last):"初回"}</td></tr>`).join("")}</table>`:"<p class='muted'>今日は復習待ちカードはありません。</p>"}
+ </div>
+ <div class="spacer"></div><div class="card"><h3>次回以降の予定カード</h3>
+ ${upcoming.length?`<table><tr><th>内容</th><th>段階</th><th>次回</th></tr>${upcoming.map(c=>`<tr><td>${esc(c.a)} → ${esc(c.b)}</td><td>${c.box}</td><td>${fmtDate(c.due)}</td></tr>`).join("")}</table>`:"まだカードがありません。単語帳から学習してください。"}</div>
+ <div class="spacer"></div><div class="notice">復習間隔：1日 → 3日 → 7日 → 14日 → 30日 → 60日。間違えたカードは10分後に再復習します。</div>`;
+}
+function startDue(){
+ const due=Object.values(state.cards).filter(c=>c.due<=Date.now()).sort((a,b)=>a.due-b.due);
+ if(!due.length){alert("今すぐ復習するカードはありません。");return}
+ flashList=shuffle(due.slice(0,20).map(c=>[c.kind,c.a,c.b]));fi=0;flashRevealed=false;setView("flash");
+}
+function renderStats(){
+ const all=Object.values(state.quiz), n=all.reduce((a,x)=>a+x.n,0), ok=all.reduce((a,x)=>a+x.ok,0);
+ const accuracy=n?Math.round(ok/n*100):0;
+ const days=[...Array(7)].map((_,i)=>{let d=new Date();d.setDate(d.getDate()-i);let k=d.toISOString().slice(0,10);return [k,state.sessions.filter(s=>new Date(s.ts).toISOString().slice(0,10)===k).reduce((a,s)=>a+s.sec,0)]});
+ document.getElementById("stats").innerHTML=`<h2>学習記録</h2>
+ <div class="card"><div class="muted">問題バンク</div><div class="metric">${makeQuestions().length}問+</div></div><div class="grid"><div class="card"><div class="muted">問題数</div><div class="metric">${n}</div></div><div class="card"><div class="muted">正答率</div><div class="metric">${accuracy}%</div></div><div class="card"><div class="muted">累計時間</div><div class="metric">${totalMinutes()}分</div></div></div>
+ <div class="spacer"></div><div class="card"><h3>📈 昨日との比較</h3>
+ ${(()=>{const t=today(),d=new Date();d.setDate(d.getDate()-1);const y=d.toISOString().slice(0,10);
+ const tc=(state.quizToday||{})[t]||0,yc=(state.quizToday||{})[y]||0;
+ const diff=tc-yc; return `<div class="metric">${diff>=0?"+":""}${diff}問</div><p class="muted">今日の回答数 − 昨日の回答数</p>`})()}
+ </div><div class="spacer"></div><div class="card"><h3>直近7日間</h3>${days.map(x=>`<div style="margin:9px 0"><div class="row" style="justify-content:space-between"><span>${x[0]}</span><span>${Math.round(x[1]/60)}分</span></div><div class="progress"><span style="width:${Math.min(100,x[1]/60*5)}%"></span></div></div>`).join("")}</div>
+ <div class="spacer"></div><div class="card"><h3>現在の苦手問題</h3>
+ <p class="muted">間違えると自動でここに追加され、正解すると外れます。</p>
+ <div class="metric">${(state.wrongQuestions||[]).length}問</div>
+ <button class="action" onclick="startWrongQuiz()">❌ 苦手問題を解く</button></div>
+ <div class="spacer"></div><div class="card"><h3>🔴 苦手ランキング</h3>
+ ${getWeakRank().map((x,i)=>`<div class="weak-row"><span>${i+1}. ${esc(x.name)}</span><b>${x.acc}%</b><small>${x.n}問</small></div>`).join("")||"<p>まだ十分なデータがありません。</p>"}
+ </div><div class="spacer"></div><div class="card"><h3>分野別</h3><table><tr><th>分野</th><th>問題</th><th>正答</th><th>正答率</th></tr>${Object.entries(state.quiz).map(([k,v])=>`<tr><td>${k.split("|")[0]}</td><td>${v.n}</td><td>${v.ok}</td><td>${v.n?Math.round(v.ok/v.n*100):0}%</td></tr>`).join("")||"<tr><td colspan=4>まだ記録がありません</td></tr>"}</table></div>`;
+}
+function renderSettings(){
+ const perm=("Notification" in window)?Notification.permission:"unsupported";
+ document.getElementById("settings").innerHTML=`<h2>設定</h2>
+ <div class="card"><h3>復習通知</h3><p class="muted">復習時刻になると、ブラウザ通知を試みます。通知はブラウザ/端末側の許可が必要です。</p>
+ <div class="row"><label>通知時刻 <input id="notifyHour" type="number" min="0" max="23" value="${state.settings.notifyHour}"> 時</label>
+ <button class="action" onclick="saveSettings()">保存</button>
+ <button class="secondary" onclick="requestNotify()">通知を許可する</button>
+ <button class="secondary" onclick="testNotification()">通知テスト</button></div>
+ <p class="small">現在の通知権限：${perm}</p>
+ <div class="notice success">設定時刻以降にアプリを開いていると、当日の復習カード枚数を自動確認し、「今日は○枚の復習があります」と通知します。</div></div>
+ <div class="spacer"></div><div class="card"><h3>データ</h3><div class="row"><button class="secondary" onclick="exportData()">学習データを書き出す</button><button class="secondary" onclick="importData()">学習データを読み込む</button><button class="secondary danger" onclick="resetData()">全データをリセット</button></div></div>
+ <div class="spacer"></div><div class="notice">このHTMLを「ファイルをダブルクリック」で開いた場合、ブラウザによってはバックグラウンド通知が制限されます。通知を安定して使うには、HTTPSで公開するか、対応するローカルサーバー/インストール型Webアプリとして使う方法が適しています。</div>`;
+}
+function saveSettings(){state.settings.notifyHour=Math.max(0,Math.min(23,Number(document.getElementById("notifyHour").value)||20));save();alert("設定を保存しました。")}
+function exportData(){const a=document.createElement("a");a.href="data:application/json;charset=utf-8,"+encodeURIComponent(JSON.stringify(state));a.download="化学学習データ.json";a.click()}
+function importData(){const i=document.createElement("input");i.type="file";i.accept=".json";i.onchange=()=>{const f=i.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{state=JSON.parse(r.result);save();renderHome();alert("読み込みました。")}catch(e){alert("読み込みに失敗しました。")}};r.readAsText(f)};i.click()}
+function resetData(){if(confirm("学習記録とカード進捗をすべて削除します。よろしいですか？")){localStorage.removeItem(KEY);location.reload()}}
+navInit();renderHome();setInterval(notifyIfDue,60000);
+</script>
+
+
+<script>
+/* 第10版完全動作修正 */
+window.addEventListener("error", function(e){
+  if(e && e.message) console.error("学習アプリ:", e.message);
+});
+</script>
+
+</body>
+</html>
