@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>イオンと化学反応式 学習アプリ｜第26版・ダッシュボード詳細修正</title>
+<title>イオンと化学反応式 学習アプリ｜第31版・単語帳完全修正版</title>
 <style>
 :root{
   --bg:#fff7fc;--card:#ffffff;--ink:#35263f;--muted:#806f89;--line:#f0ddea;
@@ -251,6 +251,304 @@ th{color:#795d82;background:#fff8fc}
 #dashHome22{display:block;visibility:visible;opacity:1}
 
 </style>
+
+<style id="layout-polish-v27">
+:root{--bg:#f7f8fc;--card:#fff;--ink:#29324a;--muted:#718096;--line:#e7eaf2;--pink:#ff6fae;--purple:#7c6ee6;--mint:#45c7a5;--blue:#5d8dee;--shadow:0 8px 24px rgba(44,55,90,.08)}
+body{background:radial-gradient(circle at 90% 8%,rgba(255,188,220,.20),transparent 28%),radial-gradient(circle at 4% 88%,rgba(169,231,220,.18),transparent 28%),linear-gradient(180deg,#fafbff 0%,#f5f7fb 100%);color:var(--ink)}
+body:before,body:after{display:none}
+header{padding:20px 20px 18px;background:linear-gradient(135deg,#ff6fae 0%,#8b73e7 62%,#5ccbb3 100%);box-shadow:0 4px 18px rgba(64,62,100,.16)}
+header h1{font-size:22px;letter-spacing:.015em;max-width:1050px;margin:0 auto 4px}
+header p{max-width:1050px;margin:0 auto;font-size:12px}
+nav{top:77px;gap:7px;padding:9px max(12px,calc((100% - 1050px)/2));background:rgba(255,255,255,.92);border-bottom:1px solid #e9ebf2}
+nav button{padding:9px 13px;font-size:13px;color:#566176;border-color:#e4e7ef;box-shadow:none}
+nav button.active{background:linear-gradient(135deg,#ff6fae,#8571e6);box-shadow:0 5px 12px rgba(112,94,170,.18)}
+main{max-width:1050px;padding:24px 20px 42px}
+.view>h2:first-child{margin-top:2px;margin-bottom:18px}
+h2{font-size:20px;color:#303950}h2:after{color:#ff76b2}
+.card{border:1px solid #e7eaf2;border-radius:18px;padding:17px;box-shadow:var(--shadow)}
+.card:before{height:3px;opacity:.9}
+.grid{gap:13px}
+.metric{font-size:29px;color:#34405a;letter-spacing:-.02em}
+.muted{color:#7a8498}
+button.action{transition:transform .16s ease,box-shadow .16s ease}
+button.action:hover{transform:translateY(-1px);box-shadow:0 8px 18px rgba(112,94,170,.24)}
+button.secondary:hover{background:#f8f9fc;border-color:#d8dce8}
+.mission-card,.today-plan-card,.test-card{border-width:1px;box-shadow:0 10px 28px rgba(44,55,90,.07)}
+.mission-card{background:linear-gradient(135deg,#fffafd,#f7f4ff)}
+.today-plan-card{background:linear-gradient(135deg,#fffdf8,#f8f5ff,#f2fffb)}
+.test-card{background:linear-gradient(135deg,#fffafd,#fffdf2)}
+.mission-grid>div,.plan-summary>div{border:1px solid #edf0f5;box-shadow:none}
+.badge-grid{gap:10px}.badge{border:1px solid #f0dfaa;background:#fff8d8}
+.progress{background:#edf0f5}.progress>span{background:linear-gradient(90deg,#ff73ad,#8a73e7,#58c9af)}
+.quiz-question{color:#303950}
+.option{border-color:#e4e8f0;background:#fff;box-shadow:0 2px 8px rgba(44,55,90,.035)}
+.option:hover{border-color:#c9b9ee;background:#fcfbff}
+.flash{border:1px solid #e7eaf2;border-radius:22px;box-shadow:0 12px 30px rgba(44,55,90,.09)}
+.puzzle-card,.balance-input-card{border-color:#e5e9f1;box-shadow:0 10px 28px rgba(44,55,90,.08)}
+.puzzle-ion,.puzzle-control{border-color:#e5e9f1}
+.balance-equation{font-size:23px}.balance-coef{border-color:#d6dbe6;background:#fff}
+table{font-size:13px}th{background:#f7f8fc;color:#657087}th,td{border-color:#e7eaf2}
+.notice{border-color:#f0dfaa}.success{border-color:#bfe8db}.error{border-color:#f0c5d3}
+#home .card{margin-bottom:14px}#home .grid .card{margin-bottom:0}
+#home .mission-card,#home .today-plan-card,#home .test-card{padding:18px}
+@media(max-width:650px){
+  header{padding:17px 14px 15px}header h1{font-size:19px}
+  nav{top:68px;padding:8px 10px}nav button{font-size:12px;padding:8px 11px}
+  main{padding:18px 12px 34px}.card{padding:15px;border-radius:16px}
+  .metric{font-size:26px}.grid{gap:11px}.mission-grid,.plan-summary{gap:7px}
+}
+</style>
+
+
+<style id="home-redesign-v28">
+/* ===== 第28版：ホーム画面 再設計 ===== */
+#home{
+  max-width:1050px;
+}
+#home > h2:first-child{
+  font-size:0;
+  margin:0 0 14px;
+  height:0;
+  overflow:hidden;
+}
+#home > h2:first-child:after{display:none}
+
+/* ホーム上部に「学習センター」ヘッダー */
+#home:before{
+  content:"学習センター";
+  display:block;
+  font-size:26px;
+  font-weight:900;
+  letter-spacing:.01em;
+  color:#2e3852;
+  margin:0 0 4px;
+}
+#home:after{
+  content:"今日の学習状況をチェックして、すぐに勉強を始めよう";
+  display:block;
+  font-size:13px;
+  color:#7a8498;
+  margin:0 0 18px;
+}
+
+/* ダッシュボード */
+#home [id*="dashboard"],
+#home .dashboard-card{
+  border:0;
+  border-radius:22px;
+  background:linear-gradient(135deg,#fff 0%,#faf8ff 52%,#f3fffb 100%);
+  box-shadow:0 12px 30px rgba(52,59,91,.10);
+}
+
+/* 今日の学習系カード */
+#home .mission-card{
+  position:relative;
+  overflow:hidden;
+  border:0;
+  border-radius:22px;
+  padding:22px;
+  background:linear-gradient(135deg,#fff4fa 0%,#f7f3ff 60%,#f1fbff 100%);
+  box-shadow:0 12px 30px rgba(76,68,112,.11);
+}
+#home .mission-card:after{
+  content:"✦";
+  position:absolute;
+  right:22px;
+  top:12px;
+  font-size:58px;
+  line-height:1;
+  color:rgba(137,112,226,.10);
+}
+#home .mission-card h3{
+  font-size:19px;
+  margin-bottom:6px;
+}
+
+/* 行動メニューをタイル化 */
+#home .today-plan-card,
+#home .test-card{
+  border:1px solid #e9ebf3;
+  border-radius:20px;
+  box-shadow:0 8px 22px rgba(52,59,91,.07);
+}
+
+/* ホーム内のボタン群 */
+#home button.action{
+  min-height:44px;
+  border-radius:13px;
+  font-weight:800;
+  letter-spacing:.01em;
+}
+#home button.secondary{
+  border-radius:12px;
+}
+
+/* 数字を「成績パネル」っぽく */
+#home .metric{
+  font-weight:900;
+  font-size:31px;
+  line-height:1.1;
+}
+#home .metric + .muted{
+  margin-top:4px;
+}
+
+/* カードのタイトル */
+#home .card h3{
+  color:#343d56;
+  letter-spacing:.01em;
+}
+#home .card h4{
+  color:#4b556d;
+}
+
+/* 情報カードを少し立体的に */
+#home .grid > .card{
+  transition:transform .18s ease, box-shadow .18s ease;
+}
+#home .grid > .card:hover{
+  transform:translateY(-2px);
+  box-shadow:0 12px 26px rgba(52,59,91,.10);
+}
+
+/* 画面幅に応じたホームグリッド */
+@media(min-width:800px){
+  #home .mission-card{
+    padding:24px 26px;
+  }
+}
+@media(max-width:650px){
+  #home:before{font-size:23px;margin-bottom:3px}
+  #home:after{font-size:12px;margin-bottom:14px}
+  #home .mission-card{padding:18px;border-radius:19px}
+  #home .metric{font-size:27px}
+  #home .grid > .card:hover{transform:none}
+}
+
+/* 上部ナビをアプリらしく */
+@media(min-width:651px){
+  nav button{
+    border-radius:12px;
+  }
+}
+
+/* ホームの不要な空白を抑制 */
+#home .view,
+#home section:empty{display:none}
+</style>
+
+
+<style id="redesign-v29">
+/* ===== 第29版：ホーム全面リニューアル ===== */
+.home-hero29{
+  display:flex;align-items:center;justify-content:space-between;gap:20px;
+  padding:25px 28px;margin-bottom:16px;border-radius:25px;
+  color:#fff;background:linear-gradient(135deg,#ff70ad 0%,#806fe2 58%,#53c8ae 100%);
+  box-shadow:0 14px 32px rgba(86,72,140,.18);position:relative;overflow:hidden;
+}
+.home-hero29:after{content:"⚗";position:absolute;right:150px;bottom:-35px;font-size:145px;color:rgba(255,255,255,.08);transform:rotate(-12deg)}
+.hero-kicker29{font-size:10px;font-weight:900;letter-spacing:.18em;opacity:.8}
+.hero-copy29 h1{margin:5px 0 4px;font-size:28px;color:#fff}
+.hero-copy29 p{margin:0;font-size:13px;opacity:.92}
+.hero-level29{min-width:105px;text-align:center;padding:11px 15px;border-radius:18px;background:rgba(255,255,255,.16);backdrop-filter:blur(5px);position:relative;z-index:1}
+.level-label29{font-size:9px;font-weight:900;letter-spacing:.16em;opacity:.85}
+.level-number29{font-size:34px;font-weight:950;line-height:1}
+.level-xp29{font-size:11px;margin-top:3px}
+
+.home-focus29{display:grid;grid-template-columns:1fr 230px;gap:0;margin-bottom:24px;border-radius:22px;overflow:hidden;background:#fff;box-shadow:0 10px 28px rgba(52,59,91,.09);border:1px solid #e9ebf3}
+.focus-main29{padding:22px 24px}
+.focus-label29{font-size:10px;font-weight:900;letter-spacing:.15em;color:#8a73e5}
+.focus-main29 h2{margin:4px 0 8px;font-size:21px}
+.focus-plan29{min-height:34px}
+.focus-actions29{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.focus-actions29 button{margin:0}
+.focus-side29{display:grid;grid-template-columns:1fr;gap:1px;background:#eceef4}
+.mini-stat29{display:grid;grid-template-columns:32px 1fr auto;align-items:center;gap:5px;padding:10px 15px;background:linear-gradient(100deg,#fbfaff,#f7fffc)}
+.mini-stat29 span{font-size:20px}.mini-stat29 b{font-size:21px;color:#35405a}.mini-stat29 small{font-size:11px;color:#7b8497}
+
+.home-section-title29{display:flex;align-items:baseline;gap:10px;margin:22px 2px 10px}
+.home-section-title29 span{font-size:9px;font-weight:950;letter-spacing:.17em;color:#a079df}
+.home-section-title29 b{font-size:17px;color:#303950}
+
+.quick-grid29{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}
+.quick-card29{
+  appearance:none;border:1px solid #e6e9f1;border-radius:18px;padding:16px 14px;text-align:left;
+  background:#fff;box-shadow:0 7px 18px rgba(52,59,91,.06);cursor:pointer;
+  transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease;
+}
+.quick-card29:hover{transform:translateY(-3px);box-shadow:0 13px 25px rgba(52,59,91,.11)}
+.quick-card29>span{display:block;font-size:27px;margin-bottom:9px}
+.quick-card29 b{display:block;color:#303950;font-size:14px}
+.quick-card29 small{display:block;color:#7b8497;font-size:10px;margin-top:4px}
+.quick-card29.pink{background:linear-gradient(145deg,#fff,#fff5fa)}.quick-card29.purple{background:linear-gradient(145deg,#fff,#f7f4ff)}
+.quick-card29.blue{background:linear-gradient(145deg,#fff,#f2f7ff)}.quick-card29.mint{background:linear-gradient(145deg,#fff,#f0fcf8)}
+
+.status-grid29{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.status-card29{display:grid;grid-template-columns:42px 1fr auto;align-items:center;gap:9px;padding:13px;border:1px solid #e7eaf2;border-radius:16px;background:#fff}
+.status-icon29{width:40px;height:40px;display:grid;place-items:center;border-radius:12px;background:#f6f4ff;font-size:20px}
+.status-card29 small{display:block;color:#7c8597;font-size:10px}.status-card29 b{display:block;color:#384158;font-size:12px;margin-top:2px}
+.status-card29 button{border:0;background:transparent;color:#7d6bda;font-weight:800;font-size:11px;cursor:pointer}
+
+.home-bottom29{display:grid;grid-template-columns:1.15fr .85fr;gap:11px;margin-top:12px}
+.mission29{margin:0!important}.home-tools29{margin:0!important}
+
+.flash-start29{max-width:720px;margin:0 auto;padding:25px 18px;text-align:center;border:1px solid #e8eaf2;border-radius:23px;background:linear-gradient(145deg,#fff,#faf8ff);box-shadow:0 10px 28px rgba(52,59,91,.08)}
+.flash-start-icon29{font-size:42px}.flash-start29 h3{font-size:20px;margin:7px 0 4px}.flash-start29 p{font-size:12px;color:#7b8497;margin:0 0 18px}
+.flash-direction-grid29{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.direction-card29{border:1px solid #e5e8f0;border-radius:17px;padding:16px 12px;text-align:left;background:#fff;cursor:pointer;box-shadow:0 5px 14px rgba(52,59,91,.05);transition:.15s}
+.direction-card29:hover{transform:translateY(-2px);box-shadow:0 10px 20px rgba(52,59,91,.10)}
+.direction-card29 span{font-size:25px}.direction-card29 b{display:block;font-size:12px;color:#303950;margin-top:7px}.direction-card29 small{display:block;font-size:9px;color:#7b8497;margin-top:4px;line-height:1.5}
+.direction-card29.pink{background:#fff7fb}.direction-card29.purple{background:#f8f5ff}.direction-card29.both{background:#f3fffb}
+.flash-direction29{display:inline-block;margin:0 0 9px;padding:6px 10px;border-radius:999px;background:#f5f2ff;color:#7665ce;font-size:11px;font-weight:800}
+
+@media(max-width:800px){
+ .quick-grid29{grid-template-columns:repeat(2,1fr)}
+ .status-grid29{grid-template-columns:1fr}
+ .home-bottom29{grid-template-columns:1fr}
+ .flash-direction-grid29{grid-template-columns:1fr}
+}
+@media(max-width:650px){
+ .home-hero29{padding:20px 18px;border-radius:20px}.hero-copy29 h1{font-size:22px}.hero-level29{min-width:82px;padding:9px}
+ .home-focus29{grid-template-columns:1fr}.focus-main29{padding:18px}.focus-side29{grid-template-columns:repeat(3,1fr)}
+ .mini-stat29{grid-template-columns:1fr;text-align:center;padding:9px 4px;gap:1px}.mini-stat29 span{font-size:17px}.mini-stat29 b{font-size:18px}.mini-stat29 small{font-size:9px}
+ .quick-card29{padding:14px 12px}.quick-card29>span{font-size:23px}
+ .home-section-title29{margin-top:18px}
+}
+</style>
+
+
+<style id="flash-fix-v30">
+.flash-direction29{
+  margin:0 auto 10px;
+  width:max-content;
+  max-width:100%;
+  padding:7px 12px;
+  border-radius:999px;
+  background:#f3f0ff;
+  color:#705ec8;
+  font-size:12px;
+  font-weight:900;
+  text-align:center;
+}
+.flash-start29 h3{margin-bottom:6px}
+.flash-start29 p{line-height:1.6}
+.direction-card29{
+  appearance:none;
+  font-family:inherit;
+}
+</style>
+
+
+<style id="flash-direction-fix-v31">
+.flash-start29{display:block!important}
+.flash-direction-grid29{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:18px}
+.direction-card29{display:block!important;width:100%;min-height:125px;visibility:visible!important;opacity:1!important;cursor:pointer}
+.direction-card29 span{display:block!important;font-size:28px}
+.direction-card29 b{display:block!important;margin-top:8px}
+.direction-card29 small{display:block!important;margin-top:5px}
+@media(max-width:800px){.flash-direction-grid29{grid-template-columns:1fr}}
+</style>
+
 </head>
 <body>
 <header>
@@ -499,8 +797,7 @@ function balanceFormulaAtoms(f){
   const clean=f.replace(/[₀₁₂₃₄₅₆₇₈₉]/g,m=>"0123456789"["₀₁₂₃₄₅₆₇₈₉".indexOf(m)])
     .replace(/²/g,"2").replace(/³/g,"3").replace(/⁴/g,"4").replace(/⁵/g,"5")
     .replace(/⁶/g,"6").replace(/⁷/g,"7").replace(/⁸/g,"8").replace(/⁹/g,"9");
-  const result={};
-  function parsePart(s,mult=1){
+  const result={};  function parsePart(s,mult=1){
     const re=/([A-Z][a-z]?)(\d*)/g; let m;
     while((m=re.exec(s))){
       const el=m[1], n=m[2]?parseInt(m[2]):1;
@@ -738,35 +1035,72 @@ function navInit(){
  document.querySelector("nav button").classList.add("active");
 }
 function renderHome(){
- const d=dueCount(), mins=totalMinutes(), sess=state.sessions.length;
+ const d=dueCount(), mins=totalMinutes(), sess=state.sessions.length, p=getProgress();
  document.getElementById("home").innerHTML=`
- <div class="notice success" style="margin-bottom:14px"><b>🌷 今日もコツコツ、化学を覚えよう！</b><br><span class="small">少しずつ復習すると、あとでラクになります。</span></div>
- <h2>今日の学習</h2>
- <div class="grid">
-  <div class="card today-plan-card">
- <div class="section-title">🎯 今日やること</div>
- <div id="todayPlan"></div>
- <div id="todayProgress" class="today-progress"></div>
- <button class="action" onclick="startTodayPlan()">▶ 今日のおすすめを始める</button><button class="secondary" onclick="startFiveMinute()">⏱ 5分だけやる</button><button class="secondary" onclick="startBalanceInput()">⚗️ 反応式を理解する</button>
-</div>
-<div class="card mission-card">
- <div class="section-title">🌷 今日のミッション</div>
- <div id="missionBox" class="mission-box"></div>
- <button class="primary" onclick="startDailyMission()">▶ 今日の学習をスタート</button>
-</div>
-<div class="card"><div class="muted">復習待ち</div><div class="metric">${d}枚</div><button class="action" onclick="setView('review')">復習する</button></div>
-  <div class="card"><div class="muted">累計学習時間</div><div class="metric">${mins}分</div><div class="small">学習セッション ${sess}回</div></div>
-  <div class="card"><div class="muted">登録カード</div><div class="metric">${Object.keys(state.cards).length}枚</div><div class="small">イオン・化学式を1対1で記憶</div></div>
+ <div class="home-hero29">
+   <div class="hero-copy29">
+     <div class="hero-kicker29">🧪 CHEMISTRY STUDY</div>
+     <h1>イオンと化学反応式</h1>
+     <p>今日も少しずつ。10分から始めよう。</p>
+   </div>
+   <div class="hero-level29">
+     <div class="level-label29">LEVEL</div>
+     <div class="level-number29">${p.level}</div>
+     <div class="level-xp29">${p.xp} XP</div>
+   </div>
  </div>
- <div class="spacer"></div>
-<div class="spacer"></div>
- <div class="card">
-  <h3>今日のスタート</h3>
-  <div class="row"><button class="action" onclick="startQuiz()">10問クイズ</button><button class="secondary" onclick="startFlash()">単語帳を開始</button></div>
+
+ <div class="home-focus29">
+   <div class="focus-main29">
+     <div class="focus-label29">🎯 TODAY'S STUDY</div>
+     <h2>今日の学習</h2>
+     <div id="todayPlan" class="focus-plan29"></div>
+     <div id="todayProgress" class="today-progress focus-progress29"></div>
+     <div class="focus-actions29">
+       <button class="action" onclick="startTodayPlan()">▶ 今日の学習を始める</button>
+       <button class="secondary" onclick="startFiveMinute()">⏱ 5分だけ</button>
+     </div>
+   </div>
+   <div class="focus-side29">
+     <div class="mini-stat29"><span>🔥</span><b>${p.streak}</b><small>日連続</small></div>
+     <div class="mini-stat29"><span>📚</span><b>${d}</b><small>復習待ち</small></div>
+     <div class="mini-stat29"><span>⏱</span><b>${mins}</b><small>累計分</small></div>
+   </div>
+ </div>
+
+ <div class="home-section-title29"><span>QUICK START</span><b>すぐに勉強する</b></div>
+ <div class="quick-grid29">
+   <button class="quick-card29 pink" onclick="startFlash()"><span>📖</span><b>1対1単語帳</b><small>日本語 ↔ 化学式</small></button>
+   <button class="quick-card29 purple" onclick="startQuiz()"><span>✏️</span><b>問題演習</b><small>10問から挑戦</small></button>
+   <button class="quick-card29 blue" onclick="startWeakTraining()"><span>🎯</span><b>弱点10問</b><small>苦手を集中トレーニング</small></button>
+   <button class="quick-card29 mint" onclick="startBalanceInput()"><span>⚗️</span><b>反応式</b><small>係数合わせを練習</small></button>
+ </div>
+
+ <div class="home-section-title29"><span>YOUR STATUS</span><b>学習状況</b></div>
+ <div class="status-grid29">
+   <div class="status-card29"><div class="status-icon29">📊</div><div><small>学力ダッシュボード</small><b>今日の理解度を確認</b></div><button onclick="openDashboard17()">詳細 →</button></div>
+   <div class="status-card29"><div class="status-icon29">🔄</div><div><small>復習予定</small><b>${d}枚のカードを確認</b></div><button onclick="setView('review')">見る →</button></div>
+   <div class="status-card29"><div class="status-icon29">🏆</div><div><small>学習記録</small><b>${sess}回の学習セッション</b></div><button onclick="setView('stats')">見る →</button></div>
+ </div>
+
+ <div class="home-bottom29">
+   <div class="mission-card mission29">
+     <div class="section-title">🌷 今日のミッション</div>
+     <div id="missionBox" class="mission-box"></div>
+     <button class="primary" onclick="startDailyMission()">▶ ミッション開始</button>
+   </div>
+   <div class="card home-tools29">
+     <h3>⚙️ もっと練習する</h3>
+     <div class="row">
+       <button class="secondary" onclick="startIonPuzzle()">🧩 イオン組み合わせ</button>
+       <button class="secondary" onclick="startVariationTraining()">🔀 変化問題</button>
+     </div>
+   </div>
  </div>`;
  ensureHomeDashboard22();
  notifyIfDue();
 }
+
 function shuffle(a){return [...a].sort(()=>Math.random()-.5)}
 function makeQuestions(){
  let qs=[];
@@ -997,7 +1331,8 @@ const VARIATION_BANK=[
   {q:"マグネシウムイオンの化学式は？",choices:["Mg⁺","Mg²⁺","Mg⁻","Mg²⁻"],a:1,exp:"マグネシウムは2個の電子を失ってMg²⁺になります。"},
   {q:"Mg²⁺とCl⁻からできる化合物の化学式は？",choices:["MgCl","MgCl₂","Mg₂Cl","Mg₂Cl₂"],a:1,exp:"＋2を打ち消すにはCl⁻が2個必要なのでMgCl₂です。"},
   {q:"Mg²⁺1個とCl⁻2個の電荷の合計は？",choices:["+4","+2","0","−2"],a:2,exp:"+2 + (−1)×2 = 0です。"}
- ]}, {cat:"化学式",base:"CaCl₂",name:"塩化カルシウム",make:[
+ ]},
+ {cat:"化学式",base:"CaCl₂",name:"塩化カルシウム",make:[
   {q:"Ca²⁺とCl⁻からできる化学式は？",choices:["CaCl","CaCl₂","Ca₂Cl","Ca₂Cl₂"],a:1,exp:"Ca²⁺を打ち消すためCl⁻が2個必要です。"},
   {q:"CaCl₂に含まれるCl⁻は何個？",choices:["1個","2個","3個","4個"],a:1,exp:"下付きの2はClが2個あることを示します。"},
   {q:"CaCl₂で、CaとClの個数比は？",choices:["1:1","1:2","2:1","2:2"],a:1,exp:"Caが1個、Clが2個なので1:2です。"}
@@ -1261,8 +1596,7 @@ function renderExam15(){
   </div></div>`;
   renderExam15Timer();
 }
-function exam15Choose(i){exam15Answers[exam15i]=i;renderExam15();}
-function exam15Go(i){exam15i=i;renderExam15();}
+function exam15Choose(i){exam15Answers[exam15i]=i;renderExam15();}function exam15Go(i){exam15i=i;renderExam15();}
 function exam15Prev(){if(exam15i>0){exam15i--;renderExam15();}}
 function exam15Next(){if(exam15i<49){exam15i++;renderExam15();}else finishExam15();}
 function finishExam15(){
@@ -1775,20 +2109,140 @@ function recordQuiz(x,ok){
  addXP(ok?10:2); addTodayQuestions(1);
  save();
 }
-function startFlash(){
- flashList=shuffle([...IONS.map(x=>["イオン",...x]),...FORMULAS.map(x=>["化学式",...x])]);
- fi=0;flashRevealed=false;setView("flash");
+function startFlash(direction){
+  if(!direction){
+    flashList=[];
+    flashDirection="";
+    fi=0;
+    flashRevealed=false;
+    setView("flash");
+    renderFlash();
+    return;
+  }
+
+  flashDirection=direction;
+  const base=[
+    ...IONS.map(x=>["イオン",x[0],x[1]]),
+    ...FORMULAS.map(x=>["化学式",x[0],x[1]])
+  ];
+
+  flashList=shuffle(base).map(([kind,jp,formula])=>{
+    if(direction==="formulaToJp") return [kind,formula,jp];
+    if(direction==="random"){
+      return Math.random()<0.5 ? [kind,formula,jp] : [kind,jp,formula];
+    }
+    return [kind,jp,formula];
+  });
+
+  fi=0;
+  flashRevealed=false;
+  setView("flash");
+  renderFlash();
 }
+
 function renderFlash(){
- const el=document.getElementById("flash");
- if(!flashList.length){el.innerHTML=`<div class="card"><h2>1対1単語帳</h2><button class="action" onclick="startFlash()">開始</button></div>`;return}
- const [kind,a,b]=flashList[fi];
- el.innerHTML=`<h2>1対1単語帳 <span class="pill">${fi+1} / ${flashList.length}</span></h2>
- <div class="card flash"><div class="pill">${kind}</div><div class="big">${esc(a)}</div>
- ${flashRevealed?`<div class="answer">${esc(b)}</div>`:`<button class="action" onclick="revealFlash()">答えを見る</button>`}</div>
- ${flashRevealed?`<div class="row" style="justify-content:center;margin-top:12px"><button class="secondary" onclick="gradeFlash(false)">もう一回！</button><button class="action" onclick="gradeFlash(true)">覚えた！</button></div>`:""}`;
+  const el=document.getElementById("flash");
+  if(!el)return;
+
+  if(!flashList.length || !flashDirection){
+    el.innerHTML=`
+      <h2>📖 1対1単語帳</h2>
+      <div class="flash-start29">
+        <div class="flash-start-icon29">📖</div>
+        <h3>出題方向を選んでください</h3>
+        <p>日本語→化学式、化学式→日本語、ランダムから選べます。</p>
+        <div class="flash-direction-grid29">
+          <button type="button" class="direction-card29 pink" onclick="startFlash('jpToFormula')">
+            <span>🇯🇵</span><b>日本語 → 化学式</b><small>水 → H₂O</small>
+          </button>
+          <button type="button" class="direction-card29 purple" onclick="startFlash('formulaToJp')">
+            <span>⚗️</span><b>化学式 → 日本語</b><small>H₂O → 水</small>
+          </button>
+          <button type="button" class="direction-card29 both" onclick="startFlash('random')">
+            <span>🔄</span><b>ランダム</b><small>2つの方向からランダムに出題</small>
+          </button>
+        </div>
+      </div>`;
+    return;
+  }
+
+  const [kind,question,answer]=flashList[fi];
+  const directionLabel=
+    flashDirection==="formulaToJp" ? "⚗️ 化学式 → 日本語" :
+    flashDirection==="random" ? "🔄 ランダム" :
+    "🇯🇵 日本語 → 化学式";
+
+  el.innerHTML=`
+    <h2>📖 1対1単語帳 <span class="pill">${fi+1} / ${flashList.length}</span></h2>
+    <div class="flash-direction29">${directionLabel}</div>
+    <div class="card flash">
+      <div class="pill">${kind}</div>
+      <div class="big">${esc(question)}</div>
+      ${flashRevealed
+        ? `<div class="answer">${esc(answer)}</div>`
+        : `<button type="button" class="action" onclick="revealFlash()">答えを見る</button>`}
+    </div>
+    ${flashRevealed?`
+      <div class="row" style="justify-content:center;margin-top:12px">
+        <button type="button" class="secondary" onclick="gradeFlash(false)">もう一回！</button>
+        <button type="button" class="action" onclick="gradeFlash(true)">覚えた！</button>
+      </div>`:""}`;
 }
-function revealFlash(){flashRevealed=true;renderFlash()}
+
+
+function renderFlash(){
+  const el=document.getElementById("flash");
+  if(!el) return;
+
+  if(!flashList.length){
+    el.innerHTML=`
+      <h2>1対1単語帳</h2>
+      <div class="flash-start29">
+        <div class="flash-start-icon29">📖</div>
+        <h3>出題方向を選んでください</h3>
+        <p>日本語から化学式、化学式から日本語、どちらからも練習できます。</p>
+        <div class="flash-direction-grid29">
+          <button class="direction-card29 pink" onclick="startFlash('jpToFormula')">
+            <span>🇯🇵</span><b>日本語 → 化学式</b>
+            <small>例：水 → H₂O</small>
+          </button>
+          <button class="direction-card29 purple" onclick="startFlash('formulaToJp')">
+            <span>⚗️</span><b>化学式 → 日本語</b>
+            <small>例：H₂O → 水</small>
+          </button>
+          <button class="direction-card29 both" onclick="startFlash('both')">
+            <span>🔄</span><b>両方ランダム</b>
+            <small>日本語→化学式／化学式→日本語</small>
+          </button>
+        </div>
+      </div>`;
+    return;
+  }
+
+  const [kind,question,answer]=flashList[fi];
+  const directionLabel =
+    flashDirection==="formulaToJp" ? "⚗️ 化学式 → 日本語" :
+    flashDirection==="both" ? "🔄 両方向ランダム" :
+    "🇯🇵 日本語 → 化学式";
+
+  el.innerHTML=`
+    <h2>1対1単語帳 <span class="pill">${fi+1} / ${flashList.length}</span></h2>
+    <div class="flash-direction29">${directionLabel}</div>
+    <div class="card flash">
+      <div class="pill">${kind}</div>
+      <div class="big">${esc(question)}</div>
+      ${flashRevealed
+        ? `<div class="answer">${esc(answer)}</div>`
+        : `<button class="action" onclick="revealFlash()">答えを見る</button>`}
+    </div>
+    ${flashRevealed
+      ? `<div class="row" style="justify-content:center;margin-top:12px">
+           <button class="secondary" onclick="gradeFlash(false)">もう一回！</button>
+           <button class="action" onclick="gradeFlash(true)">覚えた！</button>
+         </div>`
+      : ""}`;
+}
+
 function gradeFlash(ok){
  const [kind,a,b]=flashList[fi];reviewAfter(card(kind,a,b),ok);fi++;
  if(fi>=flashList.length){alert("単語帳1周完了！");flashList=[];setView("home")}else{flashRevealed=false;renderFlash()}
@@ -1859,4 +2313,4 @@ window.addEventListener("error", function(e){
 </script>
 
 </body>
-</html>
+</html></html>
