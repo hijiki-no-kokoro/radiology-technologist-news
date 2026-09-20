@@ -2128,7 +2128,7 @@ function startFlash(direction){
 
   flashList=shuffle(base).map(([kind,jp,formula])=>{
     if(direction==="formulaToJp") return [kind,formula,jp];
-    if(direction==="random"){
+    if(direction==="both" || direction==="random"){
       return Math.random()<0.5 ? [kind,formula,jp] : [kind,jp,formula];
     }
     return [kind,jp,formula];
@@ -2140,55 +2140,11 @@ function startFlash(direction){
   renderFlash();
 }
 
-function renderFlash(){
-  const el=document.getElementById("flash");
-  if(!el)return;
-
-  if(!flashList.length || !flashDirection){
-    el.innerHTML=`
-      <h2>📖 1対1単語帳</h2>
-      <div class="flash-start29">
-        <div class="flash-start-icon29">📖</div>
-        <h3>出題方向を選んでください</h3>
-        <p>日本語→化学式、化学式→日本語、ランダムから選べます。</p>
-        <div class="flash-direction-grid29">
-          <button type="button" class="direction-card29 pink" onclick="startFlash('jpToFormula')">
-            <span>🇯🇵</span><b>日本語 → 化学式</b><small>水 → H₂O</small>
-          </button>
-          <button type="button" class="direction-card29 purple" onclick="startFlash('formulaToJp')">
-            <span>⚗️</span><b>化学式 → 日本語</b><small>H₂O → 水</small>
-          </button>
-          <button type="button" class="direction-card29 both" onclick="startFlash('random')">
-            <span>🔄</span><b>ランダム</b><small>2つの方向からランダムに出題</small>
-          </button>
-        </div>
-      </div>`;
-    return;
-  }
-
-  const [kind,question,answer]=flashList[fi];
-  const directionLabel=
-    flashDirection==="formulaToJp" ? "⚗️ 化学式 → 日本語" :
-    flashDirection==="random" ? "🔄 ランダム" :
-    "🇯🇵 日本語 → 化学式";
-
-  el.innerHTML=`
-    <h2>📖 1対1単語帳 <span class="pill">${fi+1} / ${flashList.length}</span></h2>
-    <div class="flash-direction29">${directionLabel}</div>
-    <div class="card flash">
-      <div class="pill">${kind}</div>
-      <div class="big">${esc(question)}</div>
-      ${flashRevealed
-        ? `<div class="answer">${esc(answer)}</div>`
-        : `<button type="button" class="action" onclick="revealFlash()">答えを見る</button>`}
-    </div>
-    ${flashRevealed?`
-      <div class="row" style="justify-content:center;margin-top:12px">
-        <button type="button" class="secondary" onclick="gradeFlash(false)">もう一回！</button>
-        <button type="button" class="action" onclick="gradeFlash(true)">覚えた！</button>
-      </div>`:""}`;
+function revealFlash(){
+  if(!flashList.length || fi>=flashList.length) return;
+  flashRevealed=true;
+  renderFlash();
 }
-
 
 function renderFlash(){
   const el=document.getElementById("flash");
@@ -2196,23 +2152,20 @@ function renderFlash(){
 
   if(!flashList.length){
     el.innerHTML=`
-      <h2>1対1単語帳</h2>
+      <h2>📖 1対1単語帳</h2>
       <div class="flash-start29">
         <div class="flash-start-icon29">📖</div>
         <h3>出題方向を選んでください</h3>
         <p>日本語から化学式、化学式から日本語、どちらからも練習できます。</p>
         <div class="flash-direction-grid29">
-          <button class="direction-card29 pink" onclick="startFlash('jpToFormula')">
-            <span>🇯🇵</span><b>日本語 → 化学式</b>
-            <small>例：水 → H₂O</small>
+          <button type="button" class="direction-card29 pink" onclick="startFlash('jpToFormula')">
+            <span>🇯🇵</span><b>日本語 → 化学式</b><small>例：水 → H₂O</small>
           </button>
-          <button class="direction-card29 purple" onclick="startFlash('formulaToJp')">
-            <span>⚗️</span><b>化学式 → 日本語</b>
-            <small>例：H₂O → 水</small>
+          <button type="button" class="direction-card29 purple" onclick="startFlash('formulaToJp')">
+            <span>⚗️</span><b>化学式 → 日本語</b><small>例：H₂O → 水</small>
           </button>
-          <button class="direction-card29 both" onclick="startFlash('both')">
-            <span>🔄</span><b>両方ランダム</b>
-            <small>日本語→化学式／化学式→日本語</small>
+          <button type="button" class="direction-card29 both" onclick="startFlash('both')">
+            <span>🔄</span><b>両方ランダム</b><small>日本語→化学式／化学式→日本語</small>
           </button>
         </div>
       </div>`;
@@ -2222,7 +2175,7 @@ function renderFlash(){
   const [kind,question,answer]=flashList[fi];
   const directionLabel =
     flashDirection==="formulaToJp" ? "⚗️ 化学式 → 日本語" :
-    flashDirection==="both" ? "🔄 両方向ランダム" :
+    flashDirection==="both" || flashDirection==="random" ? "🔄 両方向ランダム" :
     "🇯🇵 日本語 → 化学式";
 
   el.innerHTML=`
@@ -2233,20 +2186,32 @@ function renderFlash(){
       <div class="big">${esc(question)}</div>
       ${flashRevealed
         ? `<div class="answer">${esc(answer)}</div>`
-        : `<button class="action" onclick="revealFlash()">答えを見る</button>`}
+        : `<button type="button" class="action" onclick="revealFlash()">答えを見る</button>`}
     </div>
     ${flashRevealed
       ? `<div class="row" style="justify-content:center;margin-top:12px">
-           <button class="secondary" onclick="gradeFlash(false)">もう一回！</button>
-           <button class="action" onclick="gradeFlash(true)">覚えた！</button>
+           <button type="button" class="secondary" onclick="gradeFlash(false)">もう一回！</button>
+           <button type="button" class="action" onclick="gradeFlash(true)">覚えた！</button>
          </div>`
       : ""}`;
 }
 
 function gradeFlash(ok){
- const [kind,a,b]=flashList[fi];reviewAfter(card(kind,a,b),ok);fi++;
- if(fi>=flashList.length){alert("単語帳1周完了！");flashList=[];setView("home")}else{flashRevealed=false;renderFlash()}
+ const [kind,a,b]=flashList[fi];
+ reviewAfter(card(kind,a,b),ok);
+ fi++;
+ if(fi>=flashList.length){
+   alert("単語帳1周完了！");
+   flashList=[];
+   flashDirection="";
+   flashRevealed=false;
+   setView("home");
+ }else{
+   flashRevealed=false;
+   renderFlash();
+ }
 }
+
 function renderReview(){
  const due=Object.values(state.cards).filter(c=>c.due<=Date.now()).sort((a,b)=>a.due-b.due);
  const upcoming=Object.values(state.cards).filter(c=>c.due>Date.now()).sort((a,b)=>a.due-b.due).slice(0,12);
