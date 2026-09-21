@@ -8,6 +8,28 @@ from urllib.request import Request, urlopen
 
 ROOT = Path(__file__).resolve().parents[1]
 NEWS_JSON = ROOT / 'news.json'
+HTML_DIR = ROOT / 'daily_html'
+
+def build_daily_html(items, date_str):
+    special = [x for x in items if x.get('date') == date_str and x.get('track') != 'general']
+    general = [x for x in items if x.get('date') == date_str and x.get('track') == 'general']
+
+    def esc(s):
+        return (str(s or '').replace('&','&amp;').replace('<','&lt;').replace('>','&gt;').replace(chr(34),'&quot;'))
+
+    def card(x):
+        return ('<article class="card"><div class="meta"><span class="tag">' + esc(x.get('category')) + '</span><span class="imp">重要度 ' + esc(x.get('importance')) + '</span><span class="date">' + esc(x.get('date')) + '</span></div><h2>' + esc(x.get('headline')) + '</h2><p>' + esc(x.get('summary')) + '</p><div class="why"><b>技師長目線：</b>' + esc(x.get('why')) + '</div><a href="' + esc(x.get('url')) + '" target="_blank" rel="noopener">' + esc(x.get('source') or '情報源') + ' ↗</a></article>')
+
+    def section(title, badge, data, empty):
+        body = ''.join(card(x) for x in data) or '<div class="empty">' + empty + '</div>'
+        return '<section><div class="section-title"><h2>' + title + '</h2><span class="badge">' + badge + '</span></div>' + body + '</section>'
+
+    return ('<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
+            '<title>放射線技師ニュース ' + date_str + '</title><style>body{margin:0;background:#f3f6f9;color:#17212b;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans JP","Yu Gothic",sans-serif}main{max-width:900px;margin:auto;padding:16px}header,.card{background:#fff;border:1px solid #dfe5eb;border-radius:16px;padding:18px;margin:12px 0}h1{font-size:25px;margin:0 0 8px}h2{font-size:18px;line-height:1.5;margin:10px 0}.meta{display:flex;gap:7px;flex-wrap:wrap;font-size:12px;color:#687585}.tag,.imp,.badge{border:1px solid #d3dbe4;border-radius:999px;padding:4px 9px}p{font-size:14px;line-height:1.8}.why{background:#f7f9fb;border-radius:10px;padding:11px;font-size:13px;line-height:1.7}.section-title{display:flex;justify-content:space-between;align-items:center;margin-top:26px}.empty{background:#fff;border-radius:12px;padding:16px;color:#687585}</style></head><body><main>'
+            '<header><h1>🔥 今日の放射線部門ニュース</h1><div>' + date_str + '</div></header>'
+            + section('専門ニュース','放射線・医療実務',special,'本日の専門ニュースはありません。')
+            + section('一般ニュース','一般メディア・周辺動向',general,'本日の一般ニュースはありません。')
+            + '</main></body></html>')
 JST = timezone(timedelta(hours=9))
 
 QUERIES = [
@@ -926,12 +948,16 @@ def main():
     if added and not final:
         final = added + db
 
+    final = final[:200]
     NEWS_JSON.write_text(
-        json.dumps(
-            final[:200],
-            ensure_ascii=False,
-            indent=2
-        ),
+        json.dumps(final, ensure_ascii=False, indent=2),
+        encoding='utf-8'
+    )
+
+    HTML_DIR.mkdir(parents=True, exist_ok=True)
+    today_str = datetime.now(JST).date().isoformat()
+    (HTML_DIR / f'放射線技師ニュース_{today_str}.html').write_text(
+        build_daily_html(final, today_str),
         encoding='utf-8'
     )
 
