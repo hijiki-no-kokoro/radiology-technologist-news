@@ -2,8 +2,8 @@ name: Daily radiology technologist news update
 
 on:
   schedule:
-    - cron: '0 8 * * *'
-      timezone: 'Asia/Tokyo'
+    # GitHub ActionsのcronはUTC。日本時間08:00に実行する。
+    - cron: '0 23 * * *'
   workflow_dispatch:
   push:
     paths:
@@ -14,6 +14,9 @@ permissions:
 
 jobs:
   update-news:
+    concurrency:
+      group: daily-radiology-news
+      cancel-in-progress: false
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -25,21 +28,17 @@ jobs:
           python-version: '3.13'
 
       - name: Update news
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: python scripts/update_news.py
 
-      - name: Commit updated news
+      - name: Commit updated news and daily HTML
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add index.html news.json daily_html
+          git add news.json daily_html/
           if git diff --cached --quiet; then
             echo 'No news changes to commit.'
           else
             git commit -m 'Update daily radiology technologist news'
-            # スクリプト更新と同時刻に別の実行がmainへpushしても競合しないよう、
-            # push前に最新mainを取り込んでから再送する
             git fetch origin main
             git rebase origin/main
             git push
