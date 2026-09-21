@@ -2,8 +2,8 @@ name: Daily radiology technologist news update
 
 on:
   schedule:
-    # GitHub ActionsのcronはUTC。日本時間08:00に実行する。
-    - cron: '0 23 * * *'
+    - cron: '0 8 * * *'
+      timezone: 'Asia/Tokyo'
   workflow_dispatch:
   push:
     paths:
