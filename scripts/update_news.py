@@ -10,9 +10,15 @@ ROOT = Path(__file__).resolve().parents[1]
 NEWS_JSON = ROOT / 'news.json'
 HTML_DIR = ROOT / 'daily_html'
 
+
+def feed_date(item):
+    """Date used for the daily edition; keep the original publication date intact."""
+    return item.get('featured_date') or item.get('date')
+
+
 def build_daily_html(items, date_str):
-    special = [x for x in items if x.get('date') == date_str and x.get('track') != 'general']
-    general = [x for x in items if x.get('date') == date_str and x.get('track') == 'general']
+    special = [x for x in items if feed_date(x) == date_str and x.get('track') != 'general']
+    general = [x for x in items if feed_date(x) == date_str and x.get('track') == 'general']
 
     def esc(s):
         return (str(s or '').replace('&','&amp;').replace('<','&lt;').replace('>','&gt;').replace(chr(34),'&quot;'))
@@ -50,8 +56,10 @@ QUERIES = [
     'site:radiology.jp "診療放射線技師" OR "放射線"',
     'site:jsnm.org 核医学 "放射線技師"',
     'site:jastro.or.jp 放射線治療 "放射線技師"',
+    'site:jsmp.org 医学物理 放射線治療 OR 線量管理',
     'site:mhlw.go.jp "診療放射線技師" 放射線',
     'site:pmda.go.jp 放射線 CT MRI 医療機器',
+    'site:nra.go.jp 医療 放射線 安全',
 ]
 
 OFFICIAL = (
@@ -61,6 +69,7 @@ OFFICIAL = (
     'radiology.jp',
     'jsnm.org',
     'jastro.or.jp',
+    'jsmp.org',
     'mhlw.go.jp',
     'nra.go.jp',
     'pmda.go.jp',
@@ -81,6 +90,56 @@ CATEGORIES = (
     '教育',
     '診療報酬・補助金',
     'その他'
+)
+
+# ChatGPTの日次編集版で確認した「部門で直ちに周知・検討したい」公式情報。
+# RSSの短いタイトルを、ホームページでも実務に使える要約と重要度で表示する。
+# featured_date は掲載日ではなく、日次ニュースとして選定した日を表す。
+CURATED_SPECIALIST = (
+    (
+        '第66回放射線治療セミナー',
+        {
+            'category': '放射線治療',
+            'importance': '高',
+            'summary': 'IGRTを支える教育体制、運用の基礎、臨床上の注意点や工夫を扱うWebセミナー。申込は10月1日正午～11月26日正午。',
+            'why': '放射線治療部門の教育計画、IGRTの運用標準化、スタッフの知識更新に直結します。',
+            'source': '日本放射線技術学会（JSRT）',
+            'featured_date': '2026-09-22',
+        },
+    ),
+    (
+        '実地で学ぶMRI安全管理セミナー',
+        {
+            'category': 'MRI',
+            'importance': '高',
+            'summary': 'MRI安全管理を実地で学ぶセミナーの案内。',
+            'why': 'MRI更新・増設時の安全管理、スタッフ教育、インシデント予防に実務的です。',
+            'source': '日本放射線技術学会（JSRT）',
+            'featured_date': '2026-09-22',
+        },
+    ),
+    (
+        '診断X線領域の線量測定基礎Webセミナー（血管撮影領域CBCT編）',
+        {
+            'category': '安全管理',
+            'importance': '高',
+            'summary': '血管撮影領域CBCTの線量測定を学ぶWebセミナー。',
+            'why': 'IVR・血管撮影の患者線量評価、最適化、線量管理教育に直結します。',
+            'source': '日本放射線技術学会（JSRT）',
+            'featured_date': '2026-09-22',
+        },
+    ),
+    (
+        '医療放射線安全管理講習会（WEB）',
+        {
+            'category': '安全管理',
+            'importance': '高',
+            'summary': '立入検査、タスク・シフト、グリーンラジオロジー、IVR、核医学治療などを扱う講習会。',
+            'why': '技師長が関与する立入検査対応、医療放射線安全管理、タスク・シフトをまとめて確認できます。',
+            'source': '日本診療放射線技師会（JART）',
+            'featured_date': '2026-09-22',
+        },
+    ),
 )
 
 DIRECT_TERMS = (
@@ -145,6 +204,12 @@ NOISE_TITLE_TERMS = (
     '会誌・投稿',
     '活動紹介',
     '技師会概要',
+    '市場調査',
+    '市場規模',
+    '市場動向',
+    '市場レポート',
+    '画像ギャラリー',
+    'フォトギャラリー',
 )
 
 NON_RADIOLOGY_TERMS = (
@@ -580,10 +645,13 @@ def is_specialist(x):
         '放射線医療機器',
     )
 
-    return any(
-        k.lower() in text
-        for k in specialist_terms
-    )
+    # 公式機関の更新は、職能・制度・安全・教育に直接関係する場合に
+    # 専門ニュースとして採用する。一般メディアのCT/MRI言及だけでは
+    # 専門枠に入れず、一般ニュース側で扱う。
+    if is_official(x.get('url', '')):
+        return any(k.lower() in text for k in specialist_terms)
+
+    return False
 
 
 def importance(x, official):
@@ -692,6 +760,22 @@ def load():
         return []
 
 
+def apply_curated_specialist(item):
+    """Apply editor-reviewed detail without replacing the original source URL."""
+    title = str(item.get('headline') or item.get('title') or '')
+    for needle, metadata in CURATED_SPECIALIST:
+        if needle in title:
+            item.update(metadata)
+            item['track'] = 'official'
+            break
+    return item
+
+
+def canonical_title(title):
+    """Collapse duplicate Google News titles that differ only by source suffix."""
+    return norm(re.sub(r'\s+-\s+(?:jsrt\.or\.jp|日本放射線技術学会)$', '', str(title or ''), flags=re.I))
+
+
 def clean_db(db):
     today = datetime.now(JST).date()
     out = []
@@ -718,10 +802,8 @@ def clean_db(db):
         if not is_news_item(x):
             continue
 
-        k = (
-            norm(x.get('headline'))
-            or x.get('url')
-        )
+        x = apply_curated_specialist(x)
+        k = canonical_title(x.get('headline')) or x.get('url')
 
         if not k or k in seen:
             continue
@@ -733,15 +815,19 @@ def clean_db(db):
             if x.get('category') in CATEGORIES
             else category(x)
         )
+        x['importance'] = importance(
+            x,
+            is_official(x.get('url', '')) or x.get('source') == 'JART'
+        )
 
-        if not x.get('track'):
-            x['track'] = (
-                'official'
-                if is_official(x.get('url', ''))
-                else 'general'
-            )
+        # 過去データも現行の選定基準で再分類し、表示のズレを残さない。
+        x['track'] = (
+            'official'
+            if is_specialist(x)
+            else 'general'
+        )
 
-        out.append(x)
+        out.append(apply_curated_specialist(x))
 
     return out
 
@@ -752,7 +838,7 @@ def make_item(x):
         or x.get('source') == 'JART'
     )
 
-    return {
+    item = {
         'date': x['published'][:10],
         'category': category(x),
         'importance': importance(
@@ -782,6 +868,7 @@ def make_item(x):
             else 'general'
         ),
     }
+    return apply_curated_specialist(item)
 
 
 def main():
