@@ -18,7 +18,7 @@
     h1{font-size:25px;margin:4px 0 2px}.sub{color:var(--muted);font-size:13px}
     .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:15px;margin-top:12px}
     .row{display:flex;justify-content:space-between;gap:12px;align-items:end}
-    .buttons{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:13px}
+    .buttons{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:13px}
     .nbtn{min-height:54px;border-radius:14px;border:1px solid var(--line);background:#fff;font-size:19px;font-weight:900}
     .nbtn.active{background:var(--accent-soft);border-color:var(--accent);outline:2px solid var(--accent)}
     .primary{width:100%;min-height:50px;border:0;border-radius:14px;background:var(--accent);color:#fff;font-size:16px;font-weight:800;margin-top:12px}
@@ -58,7 +58,7 @@
     .editPanel{display:none;margin-top:12px;border:2px solid var(--accent);border-radius:16px;padding:14px;background:#f8fffd}
     .editPanel.show{display:block}
     .editTitle{font-weight:900;font-size:18px}
-    .editButtons{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-top:10px}
+    .editButtons{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:10px}
     .ebtn{min-height:48px;border-radius:12px;border:1px solid var(--line);background:#fff;font-size:18px;font-weight:900}
     .ebtn.active{background:var(--accent-soft);border-color:var(--accent);outline:2px solid var(--accent)}
     .editActions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
@@ -140,6 +140,7 @@
 <script>
 const KEY='beer_save_pwa_v1';
 const defaults={settings:{baseline:4,target:2,price:180,abv:5,volume:350},records:{}};
+const MAX_INPUT=6;
 let data=load(), selected=2;
 let calendarCursor=new Date();calendarCursor.setDate(1);calendarCursor.setHours(0,0,0,0);
 let editingKey=null, editingValue=0;
@@ -153,7 +154,7 @@ function less(n){return Math.max(0,data.settings.baseline-n)}
 function alcoholPerCan(){return data.settings.volume*(data.settings.abv/100)*0.8}
 function daysBack(n){const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()-n);return d}
 function recordValues(){return Object.entries(data.records).sort().map(([k,n])=>({k,n:Number(n)}))}
-function renderButtons(){const box=document.getElementById('buttons');box.innerHTML='';for(let i=0;i<=data.settings.baseline;i++){const b=document.createElement('button');b.type='button';b.className='nbtn'+(i===selected?' active':'');b.textContent=i;b.onclick=()=>{selected=i;render()};box.appendChild(b)}}
+function renderButtons(){const box=document.getElementById('buttons');box.innerHTML='';for(let i=0;i<=MAX_INPUT;i++){const b=document.createElement('button');b.type='button';b.className='nbtn'+(i===selected?' active':'');b.textContent=i;b.onclick=()=>{selected=i;render()};box.appendChild(b)}}
 function renderWeek(){const box=document.getElementById('week');box.innerHTML='';const labels=['日','月','火','水','木','金','土'];for(let i=6;i>=0;i--){const d=daysBack(i),k=keyFor(d),n=data.records[k];const el=document.createElement('div');el.className='day';if(n===0)el.classList.add('zero');else if(n!==undefined&&n<=data.settings.target)el.classList.add('good');el.innerHTML='<div class="dsmall">'+labels[d.getDay()]+'</div><div class="dnum">'+(n===undefined?'–':n)+'</div><div class="dsmall">本</div>';box.appendChild(el)}}
 function renderChart(){const box=document.getElementById('chart');box.innerHTML='';for(let i=6;i>=0;i--){const d=daysBack(i),k=keyFor(d),n=data.records[k],r=n===undefined?0:less(Number(n));const c=document.createElement('div');c.className='col';const lab=document.createElement('div');lab.className='barlabel';lab.textContent=n===0?'★':(n===undefined?'':r);const bar=document.createElement('div');bar.className='bar'+(n===0?' zero':'');bar.style.height=Math.max(2,Math.round((r/Math.max(1,data.settings.baseline))*105))+'px';c.append(lab,bar);box.appendChild(c)}}
 function openPastEditor(k){
@@ -170,7 +171,7 @@ function openPastEditor(k){
 }
 function renderEditButtons(){
   const box=document.getElementById('editButtons');box.innerHTML='';
-  for(let i=0;i<=data.settings.baseline;i++){
+  for(let i=0;i<=MAX_INPUT;i++){
     const b=document.createElement('button');b.type='button';b.className='ebtn'+(i===editingValue?' active':'');b.textContent=i;
     b.onclick=()=>{editingValue=i;renderEditButtons()};
     box.appendChild(b);
@@ -209,7 +210,7 @@ function renderCalendar(){
   document.getElementById('nextMonth').style.opacity=document.getElementById('nextMonth').disabled?'.35':'1';
 }
 function renderStats(){const vals=recordValues();const totalLess=vals.reduce((s,r)=>s+less(r.n),0);document.getElementById('totalSave').textContent=fmt(totalLess*data.settings.price);let streak=0;for(let i=0;i<370;i++){const k=keyFor(daysBack(i));if(data.records[k]!==undefined&&Number(data.records[k])<=data.settings.target)streak++;else if(i===0&&data.records[k]===undefined)continue;else break}document.getElementById('streak').textContent=streak+'日';document.getElementById('zeroDays').textContent=vals.filter(r=>r.n===0).length+'日';document.getElementById('achieveDays').textContent=vals.filter(r=>r.n<=data.settings.target).length+'日';const avg=vals.length?totalLess/vals.length:0;document.getElementById('forecast30').textContent=fmt(avg*30*data.settings.price);document.getElementById('forecast365').textContent=fmt(avg*365*data.settings.price);const now=new Date(),prefix=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-';const month=vals.filter(r=>r.k.startsWith(prefix));document.getElementById('monthBest').textContent=month.length?Math.min(...month.map(r=>r.n))+'本':'—';document.getElementById('monthSave').textContent=fmt(month.reduce((s,r)=>s+less(r.n)*data.settings.price,0))}
-function render(){selected=Math.min(selected,data.settings.baseline);document.getElementById('todayLabel').textContent=selected+'本';document.getElementById('todayLess').textContent=less(selected)+'本';document.getElementById('todaySave').textContent=fmt(less(selected)*data.settings.price);document.getElementById('baseTarget').textContent='基準'+data.settings.baseline+'本 / 目標'+data.settings.target+'本';const cel=document.getElementById('celebrate');cel.classList.toggle('show',selected===0);document.getElementById('celebrateText').textContent=fmt(data.settings.baseline*data.settings.price)+'・純アルコール約'+Math.round(data.settings.baseline*alcoholPerCan())+'g分を回避';renderButtons();renderWeek();renderCalendar();renderChart();renderStats()}
+function render(){selected=Math.min(selected,MAX_INPUT);document.getElementById('todayLabel').textContent=selected+'本';document.getElementById('todayLess').textContent=less(selected)+'本';document.getElementById('todaySave').textContent=fmt(less(selected)*data.settings.price);document.getElementById('baseTarget').textContent='基準'+data.settings.baseline+'本 / 目標'+data.settings.target+'本';const cel=document.getElementById('celebrate');cel.classList.toggle('show',selected===0);document.getElementById('celebrateText').textContent=fmt(data.settings.baseline*data.settings.price)+'・純アルコール約'+Math.round(data.settings.baseline*alcoholPerCan())+'g分を回避';renderButtons();renderWeek();renderCalendar();renderChart();renderStats()}
 document.getElementById('savePast').onclick=()=>{
   if(!editingKey)return;
   data.records[editingKey]=editingValue;save();
