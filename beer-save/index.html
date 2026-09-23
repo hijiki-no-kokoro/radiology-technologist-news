@@ -35,6 +35,26 @@
     .col{height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center}
     .bar{width:100%;max-width:32px;background:#4f8e87;border-radius:6px 6px 2px 2px;min-height:2px}
     .bar.zero{background:#f59e0b}.barlabel{font-size:11px;height:18px}
+    .monthHead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px}
+    .monthTitle{font-weight:900;font-size:18px}
+    .monthNav{min-width:44px;min-height:44px;border:1px solid var(--line);border-radius:12px;background:#fff;font-size:20px;font-weight:900}
+    .calDow,.calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+    .calDow{margin-top:10px}.calDow div{text-align:center;font-size:11px;color:var(--muted);font-weight:800}
+    .calendar{margin-top:5px}
+    .calCell{min-height:54px;border:1px solid var(--line);border-radius:10px;background:#fff;padding:5px 3px;text-align:center;position:relative}
+    .calCell.empty{border-color:transparent;background:transparent}
+    .calCell .date{font-size:11px;color:var(--muted)}
+    .calCell .count{font-size:17px;font-weight:900;margin-top:3px}
+    .calCell.zero{background:linear-gradient(135deg,#fff7c2,#fde68a);border-color:#f59e0b;box-shadow:0 0 12px rgba(245,158,11,.18)}
+    .calCell.zero::after{content:'✨';position:absolute;right:1px;top:-7px;font-size:11px}
+    .calCell.good{background:var(--green);border-color:#86efac}
+    .calCell.mid{background:#fef3c7;border-color:#facc15}
+    .calCell.high{background:var(--danger);border-color:#fca5a5}
+    .legend{display:flex;flex-wrap:wrap;gap:8px 12px;margin-top:10px;font-size:11px;color:var(--muted)}
+    .legend span::before{content:'';display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px;vertical-align:-1px;border:1px solid var(--line)}
+    .legend .lz::before{background:var(--gold);border-color:#f59e0b}.legend .lg::before{background:var(--green);border-color:#86efac}.legend .lm::before{background:#fef3c7;border-color:#facc15}.legend .lh::before{background:var(--danger);border-color:#fca5a5}
+    .monthSummary{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:10px}
+    .monthSummary .metric .value{font-size:18px}
     .badgeGrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
     .badge{border:1px solid var(--line);border-radius:14px;padding:12px;background:#fff}
     .badge strong{display:block;font-size:20px;margin-top:3px}
@@ -64,6 +84,22 @@
     <div class="metric"><div class="label">連続達成</div><div class="value" id="streak">0日</div></div>
   </section>
   <section class="card"><b>🏅 直近7日</b><div class="week" id="week"></div></section>
+  <section class="card">
+    <b>📅 月間カレンダー</b>
+    <div class="monthHead">
+      <button type="button" class="monthNav" id="prevMonth" aria-label="前の月">‹</button>
+      <div class="monthTitle" id="monthTitle"></div>
+      <button type="button" class="monthNav" id="nextMonth" aria-label="次の月">›</button>
+    </div>
+    <div class="calDow"><div>日</div><div>月</div><div>火</div><div>水</div><div>木</div><div>金</div><div>土</div></div>
+    <div class="calendar" id="calendar"></div>
+    <div class="monthSummary">
+      <div class="metric"><div class="label">記録日</div><div class="value" id="calRecorded">0日</div></div>
+      <div class="metric"><div class="label">目標達成</div><div class="value" id="calAchieved">0日</div></div>
+      <div class="metric"><div class="label">節約額</div><div class="value" id="calSaved">0円</div></div>
+    </div>
+    <div class="legend"><span class="lz">0本</span><span class="lg">目標以下</span><span class="lm">基準より減</span><span class="lh">基準以上</span></div>
+  </section>
   <section class="card"><b>📊 直近7日の「減らせた本数」</b><div class="chart" id="chart"></div></section>
   <section class="card"><b>🔮 このペースなら</b><div class="forecast" style="margin-top:10px"><div class="metric"><div class="label">30日で</div><div class="value" id="forecast30">0円</div></div><div class="metric"><div class="label">1年で</div><div class="value" id="forecast365">0円</div></div></div></section>
   <section class="card"><b>🎖 達成バッジ</b><div class="badgeGrid" style="margin-top:10px">
@@ -86,6 +122,7 @@
 const KEY='beer_save_pwa_v1';
 const defaults={settings:{baseline:4,target:2,price:180,abv:5,volume:350},records:{}};
 let data=load(), selected=2;
+let calendarCursor=new Date();calendarCursor.setDate(1);calendarCursor.setHours(0,0,0,0);
 function clone(o){return JSON.parse(JSON.stringify(o))}
 function load(){try{const r=localStorage.getItem(KEY);if(!r)return clone(defaults);const p=JSON.parse(r);return {settings:Object.assign({},defaults.settings,p.settings||{}),records:p.records||{}}}catch(e){return clone(defaults)}}
 function save(){localStorage.setItem(KEY,JSON.stringify(data))}
@@ -99,8 +136,39 @@ function recordValues(){return Object.entries(data.records).sort().map(([k,n])=>
 function renderButtons(){const box=document.getElementById('buttons');box.innerHTML='';for(let i=0;i<=data.settings.baseline;i++){const b=document.createElement('button');b.type='button';b.className='nbtn'+(i===selected?' active':'');b.textContent=i;b.onclick=()=>{selected=i;render()};box.appendChild(b)}}
 function renderWeek(){const box=document.getElementById('week');box.innerHTML='';const labels=['日','月','火','水','木','金','土'];for(let i=6;i>=0;i--){const d=daysBack(i),k=keyFor(d),n=data.records[k];const el=document.createElement('div');el.className='day';if(n===0)el.classList.add('zero');else if(n!==undefined&&n<=data.settings.target)el.classList.add('good');el.innerHTML='<div class="dsmall">'+labels[d.getDay()]+'</div><div class="dnum">'+(n===undefined?'–':n)+'</div><div class="dsmall">本</div>';box.appendChild(el)}}
 function renderChart(){const box=document.getElementById('chart');box.innerHTML='';for(let i=6;i>=0;i--){const d=daysBack(i),k=keyFor(d),n=data.records[k],r=n===undefined?0:less(Number(n));const c=document.createElement('div');c.className='col';const lab=document.createElement('div');lab.className='barlabel';lab.textContent=n===0?'★':(n===undefined?'':r);const bar=document.createElement('div');bar.className='bar'+(n===0?' zero':'');bar.style.height=Math.max(2,Math.round((r/Math.max(1,data.settings.baseline))*105))+'px';c.append(lab,bar);box.appendChild(c)}}
+function renderCalendar(){
+  const y=calendarCursor.getFullYear(),m=calendarCursor.getMonth();
+  document.getElementById('monthTitle').textContent=y+'年 '+(m+1)+'月';
+  const box=document.getElementById('calendar');box.innerHTML='';
+  const firstDow=new Date(y,m,1).getDay(),lastDay=new Date(y,m+1,0).getDate();
+  for(let i=0;i<firstDow;i++){const e=document.createElement('div');e.className='calCell empty';box.appendChild(e)}
+  let recorded=0,achieved=0,saved=0;
+  for(let day=1;day<=lastDay;day++){
+    const d=new Date(y,m,day),k=keyFor(d),n=data.records[k];
+    const e=document.createElement('div');e.className='calCell';
+    let count='–';
+    if(n!==undefined){
+      const nn=Number(n);recorded++;saved+=less(nn)*data.settings.price;if(nn<=data.settings.target)achieved++;
+      count=nn+'本';
+      if(nn===0)e.classList.add('zero');
+      else if(nn<=data.settings.target)e.classList.add('good');
+      else if(nn<data.settings.baseline)e.classList.add('mid');
+      else e.classList.add('high');
+    }
+    e.innerHTML='<div class="date">'+day+'</div><div class="count">'+count+'</div>';
+    box.appendChild(e);
+  }
+  document.getElementById('calRecorded').textContent=recorded+'日';
+  document.getElementById('calAchieved').textContent=achieved+'日';
+  document.getElementById('calSaved').textContent=fmt(saved);
+  const now=new Date();
+  document.getElementById('nextMonth').disabled=(y===now.getFullYear()&&m===now.getMonth());
+  document.getElementById('nextMonth').style.opacity=document.getElementById('nextMonth').disabled?'.35':'1';
+}
 function renderStats(){const vals=recordValues();const totalLess=vals.reduce((s,r)=>s+less(r.n),0);document.getElementById('totalSave').textContent=fmt(totalLess*data.settings.price);let streak=0;for(let i=0;i<370;i++){const k=keyFor(daysBack(i));if(data.records[k]!==undefined&&Number(data.records[k])<=data.settings.target)streak++;else if(i===0&&data.records[k]===undefined)continue;else break}document.getElementById('streak').textContent=streak+'日';document.getElementById('zeroDays').textContent=vals.filter(r=>r.n===0).length+'日';document.getElementById('achieveDays').textContent=vals.filter(r=>r.n<=data.settings.target).length+'日';const avg=vals.length?totalLess/vals.length:0;document.getElementById('forecast30').textContent=fmt(avg*30*data.settings.price);document.getElementById('forecast365').textContent=fmt(avg*365*data.settings.price);const now=new Date(),prefix=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-';const month=vals.filter(r=>r.k.startsWith(prefix));document.getElementById('monthBest').textContent=month.length?Math.min(...month.map(r=>r.n))+'本':'—';document.getElementById('monthSave').textContent=fmt(month.reduce((s,r)=>s+less(r.n)*data.settings.price,0))}
-function render(){selected=Math.min(selected,data.settings.baseline);document.getElementById('todayLabel').textContent=selected+'本';document.getElementById('todayLess').textContent=less(selected)+'本';document.getElementById('todaySave').textContent=fmt(less(selected)*data.settings.price);document.getElementById('baseTarget').textContent='基準'+data.settings.baseline+'本 / 目標'+data.settings.target+'本';const cel=document.getElementById('celebrate');cel.classList.toggle('show',selected===0);document.getElementById('celebrateText').textContent=fmt(data.settings.baseline*data.settings.price)+'・純アルコール約'+Math.round(data.settings.baseline*alcoholPerCan())+'g分を回避';renderButtons();renderWeek();renderChart();renderStats()}
+function render(){selected=Math.min(selected,data.settings.baseline);document.getElementById('todayLabel').textContent=selected+'本';document.getElementById('todayLess').textContent=less(selected)+'本';document.getElementById('todaySave').textContent=fmt(less(selected)*data.settings.price);document.getElementById('baseTarget').textContent='基準'+data.settings.baseline+'本 / 目標'+data.settings.target+'本';const cel=document.getElementById('celebrate');cel.classList.toggle('show',selected===0);document.getElementById('celebrateText').textContent=fmt(data.settings.baseline*data.settings.price)+'・純アルコール約'+Math.round(data.settings.baseline*alcoholPerCan())+'g分を回避';renderButtons();renderWeek();renderCalendar();renderChart();renderStats()}
+document.getElementById('prevMonth').onclick=()=>{calendarCursor.setMonth(calendarCursor.getMonth()-1);renderCalendar()}
+document.getElementById('nextMonth').onclick=()=>{const now=new Date();if(calendarCursor.getFullYear()===now.getFullYear()&&calendarCursor.getMonth()===now.getMonth())return;calendarCursor.setMonth(calendarCursor.getMonth()+1);renderCalendar()}
 document.getElementById('saveBtn').onclick=()=>{data.records[todayKey()]=selected;save();document.getElementById('message').textContent=selected===0?'✨ 0本達成！よくやった！':'今日の記録を保存しました。';render()}
 for(const id of ['baseline','target','price','abv','volume'])document.getElementById(id).value=data.settings[id];
 document.getElementById('saveSettings').onclick=()=>{const s={baseline:Math.max(1,Math.min(12,Number(document.getElementById('baseline').value)||4)),target:Math.max(0,Math.min(12,Number(document.getElementById('target').value)||0)),price:Math.max(0,Number(document.getElementById('price').value)||0),abv:Math.max(0,Math.min(20,Number(document.getElementById('abv').value)||0)),volume:Math.max(0,Number(document.getElementById('volume').value)||0)};if(s.target>s.baseline)s.target=s.baseline;data.settings=s;save();render();document.getElementById('message').textContent='設定を保存しました。'}
