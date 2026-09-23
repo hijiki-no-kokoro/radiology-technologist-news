@@ -1,0 +1,11 @@
+{
+  "name": "飲まなかった貯金",
+  "short_name": "飲まなかった貯金",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f7faf9",
+  "theme_color": "#0f766e",
+  "icons": [
+    {"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
+  ]
+}
