@@ -1,6 +1,62 @@
 [
   {
     "date": "2026-09-24",
+    "category": "教育",
+    "importance": "低",
+    "headline": "告示研修（実技研修）2026年度 開催日程（2026/9/24更新） - 日本診療放射線技師会",
+    "summary": "告示研修（実技研修）2026年度 開催日程（2026/9/24更新） 日本診療放射線技師会",
+    "why": "放射線部門の実務への影響を確認する価値があります。",
+    "source": "日本診療放射線技師会",
+    "url": "https://news.google.com/rss/articles/CBMiU0FVX3lxTFA3QUdCakdsS2Rjd3Y1UG5iUk1uNDZ3Q0lJNTRicXNueFlsTzUyVGhVdXdrMTdnaXBzeUJKUWNqczd5dERwRlBYTU94bW1IcXZMaGdF?oc=5",
+    "track": "official"
+  },
+  {
+    "date": "2026-09-25",
+    "category": "安全管理",
+    "importance": "高",
+    "headline": "［案内板］令和8年度「医療放射線安全管理講習会（WEB）」の開催案内 - 公益社団法人 日本放射線技術学会",
+    "summary": "立入検査、タスク・シフト、グリーンラジオロジー、IVR、核医学治療などを扱う講習会。",
+    "why": "技師長が関与する立入検査対応、医療放射線安全管理、タスク・シフトをまとめて確認できます。",
+    "source": "日本診療放射線技師会（JART）",
+    "url": "https://news.google.com/rss/articles/CBMiUEFVX3lxTE9rVHJINUJKeUdPWUpLVWxTOWRoYkpzN3Bqb1F4dE81RG1UQXpFQXZnMGJ4Y0xCU1JlYnc1a3dFdGtDbkpreU9oOFpoTGdaMWRV?oc=5",
+    "track": "official",
+    "featured_date": "2026-09-22"
+  },
+  {
+    "date": "2026-09-25",
+    "category": "核医学",
+    "importance": "低",
+    "headline": "PET核医学イメージングメーカーランキング - pando.life",
+    "summary": "PET核医学イメージングメーカーランキング pando.life",
+    "why": "放射線部門の実務への影響を確認する価値があります。",
+    "source": "pando.life",
+    "url": "https://news.google.com/rss/articles/CBMiSkFVX3lxTE1EUk14blVmM0tTa3pWa2pTM0RWOGZ2WE5XQXRVVHRtYUloNlBZSjlZSFdTa1RyTHlJM1lIMFhnUTFWVUdOVkw2aUVR?oc=5",
+    "track": "general"
+  },
+  {
+    "date": "2026-09-25",
+    "category": "核医学",
+    "importance": "低",
+    "headline": "『ラジエーションハウス』21巻は11月18日発売｜唯織と裕乃、放射線治療科での新たな挑戦の続きへ - tonomatsuri.com",
+    "summary": "『ラジエーションハウス』21巻は11月18日発売｜唯織と裕乃、放射線治療科での新たな挑戦の続きへ tonomatsuri.com",
+    "why": "放射線部門の実務への影響を確認する価値があります。",
+    "source": "tonomatsuri.com",
+    "url": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE1MRFhBcVppUl8zVFJ2NGhNMlBFTF9uYjNqdnMzVVV5LTh6MUpFUU9SR3VNSjdSMmc3WnE0OVNGM0E2Si05NmpjdVdPRXJlREZRZzRRRE40ZWRYUQ?oc=5",
+    "track": "general"
+  },
+  {
+    "date": "2026-09-24",
+    "category": "核医学",
+    "importance": "低",
+    "headline": "［案内板］日本癌治療学会「第2回核医学治療教育セミナー・施設見学会」のご案内 - 公益社団法人 日本放射線技術学会",
+    "summary": "［案内板］日本癌治療学会「第2回核医学治療教育セミナー・施設見学会」のご案内 公益社団法人 日本放射線技術学会",
+    "why": "放射線部門の実務への影響を確認する価値があります。",
+    "source": "公益社団法人 日本放射線技術学会",
+    "url": "https://news.google.com/rss/articles/CBMiUEFVX3lxTE5VRHdMOV9OT3BnSkw0ZGZrMVRWVzNaajVFVnVwRkw3d2NOXzR3bXRLTW55anhDblRySkZJT0JreHFMME5IcXRVTVZZQzBPSHdD?oc=5",
+    "track": "general"
+  },
+  {
+    "date": "2026-09-24",
     "category": "核医学",
     "importance": "低",
     "headline": "［案内板］日本癌治療学会「第2回核医学治療教育セミナー・施設見学会」のご案内 - jsrt.or.jp",
