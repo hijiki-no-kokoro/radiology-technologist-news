@@ -54,7 +54,7 @@
 </section>
 </main>
 <nav aria-label="メインメニュー"><button class="active" data-view="home"><span aria-hidden="true">⌂</span>ホーム</button><button data-view="history"><span aria-hidden="true">◷</span>履歴</button><button data-view="calendar"><span aria-hidden="true">▦</span>カレンダー</button><button data-view="analysis"><span aria-hidden="true">▥</span>分析</button><button data-view="settings"><span aria-hidden="true">⚙</span>設定</button></nav>
-<script src="./beer-core.js"></script><script src="./beer-store.js"></script><script src="./beer-recognition.js"></script><script src="./beer-photo-engine.js"></script>
+<script src="./beer-core.js?v=phase3-2"></script><script src="./beer-store.js?v=phase3-2"></script><script src="./beer-recognition.js?v=phase3-2"></script><script src="./beer-photo-engine.js?v=phase3-2"></script>
 <script>
 'use strict';
 const B=BeerLog,$=id=>document.getElementById(id),money=n=>Math.round(n).toLocaleString('ja-JP')+'円',decimal=n=>Number(n.toFixed(1)).toLocaleString('ja-JP');
@@ -129,9 +129,9 @@ $('replaceImport').onclick=()=>guarded(()=>{if(!imported)throw Error('読み込�
 $('exportLegacy').onclick=()=>guarded(()=>{const raw=localStorage.getItem(BeerStore.OLD_KEY);if(raw===null)throw Error('旧形式の記録はありません');download('酒ログ_旧形式原本_'+today()+'.json',raw,'application/json');});
 $('exportRecovery').onclick=()=>guarded(()=>{const raw=localStorage.getItem(BeerStore.KEY+'_recovery');if(raw===null)throw Error('回復用の退避はまだありません。JSONバックアップは通常の保存ボタンを使ってください。');download('酒ログ_直前の回復用_'+today()+'.json',raw,'application/json');});
 $('readLegacy').onclick=()=>guarded(()=>{const raw=localStorage.getItem('beer_save_pwa_v1');if(!raw)throw Error('このブラウザ・サイトには旧記録が見つかりません。以前のiPhoneと同じサイトで実行する必要があります。');stageImport(raw);});
-guarded(()=>{repo=BeerStore.open(localStorage);state=repo.get();if(repo.hasConflict())note('旧記録が別の画面から変更されています。JSONを退避して内容を確認してください。保存は停止しています。',true);$('startedAt').value=nowInput();$('countDay').value=today();$('countDay').max=today();render();});
+guarded(()=>{if(B.empty().version!==3)throw Error('アプリの更新を読み込んでいます。画面を再読み込みしてください。記録は変更していません。');repo=BeerStore.open(localStorage);state=repo.get();if(repo.hasConflict())note('旧記録が別の画面から変更されています。JSONを退避して内容を確認してください。保存は停止しています。',true);$('startedAt').value=nowInput();$('countDay').value=today();$('countDay').max=today();render();});
 if(!state){for(const el of document.querySelectorAll('form button,form input,form select'))el.disabled=true;}
 </script>
 <script>window.addEventListener('pageshow',event=>{if(event.persisted)location.reload();});if('serviceWorker' in navigator && /^https?:$/.test(location.protocol))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));</script>
-<script src="./beer-camera-ui.js"></script>
+<script src="./beer-camera-ui.js?v=phase3-2"></script>
 </html>

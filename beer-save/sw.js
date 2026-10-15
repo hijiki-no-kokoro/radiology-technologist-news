@@ -1,4 +1,4 @@
-const CACHE='beer-save-phase3-v1';
+const CACHE='beer-save-phase3-v2';
 const PREFIX='beer-save-';
 const RUNTIME='beer-ocr-runtime-v1';
 const ASSETS=['./','./index.html','./log.html','./beer-core.js','./beer-store.js','./manifest.webmanifest','./icon.svg','./beer-recognition.js','./beer-photo-engine.js','./beer-camera-ui.js','./vendor/zxing-browser-0.2.1.min.js','./vendor/tesseract-7.0.0.min.js','./vendor/tesseract-worker-7.0.0.min.js'];
@@ -6,7 +6,7 @@ const ROOT=new URL('./',self.location.href);
 const URLS=new Set(ASSETS.map(path=>new URL(path,ROOT).href));
 const EXTERNAL=new Set(['jpn','eng'].map(code=>'https://cdn.jsdelivr.net/npm/@tesseract.js-data/'+code+'@1.0.0/4.0.0_best_int/'+code+'.traineddata.gz'));
 for(const suffix of ['','-simd','-relaxedsimd','-lstm','-simd-lstm','-relaxedsimd-lstm'])for(const ext of ['.wasm.js','.wasm'])EXTERNAL.add('https://cdn.jsdelivr.net/npm/tesseract.js-core@7.0.0/tesseract-core'+suffix+ext);
-self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting())));
+self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS.map(path=>new Request(new URL(path,ROOT).href,{cache:'reload'})))).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith(PREFIX)&&key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim())));
 self.addEventListener('fetch',event=>{
   if(event.request.method!=='GET')return;

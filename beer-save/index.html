@@ -143,9 +143,9 @@
     <p class="note">記録はこのiPhone内に保存されます。Safariのデータを削除すると消えるため、上の「データのバックアップ」からJSONを保存してください。</p>
   </details></section>
 </div>
-<script src="./beer-core.js"></script><script src="./beer-store.js"></script>
+<script src="./beer-core.js?v=phase3-2"></script><script src="./beer-store.js?v=phase3-2"></script>
 <script>
-let phase2Session=null,phase2Error=null;try{phase2Session=BeerStore.open(localStorage);}catch(error){phase2Error=error;}
+let phase2Session=null,phase2Error=null;try{if(BeerLog.empty().version!==3)throw Error('アプリの更新を読み込んでいます。画面を再読み込みしてください。記録は変更していません。');phase2Session=BeerStore.open(localStorage);}catch(error){phase2Error=error;}
 function jstClockDate(){const parts=new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Tokyo',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'}).formatToParts(new Date());const p=Object.fromEntries(parts.filter(x=>x.type!=='literal').map(x=>[x.type,x.value]));return new Date(Number(p.year),Number(p.month)-1,Number(p.day),Number(p.hour),Number(p.minute),Number(p.second));}
 const KEY='beer_save_pwa_v1';
 const defaults={settings:{baseline:4,target:2,price:180,abv:5,volume:350},records:{}};
