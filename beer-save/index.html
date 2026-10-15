@@ -127,6 +127,11 @@
     <div class="badge"><div class="sub">今月の自己ベスト</div><strong id="monthBest">—</strong></div>
     <div class="badge"><div class="sub">今月の節約</div><strong id="monthSave">0円</strong></div>
   </div></section>
+  <section class="card"><b>💾 データのバックアップ</b>
+    <p class="note">更新前にJSONを保存してください。記録と設定を、そのままファイルとして残せます。iPhoneの「ファイル」など、ブラウザ以外の場所に保管してください。</p>
+    <div class="grid2"><button type="button" class="ghost" id="backupJson">JSONバックアップを保存</button><button type="button" class="ghost" id="backupCsv">本数のCSVを保存</button></div>
+    <p class="note" id="backupStatus" role="status" aria-live="polite">この操作で記録が書き換わることはありません。復元機能は次の更新で追加予定です。</p>
+  </section>
   <section class="card settings"><details><summary>⚙️ 設定</summary>
     <div class="field"><label>基準本数 / 日</label><input id="baseline" type="number" min="1" max="12"></div>
     <div class="field"><label>目標本数 / 日</label><input id="target" type="number" min="0" max="12"></div>
@@ -134,7 +139,7 @@
     <div class="field"><label>アルコール度数 %</label><input id="abv" type="number" min="0" max="20" step="0.1"></div>
     <div class="field"><label>容量 mL</label><input id="volume" type="number" min="0" max="2000"></div>
     <button class="ghost" id="saveSettings" style="width:100%;margin-top:10px">設定を保存</button>
-    <p class="note">記録はこのiPhone内に保存されます。Safariのデータを削除すると消えるため、必要なら後でバックアップ機能も追加できます。</p>
+    <p class="note">記録はこのiPhone内に保存されます。Safariのデータを削除すると消えるため、上の「データのバックアップ」からJSONを保存してください。</p>
   </details></section>
 </div>
 <script>
@@ -231,6 +236,36 @@ document.getElementById('saveSettings').onclick=()=>{const s={baseline:Math.max(
 if(data.records[todayKey()]!==undefined)selected=Number(data.records[todayKey()]);
 render();
 if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}))}
+</script>
+
+<script>
+(function(){
+  'use strict';
+  function status(message){document.getElementById('backupStatus').textContent=message}
+  function rawData(){const raw=localStorage.getItem('beer_save_pwa_v1');return raw===null?JSON.stringify(data):raw}
+  function fileName(suffix){return '飲まなかった貯金_'+keyFor(new Date())+'_'+Date.now()+suffix}
+  function download(content,name,type){
+    const url=URL.createObjectURL(new Blob([content],{type}));
+    const link=document.createElement('a');link.href=url;link.download=name;
+    document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);
+  }
+  document.getElementById('backupJson').onclick=function(){try{
+    download(rawData(),fileName('.json'),'application/json');
+    status('JSONをダウンロードしました。保存先にファイルがあることを確認してください。');
+  }catch(error){status('保存できませんでした。Safariの保存先・空き容量をご確認ください。')}};
+  document.getElementById('backupCsv').onclick=function(){try{
+    const source=JSON.parse(rawData());
+    if(!source || !source.records || typeof source.records!=='object' || Array.isArray(source.records))throw Error('invalid');
+    const rows=[['日付','記録した本数']];
+    for(const [day,count] of Object.entries(source.records).sort()){
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(day) || typeof count!=='number' || !Number.isInteger(count) || count<0)throw Error('invalid');
+      rows.push([day,count]);
+    }
+    const csv='\ufeff'+rows.map(row=>row.map(value=>'"'+String(value).replaceAll('"','""')+'"').join(',')).join('\r\n');
+    download(csv,fileName('.csv'),'text/csv;charset=utf-8');
+    status('本数のCSVをダウンロードしました。容量・度数・カロリーは旧記録から推測していません。');
+  }catch(error){status('CSVを作れませんでした。先にJSONバックアップを保存してください。')}};
+})();
 </script>
 </body>
 </html>
