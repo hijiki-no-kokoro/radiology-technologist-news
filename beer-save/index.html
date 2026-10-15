@@ -143,10 +143,10 @@
     <p class="note">記録はこのiPhone内に保存されます。Safariのデータを削除すると消えるため、上の「データのバックアップ」からJSONを保存してください。</p>
   </details></section>
 </div>
-<script src="./beer-core.js?v=phase3-2"></script><script src="./beer-store.js?v=phase3-2"></script>
+<p class="note" id="dayBoundaryHint" style="text-align:center"></p><script src="./beer-core.js?v=phase4-2"></script><script src="./beer-store.js?v=phase4-2"></script>
 <script>
-let phase2Session=null,phase2Error=null;try{if(BeerLog.empty().version!==3)throw Error('アプリの更新を読み込んでいます。画面を再読み込みしてください。記録は変更していません。');phase2Session=BeerStore.open(localStorage);}catch(error){phase2Error=error;}
-function jstClockDate(){const parts=new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Tokyo',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'}).formatToParts(new Date());const p=Object.fromEntries(parts.filter(x=>x.type!=='literal').map(x=>[x.type,x.value]));return new Date(Number(p.year),Number(p.month)-1,Number(p.day),Number(p.hour),Number(p.minute),Number(p.second));}
+let phase2Session=null,phase2Error=null;try{if(BeerLog.empty().version!==4)throw Error('アプリの更新を読み込んでいます。画面を再読み込みしてください。記録は変更していません。');phase2Session=BeerStore.open(localStorage);}catch(error){phase2Error=error;}
+function jstClockDate(){const parts=new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Tokyo',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'}).formatToParts(new Date());const p=Object.fromEntries(parts.filter(x=>x.type!=='literal').map(x=>[x.type,x.value]));return new Date(Number(p.year),Number(p.month)-1,Number(p.day),Number(p.hour)-(phase2Session?.get().settings.dayStartHour??0),Number(p.minute),Number(p.second));}
 const KEY='beer_save_pwa_v1';
 const defaults={settings:{baseline:4,target:2,price:180,abv:5,volume:350},records:{}};
 const MAX_INPUT=6;
@@ -220,7 +220,7 @@ function renderCalendar(){
 }
 function renderStats(){const vals=recordValues();const totalLess=vals.reduce((s,r)=>s+less(r.n),0);document.getElementById('totalSave').textContent=fmt(totalLess*data.settings.price);let streak=0;for(let i=0;i<370;i++){const k=keyFor(daysBack(i));if(data.records[k]!==undefined&&Number(data.records[k])<=data.settings.target)streak++;else if(i===0&&data.records[k]===undefined)continue;else break}document.getElementById('streak').textContent=streak+'日';document.getElementById('zeroDays').textContent=vals.filter(r=>r.n===0).length+'日';document.getElementById('achieveDays').textContent=vals.filter(r=>r.n<=data.settings.target).length+'日';const avg=vals.length?totalLess/vals.length:0;document.getElementById('forecast30').textContent=fmt(avg*30*data.settings.price);document.getElementById('forecast365').textContent=fmt(avg*365*data.settings.price);const now=jstClockDate(),prefix=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-';const month=vals.filter(r=>r.k.startsWith(prefix));document.getElementById('monthBest').textContent=month.length?Math.min(...month.map(r=>r.n))+'本':'—';document.getElementById('monthSave').textContent=fmt(month.reduce((s,r)=>s+less(r.n)*data.settings.price,0))}
 function renderLegacy(){document.getElementById('todayLabel').textContent=selected+'本';document.getElementById('todayLess').textContent=less(selected)+'本';document.getElementById('todaySave').textContent=fmt(less(selected)*data.settings.price);document.getElementById('baseTarget').textContent='基準'+data.settings.baseline+'本 / 目標'+data.settings.target+'本';const cel=document.getElementById('celebrate');cel.classList.toggle('show',selected===0);document.getElementById('celebrateText').textContent=fmt(data.settings.baseline*data.settings.price)+'・純アルコール約'+Math.round(data.settings.baseline*alcoholPerCan())+'g分を回避';renderButtons();renderWeek();renderCalendar();renderChart();renderStats()}
-function render(){renderLegacy();if(data.records[todayKey()]===undefined){document.getElementById('todayLabel').textContent='未記録（'+selected+'本を選択中）';document.getElementById('todaySave').textContent='未記録';document.getElementById('todayLess').textContent='未記録';document.getElementById('celebrate').classList.remove('show');}}
+function render(){renderLegacy();const h=phase2Session?.get().settings.dayStartHour??0;document.getElementById('dayBoundaryHint').textContent='集計の区切り：日本時間 '+h+'時。過去の記録日は保持します。';if(data.records[todayKey()]===undefined){document.getElementById('todayLabel').textContent='未記録（'+selected+'本を選択中）';document.getElementById('todaySave').textContent='未記録';document.getElementById('todayLess').textContent='未記録';document.getElementById('celebrate').classList.remove('show');}}
 document.getElementById('savePast').onclick=()=>{
   if(!editingKey)return;
   data.records[editingKey]=editingValue;save();
@@ -260,7 +260,7 @@ if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){window.a
   }catch(error){status('保存できませんでした。Safariの保存先・空き容量をご確認ください。')}};
   document.getElementById('backupCsv').onclick=function(){try{
     const source=JSON.parse(rawData());
-    if([2,3].includes(source.version)){download(BeerLog.csv(BeerLog.decode(rawData())),fileName('.csv'),'text/csv;charset=utf-8');status('詳細記録と本数のみの記録を区別したCSVをダウンロードしました。');return;}
+    if([2,3,4].includes(source.version)){download(BeerLog.csv(BeerLog.decode(rawData())),fileName('.csv'),'text/csv;charset=utf-8');status('詳細記録と本数のみの記録を区別したCSVをダウンロードしました。');return;}
     if(!source || !source.records || typeof source.records!=='object' || Array.isArray(source.records))throw Error('invalid');
     const rows=[['日付','記録した本数']];
     for(const [day,count] of Object.entries(source.records).sort()){
@@ -291,12 +291,12 @@ if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){window.a
   document.getElementById('savePast').onclick=()=>safe(()=>{if(editingKey && count(editingKey,editingValue)){closePastEditor();message('過去日の合計本数を保存しました。');}});
   document.getElementById('deletePast').onclick=()=>safe(()=>{
     if(!editingKey)return;
-    if(phase2Session.get().drinks.some(d=>BeerLog.dayKey(d.startedAt)===editingKey))throw Error('この日には1缶ごとの詳細があります。「酒ログ」画面で詳細を確認・削除してから、本数の記録を削除してください。');
+    if(phase2Session.get().drinks.some(d=>BeerLog.recordDay(d)===editingKey))throw Error('この日には1缶ごとの詳細があります。「酒ログ」画面で詳細を確認・削除してから、本数の記録を削除してください。');
     if(!confirm(editingKey+' の本数記録を削除しますか？\n先に変更前のJSONをダウンロードします。'))return;
     backup();phase2Session.deleteCount(editingKey);refresh();closePastEditor();message('本数記録を削除しました。変更前のJSONも保存してください。');
   });
   document.getElementById('saveSettings').onclick=()=>safe(()=>{
-    const next={};for(const id of ['baseline','target','price','abv','volume']){if(document.getElementById(id).value==='')throw Error('設定の空欄を確認してください');next[id]=Number(document.getElementById(id).value);}
+    const next={...phase2Session.get().settings};for(const id of ['baseline','target','price','abv','volume']){if(document.getElementById(id).value==='')throw Error('設定の空欄を確認してください');next[id]=Number(document.getElementById(id).value);}
     BeerLog.canonical({...phase2Session.get(),settings:next});
     if(!confirm('設定を変更しますか？過去の節約額も現在の基準・価格で再計算されます。\n先にJSONをダウンロードします。'))return;
     backup();phase2Session.saveSettings(next);refresh();message('設定を保存しました。');

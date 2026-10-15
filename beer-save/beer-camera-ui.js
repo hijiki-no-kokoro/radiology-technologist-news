@@ -17,7 +17,7 @@
     if((dirty||context)&&!confirm('入力中の商品情報を読み取り結果で置き換えますか？'))return false;
     const p=product||{productName:'',manufacturer:'',brand:'',flavor:'',revision:'',category:'other',source:'缶の表示（端末内OCR・要確認）',volumeMl:plan.info.volumeMl,alcoholPercent:plan.info.alcoholPercent,caloriesKcal:R.calories(plan.info,plan.info.volumeMl),janCode:plan.janCode};
     for(const id of ['productName','manufacturer','brand','flavor','revision','category','source','volumeMl','alcoholPercent','caloriesKcal','janCode'])$(id).value=(id==='janCode'?(plan.janCode||p.janCode):p[id])??'';
-    $('purchasePriceYen').value='';$('included').checked=false;$('savedProduct').value=product?.id||'';$('startedAt').value=inputTime(at);
+    $('purchasePriceYen').value='';$('included').checked=false;$('sessionAssignment').value='current';$('savedProduct').value=product?.id||'';$('startedAt').value=inputTime(at);
     context={startedAt:at,recordMethod:'camera',janCode:plan.janCode};dirty=false;return true;
   }
   function button(label,action){const b=document.createElement('button');b.type='button';b.textContent=label;b.onclick=action;return b;}

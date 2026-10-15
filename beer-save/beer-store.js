@@ -5,7 +5,7 @@
   'use strict';
   const KEY='beer_save_pwa_v2',OLD_KEY='beer_save_pwa_v1';
   function view(state){
-    const keys=[...new Set([...Object.keys(state.countOnlyRecords),...state.drinks.map(d=>B.dayKey(d.startedAt))])];
+    const keys=[...new Set([...Object.keys(state.countOnlyRecords),...state.drinks.map(d=>B.recordDay(d))])];
     const records={};for(const key of keys)records[key]=B.aggregate(state,k=>k===key).count;
     return {settings:{...state.settings},records};
   }
@@ -23,14 +23,14 @@
     }
     function get(){return JSON.parse(JSON.stringify(state));}
     function saveCount(day,total){
-      if(day>B.dayKey(new Date().toISOString()))throw Error('未来の日付には保存できません');
+      if(day>B.currentDay(state))throw Error('未来の日付には保存できません');
       return commit(B.setDailyTotal(state,day,total),true);
     }
     function deleteCount(day){
-      B.validDay(day);if(state.drinks.some(d=>B.dayKey(d.startedAt)===day))throw Error('この日には1缶ごとの詳細があります。先に酒ログ画面で詳細を確認・削除してください。本数だけを削除して履歴を隠すことはできません。');
+      B.validDay(day);if(state.drinks.some(d=>B.recordDay(d)===day))throw Error('この日には1缶ごとの詳細があります。先に酒ログ画面で詳細を確認・削除してください。本数だけを削除して履歴を隠すことはできません。');
       const next=get();delete next.countOnlyRecords[day];return commit(next,true);
     }
-    function saveSettings(settings){return commit({...get(),settings},true);}
+    function saveSettings(settings){return commit({...get(),settings:{...state.settings,...settings}},true);}
     function backupRaw(){return storage.getItem(key)??storage.getItem(oldKey)??B.serialize(state);}
     return {get,commit,saveCount,deleteCount,saveSettings,view:()=>view(state),backupRaw,hasConflict:()=>conflict,storageKey:key};
   }
