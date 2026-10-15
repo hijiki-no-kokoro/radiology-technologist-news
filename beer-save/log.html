@@ -9,9 +9,18 @@
 <main><a href="./index.html" class="sectionLink">← 本数入力・節約ホームに戻る</a>
 <span class="tag">酒ログ × 節約管理</span>
 <h1>飲まなかった貯金</h1><p class="muted">いつ、何を、どのくらい。毎日のお酒を、手軽に記録。</p>
-<div class="notice">1缶ごとの手動登録が使えます。写真からの自動登録は今後追加予定です。</div>
+<div class="notice">缶の写真から文字・バーコードを読み取れます。商品名や数値が曖昧な場合は、確認してから保存します。</div>
 <div id="status" class="status" role="status" aria-live="polite">本数入力・節約ホームと、同じ記録を使います。</div>
-<section id="homeView">
+<section id="homeView"><div class="card" id="beerPhotoCard"><h2>撮って記録</h2>
+<button type="button" class="primary" id="beerPhotoButton" style="margin:0;min-height:64px;font-size:20px">📷 お酒を撮影</button>
+<div class="grid" style="margin-top:10px"><button type="button" id="beerBarcodeButton">バーコードを撮影</button><button type="button" id="beerNutritionButton">栄養表示を撮影</button></div>
+<input type="file" id="beerPhotoInput" accept="image/*" capture="environment" hidden>
+<p class="hint">初回は無料の認識データをダウンロードします。写真は端末内で処理し、このアプリには保存しません。</p>
+<div id="beerPhotoStatus" class="status" role="status" aria-live="polite">缶の正面を明るい場所で撮影してください。登録済み商品はバーコードで照合できます。</div>
+<button type="button" id="beerCancel" hidden>読み取りを中止</button>
+<label class="formCheck"><input type="checkbox" id="autoBarcode" checked><span>登録済みJANが一意に一致したら自動保存<small style="display:block">文字だけの認識や未登録商品は、確認してから保存します。</small></span></label>
+<div id="beerPhotoResult" hidden><h3>読み取り結果</h3><p id="beerPhotoSummary" class="hint"></p><div id="beerPhotoCandidates" class="pillrow"></div><div id="beerPhotoNames" class="pillrow" style="margin-top:8px"></div><details style="margin-top:12px"><summary>読み取れた文字を確認</summary><pre id="beerPhotoText" style="white-space:pre-wrap;max-height:220px;overflow:auto;font-size:13px"></pre></details></div>
+</div>
 <div class="row viewTitle"><h2>今日の酒ログ</h2><small id="todayDate"></small></div>
 <div class="metrics" id="todayMetrics"></div>
 <div class="card"><div class="row"><h2>1缶を記録</h2><small>手動登録</small></div>
@@ -25,6 +34,7 @@
 <details style="margin-top:14px"><summary>商品情報・旧記録との関係</summary>
 <div class="grid"><div><label for="brand">ブランド</label><input id="brand" maxlength="200"></div><div><label for="flavor">フレーバー</label><input id="flavor" maxlength="200"></div></div>
 <label for="revision">商品版・変更メモ</label><input id="revision" maxlength="200" placeholder="リニューアル品などを区別するとき">
+<label for="janCode">JANコード（任意）</label><input id="janCode" inputmode="numeric" maxlength="20" placeholder="8桁・13桁のバーコード番号"><p class="hint">商品名・容量・度数とコードの対応を確認して保存してください。次回の照合に使います。</p>
 <label for="source">カロリー等の確認元</label><input id="source" maxlength="200" placeholder="缶の栄養成分表示、メーカー公式URLなど">
 <label class="formCheck"><input type="checkbox" id="included"><span>この1缶は、すでに本数入力した記録に含まれる<small style="display:block">チェックすると総本数は増やさず、商品情報だけを追加します。</small></span></label>
 </details><p class="hint">缶の表示で確認した内容を入力してください。空欄のカロリー・価格は「未確認」として残します。0.0%飲料は今回の対象外です。</p>
@@ -40,11 +50,11 @@
 <section id="settingsView" hidden><h2 class="viewTitle">設定とバックアップ</h2><div class="card"><h2>バックアップ</h2><p class="hint">JSONは復元用、CSVは表計算ソフトで見るためのファイルです。iPhoneの「ファイル」など、ブラウザ以外に保管してください。</p><div class="grid"><button id="exportJson">JSONを保存</button><button id="exportCsv">CSVを保存</button></div><button id="exportRecovery" style="margin-top:8px">直前の回復用JSONを保存</button><hr style="border:0;border-top:1px solid var(--line);margin:18px 0"><h3>JSONから読み込む</h3><label for="importFile">バックアップファイル</label><input id="importFile" type="file" accept=".json,application/json"><details style="margin-top:12px"><summary>JSONを貼り付けて読み込む</summary><label for="importText">バックアップJSON</label><textarea id="importText" placeholder="JSONをここに貼り付け"></textarea><button id="checkImport">内容を確認</button></details><div id="importSummary"></div><div id="importActions" hidden class="grid" style="margin-top:12px"><button id="mergeImport">同じIDを除いて統合</button><button id="replaceImport">この内容に復元</button></div><p class="hint">内容の確認後に読み込みます。復元前には現在のJSONをダウンロードし、別の保存キーにも退避します。内容が異なる同じIDを無断で上書きしません。</p></div>
 <div class="card"><h2>以前のアプリから移す</h2><p class="hint">旧本数記録は読み取り専用で保持しています。旧記録をもう一度読み込む場合は、現在のJSONも先に保存してください。</p><button id="readLegacy">このブラウザの旧記録を確認</button><button id="exportLegacy" style="margin-top:8px">旧形式のJSONを保存</button><p class="hint">旧保存キーを書き換えたり削除したりする処理はありません。</p></div>
 <div class="card"><h2>節約の設定</h2><form id="settingsForm"><div class="grid"><div><label for="baseline">基準本数 / 日</label><input id="baseline" type="number" min="1" max="12" required></div><div><label for="target">目標本数 / 日</label><input id="target" type="number" min="0" max="12" required></div></div><label for="price">基準価格 / 本（円）</label><input id="price" type="number" min="0" step="any" required><p class="hint">変更すると、従来と同じく過去分の節約額も現在の設定で再計算されます。旧設定の容量・度数は保持しますが、旧記録のアルコール量を推測するためには使いません。</p><button class="primary" type="submit">設定を保存</button></form></div>
-<div class="card"><h2>酒ログについて</h2><p class="hint">画像や記録を外部サービスへ送信しません。有料API・写真の処理はありません。日付は日本時間・午前0時区切りです。JSONバックアップによる復元に対応しますが、自動クラウド同期はありません。</p><p class="hint">次の段階：撮影と端末内認識、飲酒セッション、日付区切り設定。PWA・オフラインとiPhoneでの動作は実機で確認してください。</p></div>
+<div class="card"><h2>酒ログについて</h2><p class="hint">画像や記録を外部サービスへ送信しません。有料APIは使いません。写真は端末内で処理し、永続保存しません。日付は日本時間・午前0時区切りです。JSONバックアップによる復元に対応しますが、自動クラウド同期はありません。</p><p class="hint">次の段階：実際の缶での認識精度改善、飲酒セッション、日付区切り設定。PWA・オフラインとiPhoneでの動作は実機で確認してください。</p></div>
 </section>
 </main>
 <nav aria-label="メインメニュー"><button class="active" data-view="home"><span aria-hidden="true">⌂</span>ホーム</button><button data-view="history"><span aria-hidden="true">◷</span>履歴</button><button data-view="calendar"><span aria-hidden="true">▦</span>カレンダー</button><button data-view="analysis"><span aria-hidden="true">▥</span>分析</button><button data-view="settings"><span aria-hidden="true">⚙</span>設定</button></nav>
-<script src="./beer-core.js"></script><script src="./beer-store.js"></script>
+<script src="./beer-core.js"></script><script src="./beer-store.js"></script><script src="./beer-recognition.js"></script><script src="./beer-photo-engine.js"></script>
 <script>
 'use strict';
 const B=BeerLog,$=id=>document.getElementById(id),money=n=>Math.round(n).toLocaleString('ja-JP')+'円',decimal=n=>Number(n.toFixed(1)).toLocaleString('ja-JP');
@@ -76,6 +86,7 @@ function renderCalendar(){
  if(selectedCalendarDay){const a=B.aggregate(state,k=>k===selectedCalendarDay);$('calendarDetail').innerHTML=`<h3>${esc(selectedCalendarDay)}</h3><p>${a.count}缶・純アルコール ${decimal(a.alcohol.value)}g${a.alcohol.unknown?'（未確認 '+a.alcohol.unknown+'缶を除く）':''}</p><p>カロリー ${decimal(a.calories.value)}kcal${a.calories.unknown?'（未確認 '+a.calories.unknown+'缶を除く）':''}・費用 ${money(a.spending.value)}${a.spending.unknown?'（未登録 '+a.spending.unknown+'缶を除く）':''}</p><p>節約額 ${money(a.savings)}</p>`+timeline(state.drinks.filter(d=>B.dayKey(d.startedAt)===selectedCalendarDay));}
 }
 function render(){
+ if($('autoBarcode'))$('autoBarcode').checked=state.cameraPreferences.autoSaveKnownBarcode;
  const day=today(),all=B.aggregate(state),a=B.aggregate(state,k=>k===day);$('todayDate').textContent=day.replaceAll('-',' / ');renderMetrics('todayMetrics',a);$('todayTimeline').innerHTML=timeline(state.drinks.filter(d=>B.dayKey(d.startedAt)===day));$('finishBtn').disabled=!state.drinks.some(d=>!d.finishedAt);
  $('savings').innerHTML=`<div class="grid"><div><small>累計節約額</small><div class="value">${money(all.savings)}</div></div><div><small>基準 / 目標</small><div class="value">${state.settings.baseline} / ${state.settings.target} <small>本</small></div></div></div>`;
  const historyDays=[...new Set([...Object.keys(state.countOnlyRecords),...state.drinks.map(d=>B.dayKey(d.startedAt))])].sort().reverse();
@@ -93,14 +104,14 @@ function renderAnalysis(days){
  $('legacyStats').innerHTML=`<table><tr><td>記録日</td><td>${stats.length}日</td></tr><tr><td>0本として記録した日</td><td>${stats.filter(x=>x.count===0).length}日</td></tr><tr><td>目標以下の日</td><td>${stats.filter(x=>x.count<=state.settings.target).length}日</td></tr><tr><td>連続して目標以下</td><td>${streak}日</td></tr><tr><td>今月の最少本数</td><td>${month.length?Math.min(...month.map(x=>x.count))+'本':'—'}</td></tr><tr><td>今月の節約額</td><td>${money(month.reduce((s,x)=>s+x.savings,0))}</td></tr><tr><td>30日 / 1年の単純予測</td><td>${money(average*30)} / ${money(average*365)}</td></tr></table>`;
 }
 $('drinkForm').onsubmit=event=>{event.preventDefault();guarded(()=>{
- const input={};for(const id of ['manufacturer','brand','productName','flavor','category','revision','source'])input[id]=$(id).value;
+ const input={};for(const id of ['manufacturer','brand','productName','flavor','category','revision','source','janCode'])input[id]=$(id).value;
  for(const id of ['volumeMl','alcoholPercent'])input[id]=Number($(id).value);
- input.caloriesKcal=optional('caloriesKcal');input.purchasePriceYen=optional('purchasePriceYen');input.startedAt=$('startedAt').value+':00+09:00';input.allocation=$('included').checked?'included':'additional';
+ input.caloriesKcal=optional('caloriesKcal');input.purchasePriceYen=optional('purchasePriceYen');input.startedAt=$('startedAt').value+':00+09:00';input.allocation=$('included').checked?'included':'additional';Object.assign(input,window.BeerPhotoForm?.metadata()||{});
  if(Date.parse(input.startedAt)>Date.now()+60000)throw Error('未来の飲酒記録は保存できません');
  let next;try{next=B.add(state,input);}catch(e){if(!e.message.includes('2分以内'))throw e;if(!confirm(e.message+'\n別の1缶として追加しますか？'))return;next=B.add(state,input,{allowDuplicate:true});}
- lastAdded=next.drinks.at(-1).id;commit(next);$('startedAt').value=nowInput();$('included').checked=false;note('1缶を保存しました。間違えた場合はタイムラインの「取り消す」から戻せます。');
+ lastAdded=next.drinks.at(-1).id;commit(next);window.BeerPhotoForm?.afterSave();$('startedAt').value=nowInput();$('included').checked=false;note('1缶を保存しました。間違えた場合はタイムラインの「取り消す」から戻せます。');
  });};
-$('savedProduct').onchange=()=>{const p=state.products.find(p=>p.id===$('savedProduct').value);if(!p)return;for(const id of ['manufacturer','brand','productName','flavor','category','volumeMl','alcoholPercent','caloriesKcal','revision','source'])$(id).value=p[id]??'';$('purchasePriceYen').value='';};
+$('savedProduct').onchange=()=>{const p=state.products.find(p=>p.id===$('savedProduct').value);if(!p)return;for(const id of ['manufacturer','brand','productName','flavor','category','volumeMl','alcoholPercent','caloriesKcal','revision','source','janCode'])$(id).value=(id==='janCode'?(window.BeerPhotoForm?.janFor(p)||p.janCode):p[id])??'';$('purchasePriceYen').value='';};
 $('countForm').onsubmit=event=>{event.preventDefault();guarded(()=>{const key=$('countDay').value;if(key>today())throw Error('未来の日付には記録できません');const next=B.setDailyTotal(state,key,Number($('dayCount').value));const current=B.aggregate(state,k=>k===key);if(current.recordedDays){if(!confirm(key+' の合計本数を '+Number($('dayCount').value)+'本に変更しますか？\n現在のJSONを保存してから変更します。'))return;exportJson();}commit(next,true);note(key+' の合計本数を保存しました。商品情報のない本数は未確認として保持しています。');});};
 $('settingsForm').onsubmit=event=>{event.preventDefault();guarded(()=>{const next=structuredClone(state);for(const id of ['baseline','target','price'])next.settings[id]=Number($(id).value);B.canonical(next);if(!confirm('節約の設定を変更しますか？\n過去の節約額も新設定で再計算されます。先にJSONを保存します。'))return;exportJson();commit(next,true);note('設定を保存しました。');});};
 $('finishBtn').onclick=()=>guarded(()=>{const n=state.drinks.filter(d=>!d.finishedAt).length;if(!confirm('過去日分を含む未終了の '+n+'缶を、現在時刻で飲酒終了にしますか？'))return;commit(B.finish(state,new Date().toISOString()),true);note('飲酒終了時刻を保存しました。');});
@@ -122,4 +133,5 @@ guarded(()=>{repo=BeerStore.open(localStorage);state=repo.get();if(repo.hasConfl
 if(!state){for(const el of document.querySelectorAll('form button,form input,form select'))el.disabled=true;}
 </script>
 <script>window.addEventListener('pageshow',event=>{if(event.persisted)location.reload();});if('serviceWorker' in navigator && /^https?:$/.test(location.protocol))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));</script>
+<script src="./beer-camera-ui.js"></script>
 </html>

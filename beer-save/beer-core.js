@@ -49,25 +49,35 @@
     }
     return r;
   }
-  function empty() { return {version:2,settings:clone(DEFAULTS),countOnlyRecords:{},products:[],drinks:[],legacyRaw:null,originLegacyRaw:null}; }
+  function empty() { return {version:3,settings:clone(DEFAULTS),countOnlyRecords:{},products:[],drinks:[],legacyRaw:null,originLegacyRaw:null,cameraPreferences:{autoSaveKnownBarcode:true}}; }
   function migrate(raw) {
     if (typeof raw !== 'string') fail('旧データがありません');
     const old = JSON.parse(raw);
     if (!object(old) || !object(old.records) || !object(old.settings) || old.version !== undefined) fail('旧形式のデータではありません');
     return {...empty(),settings:settings(old.settings),countOnlyRecords:counts(old.records),legacyRaw:raw,originLegacyRaw:raw};
   }
+  function normalizeJan(value){
+    if(value===undefined||value===null||value==='')return '';
+    if(typeof value!=='string')fail('JANコードは数字の文字列で入力してください');
+    let code=value.normalize('NFKC').replace(/[\s-]/g,'');if(/^\d{12}$/.test(code))code='0'+code;
+    if(!/^(\d{8}|\d{13})$/.test(code)||/^0+$/.test(code))fail('JANコードは有効な8桁または13桁で入力してください');
+    const digits=[...code].map(Number),check=digits.pop();let sum=0;for(let i=digits.length-1,w=3;i>=0;i--,w=w===3?1:3)sum+=digits[i]*w;
+    if((10-sum%10)%10!==check)fail('JANコードのチェック数字が一致しません');return code;
+  }
+  function method(value,allowed,fallback){const result=value??fallback;if(!allowed.includes(result))fail('記録方法が不正です');return result;}
   function fingerprint(p) {
     return JSON.stringify([p.manufacturer,p.brand,p.productName,p.flavor,p.volumeMl,p.alcoholPercent,p.revision].map(x=>typeof x==='string'?x.normalize('NFKC').toLowerCase().trim():x));
   }
   function product(p) {
     if (!object(p)) fail('商品情報が不正です');
-    return {manufacturer:text(p.manufacturer,'メーカー',true),brand:text(p.brand,'ブランド',true),productName:text(p.productName,'商品名'),flavor:text(p.flavor,'フレーバー',true),category:text(p.category||'other','カテゴリ'),containerType:'can',volumeMl:number(p.volumeMl,'容量',1,10000),alcoholPercent:number(p.alcoholPercent,'度数',0.01,100),caloriesKcal:number(p.caloriesKcal,'カロリー',0,1e6,true),sugarGrams:number(p.sugarGrams,'糖質',0,1e6,true),revision:text(p.revision,'商品版・変更メモ',true),source:text(p.source,'情報の根拠',true)};
+    return {manufacturer:text(p.manufacturer,'メーカー',true),brand:text(p.brand,'ブランド',true),productName:text(p.productName,'商品名'),flavor:text(p.flavor,'フレーバー',true),category:text(p.category||'other','カテゴリ'),containerType:'can',volumeMl:number(p.volumeMl,'容量',1,10000),alcoholPercent:number(p.alcoholPercent,'度数',0.01,100),caloriesKcal:number(p.caloriesKcal,'カロリー',0,1e6,true),sugarGrams:number(p.sugarGrams,'糖質',0,1e6,true),revision:text(p.revision,'商品版・変更メモ',true),janCode:normalizeJan(p.janCode),source:text(p.source,'情報の根拠',true)};
   }
   function pure(p) {return p.volumeMl*p.alcoholPercent/100*0.8;}
   function id() {return (typeof crypto!=='undefined' && crypto.randomUUID) ? crypto.randomUUID() : Date.now().toString(36)+'-'+Math.random().toString(36).slice(2)+'-'+Math.random().toString(36).slice(2);}
   function canonical(value) {
-    if (!object(value) || value.version!==2 || !object(value.settings) || !Array.isArray(value.drinks) || !Array.isArray(value.products)) fail('対応していないバックアップ形式です');
-    const r={version:2,settings:settings(value.settings),countOnlyRecords:counts(value.countOnlyRecords),products:[],drinks:[],legacyRaw:null,originLegacyRaw:null};
+    if (!object(value) || ![2,3].includes(value.version) || !object(value.settings) || !Array.isArray(value.drinks) || !Array.isArray(value.products)) fail('対応していないバックアップ形式です');
+    const r={version:3,settings:settings(value.settings),countOnlyRecords:counts(value.countOnlyRecords),products:[],drinks:[],legacyRaw:null,originLegacyRaw:null,cameraPreferences:{autoSaveKnownBarcode:true}};
+    if(value.cameraPreferences!==undefined){if(!object(value.cameraPreferences)||typeof value.cameraPreferences.autoSaveKnownBarcode!=='boolean')fail('撮影設定が不正です');r.cameraPreferences={autoSaveKnownBarcode:value.cameraPreferences.autoSaveKnownBarcode};}
     if (value.legacyRaw!==null && value.legacyRaw!==undefined) {migrate(value.legacyRaw);r.legacyRaw=value.legacyRaw;}
     if(value.originLegacyRaw!==null && value.originLegacyRaw!==undefined){migrate(value.originLegacyRaw);r.originLegacyRaw=value.originLegacyRaw;}
     const productIds=new Set();
@@ -84,7 +94,7 @@
       if (!['additional','included'].includes(d.allocation)) fail('本数の集計方式が不正です');
       const key=dayKey(startedAt);
       if(d.allocation==='included') included[key]=(included[key]||0)+1;
-      r.drinks.push({id:did,productId:pid,snapshot,pureAlcoholGrams:pure(snapshot),purchasePriceYen:number(d.purchasePriceYen,'購入価格',0,1e9,true),startedAt,finishedAt,allocation:d.allocation,recordMethod:'manual',verificationStatus:'user-confirmed',createdAt:time(d.createdAt),updatedAt:time(d.updatedAt)});
+      r.drinks.push({id:did,productId:pid,snapshot,pureAlcoholGrams:pure(snapshot),purchasePriceYen:number(d.purchasePriceYen,'購入価格',0,1e9,true),startedAt,finishedAt,allocation:d.allocation,recordMethod:method(d.recordMethod,['manual','camera'],'manual'),verificationStatus:method(d.verificationStatus,['user-confirmed','dictionary-confirmed'],'user-confirmed'),createdAt:time(d.createdAt),updatedAt:time(d.updatedAt)});
     }
     for(const [key,n] of Object.entries(included)) if(n>(r.countOnlyRecords[key]||0)) fail(key+'の旧本数より詳細記録が多くなっています');
     return r;
@@ -97,7 +107,7 @@
     const duplicate=next.drinks.some(d=>d.productId===productId && Math.abs(Date.parse(d.startedAt)-Date.parse(startedAt))<120000);
     if(duplicate && !options.allowDuplicate)fail('同じ商品が2分以内に登録されています。別の1缶か確認してください');
     const now=new Date().toISOString();
-    next.drinks.push({id:options.id||id(),productId,snapshot:p,pureAlcoholGrams:pure(p),purchasePriceYen:input.purchasePriceYen??null,startedAt,finishedAt:null,allocation:input.allocation||'additional',recordMethod:'manual',verificationStatus:'user-confirmed',createdAt:now,updatedAt:now});
+    next.drinks.push({id:options.id||id(),productId,snapshot:p,pureAlcoholGrams:pure(p),purchasePriceYen:input.purchasePriceYen??null,startedAt,finishedAt:null,allocation:input.allocation||'additional',recordMethod:input.recordMethod||'manual',verificationStatus:input.verificationStatus||'user-confirmed',createdAt:now,updatedAt:now});
     return canonical(next);
   }
   function keys(state) {return [...new Set([...Object.keys(state.countOnlyRecords),...state.drinks.map(d=>dayKey(d.startedAt))])].sort();}
@@ -136,7 +146,7 @@
   function decode(raw) {
     if(typeof raw!=='string' || raw.length>10*1024*1024)fail('バックアップは10MB以下にしてください');
     const value=JSON.parse(raw);
-    return value.version===2 ? canonical(value) : migrate(raw);
+    return [2,3].includes(value.version) ? canonical(value) : migrate(raw);
   }
   function merge(state,incoming) {
     const a=canonical(state),b=canonical(incoming);
@@ -178,5 +188,5 @@
       }
     };
   }
-  return {DEFAULTS,empty,migrate,canonical,product,fingerprint,pure,dayKey,validDay,add,aggregate,setDailyTotal,remove,finish,decode,merge,serialize,csv,repository};
+  return {DEFAULTS,normalizeJan,empty,migrate,canonical,product,fingerprint,pure,dayKey,validDay,add,aggregate,setDailyTotal,remove,finish,decode,merge,serialize,csv,repository};
 });

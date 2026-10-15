@@ -80,7 +80,7 @@
 <body>
 <div class="wrap">
   <h1>🍺 飲まなかった貯金</h1><div class="sub">お酒の記録と、節約の振り返り。</div>
-<section class="card"><b>🍺 酒ログ</b><p class="note">銘柄・容量・度数を1缶ずつ記録できます。本数だけでの入力も、これまでどおり使えます。</p><a class="primary" style="display:block;text-align:center;text-decoration:none;padding:12px" href="./log.html">1缶を記録・履歴を見る</a><p class="note">写真からの自動登録は、次の段階で追加予定です。</p></section>
+<section class="card"><b>🍺 酒ログ</b><p class="note">銘柄・容量・度数を1缶ずつ記録できます。本数だけでの入力も、これまでどおり使えます。</p><a class="primary" style="display:block;text-align:center;text-decoration:none;padding:12px" href="./log.html">1缶を記録・履歴を見る</a><p class="note">酒ログ画面の「お酒を撮影」から、文字・バーコードを読み取れます。</p></section>
   <section class="card">
     <div class="row"><div><div class="sub">今日飲んだ本数</div><div id="todayLabel" style="font-size:28px;font-weight:900">2本</div></div><div class="sub" id="baseTarget">基準4本 / 目標2本</div></div>
     <div class="buttons" id="buttons"></div>
@@ -260,7 +260,7 @@ if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){window.a
   }catch(error){status('保存できませんでした。Safariの保存先・空き容量をご確認ください。')}};
   document.getElementById('backupCsv').onclick=function(){try{
     const source=JSON.parse(rawData());
-    if(source.version===2){download(BeerLog.csv(BeerLog.decode(rawData())),fileName('.csv'),'text/csv;charset=utf-8');status('詳細記録と本数のみの記録を区別したCSVをダウンロードしました。');return;}
+    if([2,3].includes(source.version)){download(BeerLog.csv(BeerLog.decode(rawData())),fileName('.csv'),'text/csv;charset=utf-8');status('詳細記録と本数のみの記録を区別したCSVをダウンロードしました。');return;}
     if(!source || !source.records || typeof source.records!=='object' || Array.isArray(source.records))throw Error('invalid');
     const rows=[['日付','記録した本数']];
     for(const [day,count] of Object.entries(source.records).sort()){
