@@ -51,8 +51,8 @@
     return '';
   }
   async function ocr(canvas,job,progress){
-    await race(load('ocr'),job.controller.signal);progress('文字認識データを準備しています（初回は通信が必要です）');
-    const pending=root.Tesseract.createWorker('jpn',1,{langPath:MODEL_ROOT+'jpn@1.0.0/4.0.0_best_int',workerPath:new URL('./vendor/tesseract-worker-7.0.0.min.js',document.baseURI).href,corePath:CORE,workerBlobURL:false,cacheMethod:'none',errorHandler:error=>{job.error=Error('文字認識を初期化できませんでした。通信を確認してください。');job.controller.abort();},logger:event=>{if(!job.controller.signal.aborted&&event.status==='recognizing text')progress('文字を読み取っています '+Math.round(event.progress*100)+'%');}});
+    progress('文字認識機能を準備しています（初回は通信が必要です）');await race(load('ocr'),job.controller.signal);
+    const pending=root.Tesseract.createWorker('jpn',1,{langPath:MODEL_ROOT+'jpn@1.0.0/4.0.0_best_int',workerPath:new URL('./vendor/tesseract-worker-7.0.0.min.js',document.baseURI).href,corePath:CORE,workerBlobURL:false,cacheMethod:'none',errorHandler:error=>{job.error=Error('文字認識を初期化できませんでした。通信を確認してください。');job.controller.abort();},logger:event=>{if(job.controller.signal.aborted)return;const labels={'loading tesseract core':'文字認識エンジンを準備しています','initializing tesseract':'文字認識を起動しています','loading language traineddata':'日本語データを読み込んでいます','initializing api':'日本語認識を準備しています','recognizing text':'文字を読み取っています'};if(labels[event.status])progress(labels[event.status]+(Number.isFinite(event.progress)?' '+Math.round(event.progress*100)+'%':''));}});
     pending.then(worker=>{if(job.controller.signal.aborted)worker.terminate().catch(()=>{});}).catch(()=>{});
     job.worker=await race(pending,job.controller.signal);
     await race(job.worker.setParameters({tessedit_pageseg_mode:root.Tesseract.PSM.SPARSE_TEXT,user_defined_dpi:'300'}),job.controller.signal);
@@ -64,7 +64,7 @@
     const timer=setTimeout(()=>job.controller.abort(),90000);
     try{
       progress('写真を端末内で準備しています');const canvas=await canvasFor(file,job);let code='',read={text:'',confidence:0},barcodeError=null;
-      if(mode!=='nutrition'){progress('バーコードを読み取っています');try{code=await barcode(canvas,job);}catch(error){if(error.name==='AbortError')throw error;barcodeError=error.message;}}
+      if(mode==='barcode'){progress('バーコードを読み取っています');try{code=await barcode(canvas,job);}catch(error){if(error.name==='AbortError')throw error;barcodeError=error.message;}}
       if(mode!=='barcode'){try{read=await ocr(canvas,job,progress);}catch(error){if(error.name==='AbortError')throw error;if(!code)throw error;read={text:'',confidence:0,ocrError:error.message};}}
       if(job.controller.signal.aborted)throw abortError();return {barcode:code,text:read.text,confidence:read.confidence,barcodeError};
     }catch(error){throw job.error||error;}finally{clearTimeout(timer);release(job);file=null;}

@@ -16,11 +16,12 @@ dialog{width:min(92vw,460px);border:1px solid var(--line);border-radius:18px;pad
 <button type="button" class="primary" id="beerPhotoButton" style="margin:0;min-height:64px;font-size:20px">📷 お酒を撮影</button>
 <div class="grid" style="margin-top:10px"><button type="button" id="beerBarcodeButton">バーコードを撮影</button><button type="button" id="beerNutritionButton">栄養表示を撮影</button></div>
 <input type="file" id="beerPhotoInput" accept="image/*" capture="environment" hidden>
+<label for="beerLibraryInput" class="hint">カメラから戻っても反応がない場合は、撮った写真をここから選んでください。</label><input type="file" id="beerLibraryInput" accept="image/*">
 <p class="hint">初回は無料の認識データをダウンロードします。写真は端末内で処理し、このアプリには保存しません。</p>
-<div id="beerPhotoStatus" class="status" role="status" aria-live="polite">缶の正面を明るい場所で撮影してください。登録済み商品はバーコードで照合できます。</div>
+<div id="beerPhotoStatus" class="status" role="status" aria-live="polite">缶の正面の商品名・容量・度数が見えるよう撮影してください。バーコードは別ボタンから読み取れます。金麦は新旧の商品情報に対応しています。</div>
 <button type="button" id="beerCancel" hidden>読み取りを中止</button>
-<label class="formCheck"><input type="checkbox" id="autoBarcode" checked><span>登録済みJANが一意に一致したら自動保存<small style="display:block">文字だけの認識や未登録商品は、確認してから保存します。</small></span></label>
-<div id="beerPhotoResult" hidden><h3>読み取り結果</h3><p id="beerPhotoSummary" class="hint"></p><div id="beerPhotoCandidates" class="pillrow"></div><div id="beerPhotoNames" class="pillrow" style="margin-top:8px"></div><details style="margin-top:12px"><summary>読み取れた文字を確認</summary><pre id="beerPhotoText" style="white-space:pre-wrap;max-height:220px;overflow:auto;font-size:13px"></pre></details></div>
+<label class="formCheck"><input type="checkbox" id="autoBarcode" checked><span>商品情報とJANが一意に一致したら自動保存<small style="display:block">文字だけの認識や未登録商品は、確認してから保存します。</small></span></label>
+<details style="margin:12px 0"><summary>バーコードの数字で商品を照合する</summary><label for="beerJanLookup">JANコード（缶の8桁または13桁の数字）</label><input id="beerJanLookup" type="text" inputmode="numeric" autocomplete="off"><button id="beerJanLookupButton" type="button">このJANの商品情報を入力</button></details><div id="beerPhotoResult" hidden><h3>読み取り結果</h3><p id="beerPhotoSummary" class="hint"></p><button id="beerPhotoFormLink" type="button">入力欄の内容を確認する</button><div id="beerPhotoCandidates" class="pillrow"></div><div id="beerPhotoNames" class="pillrow" style="margin-top:8px"></div><details style="margin-top:12px"><summary>読み取れた文字を確認</summary><pre id="beerPhotoText" style="white-space:pre-wrap;max-height:220px;overflow:auto;font-size:13px"></pre></details></div>
 </div>
 <div class="row viewTitle"><h2>今日の酒ログ</h2><small id="todayDate"></small></div>
 <p class="hint" id="dayBoundaryHint"></p><div class="metrics" id="todayMetrics"></div>
@@ -55,9 +56,18 @@ dialog{width:min(92vw,460px);border:1px solid var(--line);border-radius:18px;pad
 <div class="card"><h2>1日の区切り</h2><form id="dayBoundaryForm"><label for="dayStartHour">日別集計の開始時刻（日本時間）</label><select id="dayStartHour"><option value="0">午前0時</option><option value="1">午前1時</option><option value="2">午前2時</option><option value="3">午前3時</option><option value="4">午前4時</option><option value="5">午前5時</option><option value="6">午前6時</option><option value="7">午前7時</option><option value="8">午前8時</option><option value="9">午前9時</option><option value="10">午前10時</option><option value="11">午前11時</option><option value="12">午後0時</option><option value="13">午後1時</option><option value="14">午後2時</option><option value="15">午後3時</option><option value="16">午後4時</option><option value="17">午後5時</option><option value="18">午後6時</option><option value="19">午後7時</option><option value="20">午後8時</option><option value="21">午後9時</option><option value="22">午後10時</option><option value="23">午後11時</option></select><p class="hint">初期値は午前0時です。変更後に追加する詳細記録に適用します。過去の記録日・本数・節約額は移動しません。本数だけの記録は、指定した日付に保存します。</p><button class="primary" type="submit">区切り時刻を保存</button></form></div><div class="card"><h2>酒ログについて</h2><p class="hint">画像や記録を外部サービスへ送信しません。有料APIは使いません。写真は端末内で処理し、永続保存しません。日付は日本時間を基準とし、設定した区切り時刻でこれからの詳細記録を集計します。JSONバックアップによる復元に対応しますが、自動クラウド同期はありません。</p><p class="hint">次の段階：実際の缶での認識精度改善と、月間レポートの充実。PWA・オフラインとiPhoneでの動作は実機で確認してください。</p></div>
 </section>
 </main>
+<dialog id="beerPhotoConfirm" aria-labelledby="beerPhotoConfirmTitle"><h2 id="beerPhotoConfirmTitle">入力内容の確認</h2><p id="beerPhotoConfirmText"></p><div class="grid"><button type="button" id="beerPhotoConfirmNo">キャンセル</button><button type="button" id="beerPhotoConfirmYes">読み取り結果を反映</button></div></dialog>
 <dialog id="sessionConfirm" aria-labelledby="sessionConfirmTitle"><h2 id="sessionConfirmTitle">変更内容の確認</h2><p id="sessionConfirmText"></p><div class="grid"><button type="button" id="sessionConfirmNo">キャンセル</button><button type="button" id="sessionConfirmYes" style="background:var(--accent);color:white">保存する</button></div></dialog>
 <nav aria-label="メインメニュー"><button class="active" data-view="home"><span aria-hidden="true">⌂</span>ホーム</button><button data-view="history"><span aria-hidden="true">◷</span>履歴</button><button data-view="calendar"><span aria-hidden="true">▦</span>カレンダー</button><button data-view="analysis"><span aria-hidden="true">▥</span>分析</button><button data-view="settings"><span aria-hidden="true">⚙</span>設定</button></nav>
-<script src="./beer-core.js?v=phase4-2"></script><script src="./beer-store.js?v=phase4-2"></script><script src="./beer-recognition.js?v=phase4-2"></script><script src="./beer-photo-engine.js?v=phase4-2"></script>
+<script>
+(function(){
+ const message='画面の読み込みに失敗しました。アプリを開き直してください。記録は削除せず、そのまま残しています。';
+ function show(){const el=document.getElementById('beerPhotoStatus');if(el){el.textContent=message;el.classList.add('error');}}
+ window.addEventListener('error',event=>{if(event.target?.tagName==='SCRIPT'||(event.filename&&event.filename.includes('/beer-save/')))show();},true);
+ window.addEventListener('unhandledrejection',show);
+})();
+</script>
+<script src="./beer-catalog.js?v=photo-fix-1"></script><script src="./beer-core.js?v=photo-fix-1"></script><script src="./beer-store.js?v=photo-fix-1"></script><script src="./beer-recognition.js?v=photo-fix-1"></script><script src="./beer-photo-engine.js?v=photo-fix-1"></script>
 <script>
 'use strict';
 const B=BeerLog,$=id=>document.getElementById(id),money=n=>Math.round(n).toLocaleString('ja-JP')+'円',decimal=n=>Number(n.toFixed(1)).toLocaleString('ja-JP');
@@ -135,6 +145,6 @@ guarded(()=>{if(B.empty().version!==4)throw Error('アプリの更新を読み�
 if(!state){for(const el of document.querySelectorAll('form button,form input,form select'))el.disabled=true;}
 </script>
 <script>window.addEventListener('pageshow',event=>{if(event.persisted)location.reload();});if('serviceWorker' in navigator && /^https?:$/.test(location.protocol))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));</script>
-<script src="./beer-session-ui.js?v=phase4-2"></script>
-<script src="./beer-camera-ui.js?v=phase4-2"></script>
+<script src="./beer-session-ui.js?v=photo-fix-1"></script>
+<script src="./beer-camera-ui.js?v=photo-fix-1"></script>
 </html>

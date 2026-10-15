@@ -43,16 +43,25 @@
     if(info.calorieBasis==='can')return info.calorieValue;
     return Number.isFinite(volume)&&volume>0?Number((info.calorieValue*volume/100).toFixed(4)):null;
   }
-  function plan(raw,barcode,products){
-    const info=facts(raw),code=jan(barcode),text=normalize(info.text);let candidates=[],reason='unknown';
-    if(code){
-      candidates=products.filter(p=>jan(p.janCode)===code);reason=candidates.length?'barcode':'unknown-barcode';
+  function pool(products,catalog){
+    const all=products.map(p=>({...p}));
+    for(const p of catalog){
+      // A saved copy of the same catalog entry is one candidate. Conflicting user entries remain distinct.
+      const saved=all.find(q=>jan(q.janCode)===p.janCode&&q.productName===p.productName&&q.volumeMl===p.volumeMl&&q.alcoholPercent===p.alcoholPercent&&q.revision===p.revision&&q.caloriesKcal===p.caloriesKcal&&q.category===p.category);
+      if(saved)Object.assign(saved,{aliases:p.aliases,excludeTokens:p.excludeTokens,ocrAliases:p.ocrAliases,catalog:true});else all.push(p);
     }
+    return all;
+  }
+  function plan(raw,barcode,products,catalog=[]){
+    const info=facts(raw),code=jan(barcode),text=normalize(info.text),all=pool(products,catalog);let candidates=[],reason='unknown';
+    if(code){candidates=all.filter(p=>jan(p.janCode)===code);reason=candidates.length?'barcode':'unknown-barcode';}
     if(!candidates.length&&reason!=='unknown-barcode'){
-      candidates=products.filter(p=>{
+      candidates=all.filter(p=>{
         const name=normalize(p.productName),flavor=normalize(p.flavor);
-        if(name.length<4||['ビール','チューハイ','サワー','ハイボール','BEER','HIGHBALL'].includes(name))return false;
-        return text.includes(name)&&(!flavor||text.includes(flavor))&&(!info.volumes.length||info.volumes.includes(p.volumeMl))&&(!info.alcohols.length||info.alcohols.includes(p.alcoholPercent));
+        const aliases=p.aliases||[p.productName];
+        const corrected=p.catalog&&(p.ocrAliases||[]).some(x=>text.includes(normalize(x)))&&['SUNTORY','サントリー'].some(x=>text.includes(x));
+        const matched=p.catalog?(aliases.some(x=>text.includes(normalize(x)))||corrected):name.length>=2&&!['ビール','チューハイ','サワー','ハイボール','BEER','HIGHBALL'].includes(name)&&text.includes(name)&&(!flavor||text.includes(flavor));
+        return matched&&!(p.excludeTokens||[]).some(x=>text.includes(normalize(x)))&&(!info.volumes.length||info.volumes.includes(p.volumeMl))&&(!info.alcohols.length||info.alcohols.includes(p.alcoholPercent));
       });reason=candidates.length?'ocr':'unknown';
     }
     const conflict=candidates.length===1&&(info.volumes.some(v=>v!==candidates[0].volumeMl)||info.alcohols.some(a=>a!==candidates[0].alcoholPercent));

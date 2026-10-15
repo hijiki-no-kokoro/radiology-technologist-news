@@ -1,7 +1,7 @@
-const CACHE='beer-save-phase4-v2';
+const CACHE='beer-save-photo-fix-v1';
 const PREFIX='beer-save-';
 const RUNTIME='beer-ocr-runtime-v1';
-const ASSETS=['./','./index.html','./log.html','./beer-core.js','./beer-store.js','./manifest.webmanifest','./icon.svg','./beer-recognition.js','./beer-photo-engine.js','./beer-camera-ui.js','./beer-session-ui.js','./vendor/zxing-browser-0.2.1.min.js','./vendor/tesseract-7.0.0.min.js','./vendor/tesseract-worker-7.0.0.min.js'];
+const ASSETS=['./','./index.html','./log.html','./beer-core.js','./beer-store.js','./manifest.webmanifest','./icon.svg','./beer-catalog.js','./beer-recognition.js','./beer-photo-engine.js','./beer-camera-ui.js','./beer-session-ui.js','./vendor/zxing-browser-0.2.1.min.js','./vendor/tesseract-7.0.0.min.js','./vendor/tesseract-worker-7.0.0.min.js'];
 const ROOT=new URL('./',self.location.href);
 const URLS=new Set(ASSETS.map(path=>new URL(path,ROOT).href));
 const EXTERNAL=new Set(['jpn','eng'].map(code=>'https://cdn.jsdelivr.net/npm/@tesseract.js-data/'+code+'@1.0.0/4.0.0_best_int/'+code+'.traineddata.gz'));
