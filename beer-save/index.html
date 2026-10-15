@@ -79,7 +79,8 @@
 </head>
 <body>
 <div class="wrap">
-  <h1>🍺 飲まなかった貯金</h1><div class="sub">減らせた分だけ、ちゃんと成果に。</div>
+  <h1>🍺 飲まなかった貯金</h1><div class="sub">お酒の記録と、節約の振り返り。</div>
+<section class="card"><b>🍺 酒ログ</b><p class="note">銘柄・容量・度数を1缶ずつ記録できます。本数だけでの入力も、これまでどおり使えます。</p><a class="primary" style="display:block;text-align:center;text-decoration:none;padding:12px" href="./log.html">1缶を記録・履歴を見る</a><p class="note">写真からの自動登録は、次の段階で追加予定です。</p></section>
   <section class="card">
     <div class="row"><div><div class="sub">今日飲んだ本数</div><div id="todayLabel" style="font-size:28px;font-weight:900">2本</div></div><div class="sub" id="baseTarget">基準4本 / 目標2本</div></div>
     <div class="buttons" id="buttons"></div>
@@ -129,8 +130,8 @@
   </div></section>
   <section class="card"><b>💾 データのバックアップ</b>
     <p class="note">更新前にJSONを保存してください。記録と設定を、そのままファイルとして残せます。iPhoneの「ファイル」など、ブラウザ以外の場所に保管してください。</p>
-    <div class="grid2"><button type="button" class="ghost" id="backupJson">JSONバックアップを保存</button><button type="button" class="ghost" id="backupCsv">本数のCSVを保存</button></div>
-    <p class="note" id="backupStatus" role="status" aria-live="polite">この操作で記録が書き換わることはありません。復元機能は次の更新で追加予定です。</p>
+    <div class="grid2"><button type="button" class="ghost" id="backupJson">JSONバックアップを保存</button><button type="button" class="ghost" id="backupCsv">酒ログのCSVを保存</button></div>
+    <p class="note" id="backupStatus" role="status" aria-live="polite">この操作で記録が書き換わることはありません。復元は「酒ログ」の設定画面から利用できます。</p>
   </section>
   <section class="card settings"><details><summary>⚙️ 設定</summary>
     <div class="field"><label>基準本数 / 日</label><input id="baseline" type="number" min="1" max="12"></div>
@@ -142,29 +143,32 @@
     <p class="note">記録はこのiPhone内に保存されます。Safariのデータを削除すると消えるため、上の「データのバックアップ」からJSONを保存してください。</p>
   </details></section>
 </div>
+<script src="./beer-core.js"></script><script src="./beer-store.js"></script>
 <script>
+let phase2Session=null,phase2Error=null;try{phase2Session=BeerStore.open(localStorage);}catch(error){phase2Error=error;}
+function jstClockDate(){const parts=new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Tokyo',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'}).formatToParts(new Date());const p=Object.fromEntries(parts.filter(x=>x.type!=='literal').map(x=>[x.type,x.value]));return new Date(Number(p.year),Number(p.month)-1,Number(p.day),Number(p.hour),Number(p.minute),Number(p.second));}
 const KEY='beer_save_pwa_v1';
 const defaults={settings:{baseline:4,target:2,price:180,abv:5,volume:350},records:{}};
 const MAX_INPUT=6;
 let data=load(), selected=2;
-let calendarCursor=new Date();calendarCursor.setDate(1);calendarCursor.setHours(0,0,0,0);
+let calendarCursor=jstClockDate();calendarCursor.setDate(1);calendarCursor.setHours(0,0,0,0);
 let editingKey=null, editingValue=0;
 function clone(o){return JSON.parse(JSON.stringify(o))}
-function load(){try{const r=localStorage.getItem(KEY);if(!r)return clone(defaults);const p=JSON.parse(r);return {settings:Object.assign({},defaults.settings,p.settings||{}),records:p.records||{}}}catch(e){return clone(defaults)}}
-function save(){localStorage.setItem(KEY,JSON.stringify(data))}
+function load(){return phase2Session?phase2Session.view():clone(defaults)}
+function save(){throw Error('新しい保存処理で操作してください')}
 function keyFor(d){const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),dd=String(d.getDate()).padStart(2,'0');return y+'-'+m+'-'+dd}
-function todayKey(){return keyFor(new Date())}
+function todayKey(){return keyFor(jstClockDate())}
 function fmt(n){return Math.round(n).toLocaleString('ja-JP')+'円'}
 function less(n){return Math.max(0,data.settings.baseline-n)}
 function alcoholPerCan(){return data.settings.volume*(data.settings.abv/100)*0.8}
-function daysBack(n){const d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()-n);return d}
+function daysBack(n){const d=jstClockDate();d.setHours(0,0,0,0);d.setDate(d.getDate()-n);return d}
 function recordValues(){return Object.entries(data.records).sort().map(([k,n])=>({k,n:Number(n)}))}
 function renderButtons(){const box=document.getElementById('buttons');box.innerHTML='';for(let i=0;i<=MAX_INPUT;i++){const b=document.createElement('button');b.type='button';b.className='nbtn'+(i===selected?' active':'');b.textContent=i;b.onclick=()=>{selected=i;render()};box.appendChild(b)}}
 function renderWeek(){const box=document.getElementById('week');box.innerHTML='';const labels=['日','月','火','水','木','金','土'];for(let i=6;i>=0;i--){const d=daysBack(i),k=keyFor(d),n=data.records[k];const el=document.createElement('div');el.className='day';if(n===0)el.classList.add('zero');else if(n!==undefined&&n<=data.settings.target)el.classList.add('good');el.innerHTML='<div class="dsmall">'+labels[d.getDay()]+'</div><div class="dnum">'+(n===undefined?'–':n)+'</div><div class="dsmall">本</div>';box.appendChild(el)}}
 function renderChart(){const box=document.getElementById('chart');box.innerHTML='';for(let i=6;i>=0;i--){const d=daysBack(i),k=keyFor(d),n=data.records[k],r=n===undefined?0:less(Number(n));const c=document.createElement('div');c.className='col';const lab=document.createElement('div');lab.className='barlabel';lab.textContent=n===0?'★':(n===undefined?'':r);const bar=document.createElement('div');bar.className='bar'+(n===0?' zero':'');bar.style.height=Math.max(2,Math.round((r/Math.max(1,data.settings.baseline))*105))+'px';c.append(lab,bar);box.appendChild(c)}}
 function openPastEditor(k){
   const parts=k.split('-').map(Number), d=new Date(parts[0],parts[1]-1,parts[2]);
-  const today=new Date();today.setHours(0,0,0,0);
+  const today=jstClockDate();today.setHours(0,0,0,0);
   if(d>today)return;
   editingKey=k;
   editingValue=data.records[k]!==undefined?Number(data.records[k]):Math.min(data.settings.target,data.settings.baseline);
@@ -203,19 +207,20 @@ function renderCalendar(){
       else e.classList.add('high');
     }
     e.innerHTML='<div class="date">'+day+'</div><div class="count">'+count+'</div>';
-    const today=new Date();today.setHours(0,0,0,0);
+    const today=jstClockDate();today.setHours(0,0,0,0);
     if(d<=today){e.classList.add('clickable');e.onclick=()=>openPastEditor(k)}
     box.appendChild(e);
   }
   document.getElementById('calRecorded').textContent=recorded+'日';
   document.getElementById('calAchieved').textContent=achieved+'日';
   document.getElementById('calSaved').textContent=fmt(saved);
-  const now=new Date();
+  const now=jstClockDate();
   document.getElementById('nextMonth').disabled=(y===now.getFullYear()&&m===now.getMonth());
   document.getElementById('nextMonth').style.opacity=document.getElementById('nextMonth').disabled?'.35':'1';
 }
-function renderStats(){const vals=recordValues();const totalLess=vals.reduce((s,r)=>s+less(r.n),0);document.getElementById('totalSave').textContent=fmt(totalLess*data.settings.price);let streak=0;for(let i=0;i<370;i++){const k=keyFor(daysBack(i));if(data.records[k]!==undefined&&Number(data.records[k])<=data.settings.target)streak++;else if(i===0&&data.records[k]===undefined)continue;else break}document.getElementById('streak').textContent=streak+'日';document.getElementById('zeroDays').textContent=vals.filter(r=>r.n===0).length+'日';document.getElementById('achieveDays').textContent=vals.filter(r=>r.n<=data.settings.target).length+'日';const avg=vals.length?totalLess/vals.length:0;document.getElementById('forecast30').textContent=fmt(avg*30*data.settings.price);document.getElementById('forecast365').textContent=fmt(avg*365*data.settings.price);const now=new Date(),prefix=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-';const month=vals.filter(r=>r.k.startsWith(prefix));document.getElementById('monthBest').textContent=month.length?Math.min(...month.map(r=>r.n))+'本':'—';document.getElementById('monthSave').textContent=fmt(month.reduce((s,r)=>s+less(r.n)*data.settings.price,0))}
-function render(){selected=Math.min(selected,MAX_INPUT);document.getElementById('todayLabel').textContent=selected+'本';document.getElementById('todayLess').textContent=less(selected)+'本';document.getElementById('todaySave').textContent=fmt(less(selected)*data.settings.price);document.getElementById('baseTarget').textContent='基準'+data.settings.baseline+'本 / 目標'+data.settings.target+'本';const cel=document.getElementById('celebrate');cel.classList.toggle('show',selected===0);document.getElementById('celebrateText').textContent=fmt(data.settings.baseline*data.settings.price)+'・純アルコール約'+Math.round(data.settings.baseline*alcoholPerCan())+'g分を回避';renderButtons();renderWeek();renderCalendar();renderChart();renderStats()}
+function renderStats(){const vals=recordValues();const totalLess=vals.reduce((s,r)=>s+less(r.n),0);document.getElementById('totalSave').textContent=fmt(totalLess*data.settings.price);let streak=0;for(let i=0;i<370;i++){const k=keyFor(daysBack(i));if(data.records[k]!==undefined&&Number(data.records[k])<=data.settings.target)streak++;else if(i===0&&data.records[k]===undefined)continue;else break}document.getElementById('streak').textContent=streak+'日';document.getElementById('zeroDays').textContent=vals.filter(r=>r.n===0).length+'日';document.getElementById('achieveDays').textContent=vals.filter(r=>r.n<=data.settings.target).length+'日';const avg=vals.length?totalLess/vals.length:0;document.getElementById('forecast30').textContent=fmt(avg*30*data.settings.price);document.getElementById('forecast365').textContent=fmt(avg*365*data.settings.price);const now=jstClockDate(),prefix=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-';const month=vals.filter(r=>r.k.startsWith(prefix));document.getElementById('monthBest').textContent=month.length?Math.min(...month.map(r=>r.n))+'本':'—';document.getElementById('monthSave').textContent=fmt(month.reduce((s,r)=>s+less(r.n)*data.settings.price,0))}
+function renderLegacy(){document.getElementById('todayLabel').textContent=selected+'本';document.getElementById('todayLess').textContent=less(selected)+'本';document.getElementById('todaySave').textContent=fmt(less(selected)*data.settings.price);document.getElementById('baseTarget').textContent='基準'+data.settings.baseline+'本 / 目標'+data.settings.target+'本';const cel=document.getElementById('celebrate');cel.classList.toggle('show',selected===0);document.getElementById('celebrateText').textContent=fmt(data.settings.baseline*data.settings.price)+'・純アルコール約'+Math.round(data.settings.baseline*alcoholPerCan())+'g分を回避';renderButtons();renderWeek();renderCalendar();renderChart();renderStats()}
+function render(){renderLegacy();if(data.records[todayKey()]===undefined){document.getElementById('todayLabel').textContent='未記録（'+selected+'本を選択中）';document.getElementById('todaySave').textContent='未記録';document.getElementById('todayLess').textContent='未記録';document.getElementById('celebrate').classList.remove('show');}}
 document.getElementById('savePast').onclick=()=>{
   if(!editingKey)return;
   data.records[editingKey]=editingValue;save();
@@ -229,20 +234,20 @@ document.getElementById('deletePast').onclick=()=>{
   closePastEditor();render();
 }
 document.getElementById('prevMonth').onclick=()=>{closePastEditor();calendarCursor.setMonth(calendarCursor.getMonth()-1);renderCalendar()}
-document.getElementById('nextMonth').onclick=()=>{const now=new Date();if(calendarCursor.getFullYear()===now.getFullYear()&&calendarCursor.getMonth()===now.getMonth())return;closePastEditor();calendarCursor.setMonth(calendarCursor.getMonth()+1);renderCalendar()}
+document.getElementById('nextMonth').onclick=()=>{const now=jstClockDate();if(calendarCursor.getFullYear()===now.getFullYear()&&calendarCursor.getMonth()===now.getMonth())return;closePastEditor();calendarCursor.setMonth(calendarCursor.getMonth()+1);renderCalendar()}
 document.getElementById('saveBtn').onclick=()=>{data.records[todayKey()]=selected;save();document.getElementById('message').textContent=selected===0?'✨ 0本達成！よくやった！':'今日の記録を保存しました。';render()}
 for(const id of ['baseline','target','price','abv','volume'])document.getElementById(id).value=data.settings[id];
 document.getElementById('saveSettings').onclick=()=>{const s={baseline:Math.max(1,Math.min(12,Number(document.getElementById('baseline').value)||4)),target:Math.max(0,Math.min(12,Number(document.getElementById('target').value)||0)),price:Math.max(0,Number(document.getElementById('price').value)||0),abv:Math.max(0,Math.min(20,Number(document.getElementById('abv').value)||0)),volume:Math.max(0,Number(document.getElementById('volume').value)||0)};if(s.target>s.baseline)s.target=s.baseline;data.settings=s;save();render();document.getElementById('message').textContent='設定を保存しました。'}
 if(data.records[todayKey()]!==undefined)selected=Number(data.records[todayKey()]);
 render();
-if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}))}
+if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}))}
 </script>
 
 <script>
 (function(){
   'use strict';
   function status(message){document.getElementById('backupStatus').textContent=message}
-  function rawData(){const raw=localStorage.getItem('beer_save_pwa_v1');return raw===null?JSON.stringify(data):raw}
+  function rawData(){return phase2Session?phase2Session.backupRaw():(localStorage.getItem('beer_save_pwa_v2')??localStorage.getItem('beer_save_pwa_v1')??JSON.stringify(data))}
   function fileName(suffix){return '飲まなかった貯金_'+keyFor(new Date())+'_'+Date.now()+suffix}
   function download(content,name,type){
     const url=URL.createObjectURL(new Blob([content],{type}));
@@ -255,6 +260,7 @@ if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.se
   }catch(error){status('保存できませんでした。Safariの保存先・空き容量をご確認ください。')}};
   document.getElementById('backupCsv').onclick=function(){try{
     const source=JSON.parse(rawData());
+    if(source.version===2){download(BeerLog.csv(BeerLog.decode(rawData())),fileName('.csv'),'text/csv;charset=utf-8');status('詳細記録と本数のみの記録を区別したCSVをダウンロードしました。');return;}
     if(!source || !source.records || typeof source.records!=='object' || Array.isArray(source.records))throw Error('invalid');
     const rows=[['日付','記録した本数']];
     for(const [day,count] of Object.entries(source.records).sort()){
@@ -267,5 +273,47 @@ if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.se
   }catch(error){status('CSVを作れませんでした。先にJSONバックアップを保存してください。')}};
 })();
 </script>
+<script>
+(function(){
+  'use strict';
+  function message(text){document.getElementById('message').textContent=text;}
+  function refresh(){data=phase2Session.view();selected=data.records[todayKey()]??2;render();}
+  function safe(action){try{action();}catch(error){if(phase2Session)refresh();message(error.message);}}
+  function backup(){document.getElementById('backupJson').click();}
+  function confirmEdit(day,total){return data.records[day]===undefined || data.records[day]===total || confirm(day+' の合計本数を '+total+'本に変更しますか？\n先に変更前のJSONをダウンロードします。');}
+  function count(day,total){
+    const old=data.records[day];if(!confirmEdit(day,total))return false;
+    BeerLog.setDailyTotal(phase2Session.get(),day,total);
+    if(old!==undefined && old!==total)backup();
+    phase2Session.saveCount(day,total);refresh();return true;
+  }
+  document.getElementById('saveBtn').onclick=()=>safe(()=>{const n=selected;if(count(todayKey(),n))message('今日の合計 '+n+'本を保存しました。詳細記録も含めた合計です。');});
+  document.getElementById('savePast').onclick=()=>safe(()=>{if(editingKey && count(editingKey,editingValue)){closePastEditor();message('過去日の合計本数を保存しました。');}});
+  document.getElementById('deletePast').onclick=()=>safe(()=>{
+    if(!editingKey)return;
+    if(phase2Session.get().drinks.some(d=>BeerLog.dayKey(d.startedAt)===editingKey))throw Error('この日には1缶ごとの詳細があります。「酒ログ」画面で詳細を確認・削除してから、本数の記録を削除してください。');
+    if(!confirm(editingKey+' の本数記録を削除しますか？\n先に変更前のJSONをダウンロードします。'))return;
+    backup();phase2Session.deleteCount(editingKey);refresh();closePastEditor();message('本数記録を削除しました。変更前のJSONも保存してください。');
+  });
+  document.getElementById('saveSettings').onclick=()=>safe(()=>{
+    const next={};for(const id of ['baseline','target','price','abv','volume']){if(document.getElementById(id).value==='')throw Error('設定の空欄を確認してください');next[id]=Number(document.getElementById(id).value);}
+    BeerLog.canonical({...phase2Session.get(),settings:next});
+    if(!confirm('設定を変更しますか？過去の節約額も現在の基準・価格で再計算されます。\n先にJSONをダウンロードします。'))return;
+    backup();phase2Session.saveSettings(next);refresh();message('設定を保存しました。');
+  });
+  if(phase2Error || !phase2Session){
+    message('データを読み込めません。保存を止めています。JSONを退避してください。'+(phase2Error?phase2Error.message:''));
+    for(const id of ['saveBtn','savePast','deletePast','saveSettings'])document.getElementById(id).disabled=true;
+    document.getElementById('todayLabel').textContent='読み込み停止';
+  }else{
+    refresh();
+    if(phase2Session.hasConflict())message('旧画面から変更された記録があります。旧記録と新記録を両方JSONで保存してから確認してください。新しい記録で旧記録を上書きしません。');
+  }
+  window.addEventListener('pageshow',event=>{if(event.persisted)location.reload();});
+  window.addEventListener('storage',event=>{if([BeerStore.KEY,BeerStore.OLD_KEY].includes(event.key))message('別の画面で記録が更新されました。再読み込みして最新の記録を確認してください。');});
+})();
+
+</script>
 </body>
 </html>
+

@@ -1,14 +1,16 @@
-const CACHE='beer-save-v4';
-const ASSETS=['./','./index.html','./manifest.webmanifest','./icon.svg'];
-self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)))});
-self.addEventListener('activate',e=>e.waitUntil(Promise.all([
-  self.clients.claim(),
-  caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k))))
-])));
-self.addEventListener('fetch',e=>{
-  if(e.request.mode==='navigate'){
-    e.respondWith(fetch(e.request).then(r=>{const copy=r.clone();caches.open(CACHE).then(c=>c.put('./index.html',copy));return r}).catch(()=>caches.match('./index.html')));
-    return;
-  }
-  e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(resp=>{const copy=resp.clone();caches.open(CACHE).then(c=>c.put(e.request,copy));return resp})));
+const CACHE='beer-save-phase2-v1';
+const PREFIX='beer-save-';
+const ASSETS=['./','./index.html','./log.html','./beer-core.js','./beer-store.js','./manifest.webmanifest','./icon.svg'];
+const ROOT=new URL('./',self.location.href);
+const URLS=new Set(ASSETS.map(path=>new URL(path,ROOT).href));
+self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting())));
+self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith(PREFIX)&&key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim())));
+self.addEventListener('fetch',event=>{
+  const url=new URL(event.request.url);url.search='';url.hash='';
+  if(event.request.method!=='GET'||url.origin!==ROOT.origin||!URLS.has(url.href))return;
+  const cacheKey=url.pathname===ROOT.pathname?new URL('./index.html',ROOT).href:url.href;
+  event.respondWith(fetch(event.request).then(response=>{
+    if(response.ok){const copy=response.clone();event.waitUntil(caches.open(CACHE).then(cache=>cache.put(cacheKey,copy)));}
+    return response;
+  }).catch(()=>caches.open(CACHE).then(cache=>cache.match(cacheKey)).then(response=>response||Response.error())));
 });
