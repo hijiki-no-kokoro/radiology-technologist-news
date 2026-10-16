@@ -44,10 +44,11 @@
     return Number.isFinite(volume)&&volume>0?Number((info.calorieValue*volume/100).toFixed(4)):null;
   }
   function pool(products,catalog){
-    const all=products.map(p=>({...p}));
+    const all=products.map(p=>({...p})),savedByJan=new Map();
+    for(const p of all){const code=jan(p.janCode);if(code){if(!savedByJan.has(code))savedByJan.set(code,[]);savedByJan.get(code).push(p);}}
     for(const p of catalog){
       // A saved copy of the same catalog entry is one candidate. Conflicting user entries remain distinct.
-      const saved=all.find(q=>jan(q.janCode)===p.janCode&&q.productName===p.productName&&q.volumeMl===p.volumeMl&&q.alcoholPercent===p.alcoholPercent&&q.revision===p.revision&&q.caloriesKcal===p.caloriesKcal&&q.category===p.category);
+      const saved=(savedByJan.get(jan(p.janCode))||[]).find(q=>q.productName===p.productName&&q.volumeMl===p.volumeMl&&q.alcoholPercent===p.alcoholPercent&&q.revision===p.revision&&q.caloriesKcal===p.caloriesKcal&&q.category===p.category);
       if(saved)Object.assign(saved,{aliases:p.aliases,excludeTokens:p.excludeTokens,ocrAliases:p.ocrAliases,catalog:true});else all.push(p);
     }
     return all;
