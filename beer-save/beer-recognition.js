@@ -49,7 +49,7 @@
     for(const p of catalog){
       // A saved copy of the same catalog entry is one candidate. Conflicting user entries remain distinct.
       const saved=(savedByJan.get(jan(p.janCode))||[]).find(q=>q.productName===p.productName&&q.volumeMl===p.volumeMl&&q.alcoholPercent===p.alcoholPercent&&q.revision===p.revision&&q.caloriesKcal===p.caloriesKcal&&q.category===p.category);
-      if(saved)Object.assign(saved,{aliases:p.aliases,excludeTokens:p.excludeTokens,ocrAliases:p.ocrAliases,catalog:true});else all.push(p);
+      if(saved)Object.assign(saved,{aliases:p.aliases,excludeTokens:p.excludeTokens,ocrAliases:p.ocrAliases,catalog:true,requiresConfirmation:!!p.requiresConfirmation});else all.push(p);
     }
     return all;
   }
@@ -65,9 +65,9 @@
         return matched&&!(p.excludeTokens||[]).some(x=>text.includes(normalize(x)))&&(!info.volumes.length||info.volumes.includes(p.volumeMl))&&(!info.alcohols.length||info.alcohols.includes(p.alcoholPercent));
       });reason=candidates.length?'ocr':'unknown';
     }
-    const conflict=candidates.length===1&&(info.volumes.some(v=>v!==candidates[0].volumeMl)||info.alcohols.some(a=>a!==candidates[0].alcoholPercent));
+    const conflict=candidates.length===1&&(candidates[0].requiresConfirmation||info.volumes.some(v=>v!==candidates[0].volumeMl)||info.alcohols.some(a=>a!==candidates[0].alcoholPercent));
     const autoSave=reason==='barcode'&&candidates.length===1&&!conflict;
-    return {info,janCode:code||'',candidates,reason,conflict,autoSave};
+    return {info,janCode:code||'',candidates,reason,conflict,autoSave,reviewReason:candidates.some(p=>p.requiresConfirmation)?'公式情報に容量・度数の変更が見つかりました。缶の表示を確認してください。':''};
   }
   return {normalize,jan,facts,calories,plan};
 });

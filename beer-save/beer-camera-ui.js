@@ -35,7 +35,7 @@
     if(plan.candidates.length===1&&!plan.conflict){
       const p=plan.candidates[0];if(await fill(plan,p,at)){say(applied(p));$('beerPhotoSummary').textContent=applied(p);}else say('入力中の内容を保持しました。読み取り候補は上に表示しています。');
     }else if(plan.candidates.length){
-      say(plan.conflict?'読み取り値と商品情報が一致しません。上の候補と缶の表示を確認してください。':'商品候補が見つかりました。容量・度数・新旧仕様を確認して、上の候補を1つ選んでください。',plan.conflict);
+      say(plan.conflict?(plan.reviewReason||'読み取り値と商品情報が一致しません。上の候補と缶の表示を確認してください。'):'商品候補が見つかりました。容量・度数・新旧仕様を確認して、上の候補を1つ選んでください。',plan.conflict);
       $('beerPhotoSummary').textContent+=(plan.conflict?' ／ 不一致のため反映していません。':' ／ 仕様が複数あるため選択してください。');
     }else if(plan.reason==='unknown-barcode'){
       if(await fill(plan,null,at))say('JAN '+plan.janCode+' を読み取りましたが、対応商品情報がありません。JAN欄には反映済みです。商品名・容量・度数を入力して一度保存すると、次回から照合できます。');

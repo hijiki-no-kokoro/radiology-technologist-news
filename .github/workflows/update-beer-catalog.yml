@@ -1,0 +1,82 @@
+name: Weekly beer product dictionary update
+
+on:
+  schedule:
+    # Monday 03:23 UTC = Monday 12:23 Japan time.
+    - cron: '23 3 * * 1'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/update-beer-catalog.yml'
+      - 'scripts/update_beer_catalog.py'
+      - 'scripts/publish_beer_catalog.py'
+
+permissions:
+  contents: write
+  pages: write
+
+concurrency:
+  group: weekly-beer-catalog
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+      - name: Test update and recognition protections
+        run: |
+          python -m unittest discover -s tests -p 'test_beer_catalog*.py'
+          node --test tests/beer-catalog-auto.test.cjs
+      - name: Collect verifiable single-can product facts
+        run: python scripts/update_beer_catalog.py --apply
+      - name: Validate generated dictionary
+        run: node --test tests/beer-catalog-auto.test.cjs
+      - name: Save only dictionary-related changes
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add beer-save/beer-catalog.js beer-save/log.html beer-save/sw.js
+          if ! git diff --cached --quiet; then
+            git commit -m 'Update verified beer product dictionary'
+            git fetch origin main
+            git rebase origin/main
+            git push origin HEAD:main
+          fi
+      - name: Request publication and verify served dictionary
+        # Bot pushes alone do not trigger Pages. This explicitly requests a build
+        # and also retries publication after a previous deployment failure.
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python scripts/publish_beer_catalog.py
+      - name: Keep collection and publication reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: beer-catalog-update-result
+          path: work/beer-catalog-*.json
+          retention-days: 30
+      - name: Summarize sources and additions
+        if: always()
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json, os
+          p=Path('work/beer-catalog-report.json')
+          if p.exists():
+              r=json.loads(p.read_text())
+              lines=['## 商品辞書の週次確認',f"確認日: {r['checkedOn']} / {r['count']}件 / 追加{len(r['added'])}件 / 保留{len(r['held'])}件"]
+              lines += [f"- {s['manufacturer']}: {s['status']}" for s in r['sources'].values()]
+              with open(os.environ['GITHUB_STEP_SUMMARY'],'a') as f:f.write('\n'.join(lines)+'\n')
+          PY
