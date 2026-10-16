@@ -1,4 +1,4 @@
-const CACHE='beer-save-catalog-auto-20261016-3270a34b2f10';
+const CACHE='beer-save-barcode-capture-20261016-1';
 const PREFIX='beer-save-';
 const RUNTIME='beer-ocr-runtime-v1';
 const ASSETS=['./','./index.html','./log.html','./beer-core.js','./beer-store.js','./manifest.webmanifest','./icon.svg','./beer-catalog.js','./beer-recognition.js','./beer-photo-engine.js','./beer-camera-ui.js','./beer-session-ui.js','./vendor/zxing-browser-0.2.1.min.js','./vendor/tesseract-7.0.0.min.js','./vendor/tesseract-worker-7.0.0.min.js'];
