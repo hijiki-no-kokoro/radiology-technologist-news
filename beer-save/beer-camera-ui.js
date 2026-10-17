@@ -5,6 +5,8 @@
   const captures=[[capture,'front'],[barcodeCapture,'barcode'],[nutritionCapture,'nutrition']];
   const pendingKey='beer-save-capture-pending-v1';
   const buttons=[$('beerPhotoButton'),$('beerBarcodeButton'),$('beerNutritionButton')];
+  const liveButton=$('beerLiveButton'),liveDialog=$('beerLiveDialog'),liveVideo=$('beerLiveVideo'),livePreview=$('beerLivePreview');
+  let liveScanner=null,livePlan=null,liveProduct=null,liveAt=null,liveOpen=false,liveSaving=false,liveGeneration=0;
   let context=null,dirty=false,mode='front',generation=0,busy=false,pendingReview=null,readMethod='camera',capturePending=false,returnTimer=null,interrupted=false;
   function pendingCapture(value){
     capturePending=!!value;clearTimeout(returnTimer);
@@ -23,7 +25,7 @@
     },1200);
   }
   function say(text,error=false){status.textContent=text;status.classList.toggle('error',error);}
-  function setBusy(value){busy=value;buttons.forEach(button=>button.disabled=value||!repo);captures.forEach(([input])=>input.disabled=value||!repo);library.disabled=value||!repo;libraryMode.disabled=value||!repo;$('beerJanLookupButton').disabled=value||!repo;$('beerCancel').hidden=!value;}
+  function setBusy(value){busy=value;buttons.forEach(button=>button.disabled=value||!repo);liveButton.disabled=value||!repo;captures.forEach(([input])=>input.disabled=value||!repo);library.disabled=value||!repo;libraryMode.disabled=value||!repo;$('beerJanLookupButton').disabled=value||!repo;$('beerCancel').hidden=!value;}
   function clearResult(){panel.hidden=true;$('beerPhotoText').textContent='';$('beerPhotoSummary').textContent='';candidates.replaceChildren();names.replaceChildren();}
   function review(text){
     return new Promise(resolve=>{pendingReview?.(false);pendingReview=resolve;$('beerPhotoConfirmText').textContent=text;const d=$('beerPhotoConfirm');if(d.showModal)d.showModal();else d.setAttribute('open','');});
@@ -31,6 +33,69 @@
   function resolveReview(value){const d=$('beerPhotoConfirm');if(d.close)d.close();else d.removeAttribute('open');const done=pendingReview;pendingReview=null;done?.(value);}
   $('beerPhotoConfirmNo').onclick=()=>resolveReview(false);$('beerPhotoConfirmYes').onclick=()=>resolveReview(true);$('beerPhotoConfirm').addEventListener('cancel',()=>resolveReview(false));
   function afterSave(){context=null;dirty=false;clearResult();captures.forEach(([input])=>input.value='');library.value='';pendingCapture(null);}
+  function liveSay(text,error=false){if($('beerLiveStatus').textContent!==text)$('beerLiveStatus').textContent=text;$('beerLiveStatus').classList.toggle('error',error);}
+  function stopLive(close=true){
+    liveGeneration++;liveScanner?.stop();liveScanner=null;liveOpen=false;resolveReview(false);liveSaving=false;$('beerLiveConfirm').disabled=false;
+    if(close){if(liveDialog.close)liveDialog.close();else liveDialog.removeAttribute('open');livePreview.width=1;livePreview.height=1;livePlan=null;liveProduct=null;}
+    setBusy(false);
+  }
+  function selectLiveProduct(p){
+    $('beerLiveQuestion').textContent=livePlan.conflict||p.requiresConfirmation?'缶の表示も確認してください':'この商品で間違いありませんか？';
+    liveProduct=p;$('beerLiveProduct').textContent=p.productName;$('beerLiveFacts').textContent=p.volumeMl+'ml ・ '+p.alcoholPercent+'%';
+    $('beerLiveConfirm').textContent=livePlan.conflict||p.requiresConfirmation?'缶の表示を確認して入力する':'この商品で1缶を記録';$('beerLiveConfirm').hidden=false;
+    if(livePlan.conflict||p.requiresConfirmation)liveSay(livePlan.reviewReason||'商品情報に複数の仕様があります。缶の表示を確認してください。');
+  }
+  function liveDetected(code,token){
+    if(!liveOpen||token!==liveGeneration)return;
+    liveAt=new Date().toISOString();readMethod='camera';livePlan=R.plan('',code,state.products,window.BeerCatalog?.products||[]);
+    liveVideo.hidden=true;livePreview.hidden=false;$('beerLiveResult').hidden=false;$('beerLiveRetry').hidden=false;
+    $('beerLiveCode').textContent='JAN '+code;$('beerLiveChoices').replaceChildren();
+    if(livePlan.candidates.length===1){selectLiveProduct(livePlan.candidates[0]);}
+    else if(livePlan.candidates.length){
+      $('beerLiveQuestion').textContent='読み取ったJANに複数の商品情報があります';
+      $('beerLiveProduct').textContent='商品の候補が見つかりました';$('beerLiveFacts').textContent='缶の表示に合うものを選んでください';$('beerLiveConfirm').hidden=true;
+      for(const p of livePlan.candidates)$('beerLiveChoices').append(button(productLabel(p),()=>selectLiveProduct(p)));
+    }else{
+      $('beerLiveQuestion').textContent='読み取りは完了しました';
+      $('beerLiveProduct').textContent='バーコードを認識しました';$('beerLiveFacts').textContent='商品情報は未登録です';$('beerLiveConfirm').textContent='商品情報を入力する';$('beerLiveConfirm').hidden=false;
+    }
+    rootVibrate();
+  }
+  function rootVibrate(){try{navigator.vibrate?.(60);}catch(_){} }
+  async function startLive(){
+    if(busy&&!liveOpen)return;
+    stopLive(false);pendingCapture(null);liveOpen=true;const token=++liveGeneration;liveSaving=false;
+    livePlan=null;liveProduct=null;livePreview.hidden=true;liveVideo.hidden=false;$('beerLiveResult').hidden=true;$('beerLiveRetry').hidden=true;
+    $('beerLiveViewport').dataset.state='starting';setBusy(true);$('beerCancel').hidden=true;
+    if(!liveDialog.open){if(liveDialog.showModal)liveDialog.showModal();else liveDialog.setAttribute('open','');}
+    if(!window.BeerLiveBarcode){liveSay('ライブ読み取りを準備できませんでした。写真を選んで読み取ってください。',true);$('beerLiveRetry').hidden=false;return;}
+    liveScanner=window.BeerLiveBarcode.create({video:liveVideo,preview:livePreview,
+      onState:(phase,text)=>{if(!liveOpen||token!==liveGeneration)return;$('beerLiveViewport').dataset.state=phase;liveSay(text,phase==='error');if(phase==='error')$('beerLiveRetry').hidden=false;},
+      onDetected:code=>liveDetected(code,token)});
+    await liveScanner.start();
+  }
+  async function confirmLive(){
+    if(!livePlan||liveSaving)return;
+    liveSaving=true;$('beerLiveConfirm').disabled=true;const token=liveGeneration;
+    try{
+      const p=liveProduct,plan=livePlan,at=liveAt;
+      if(!p||plan.conflict||p.requiresConfirmation){
+        if(await fill(plan,p,at)){stopLive();say(p?'缶の表示に合わせて商品情報を確認・修正して保存してください。':'JANを入力しました。商品名・容量・度数を確認して保存してください。');formLink();}return;
+      }
+      if(dirty&&!await review('入力中の商品情報があります。この商品を1缶記録しますか？'))return;
+      if(!liveOpen||token!==liveGeneration)return;
+      const input={...p,startedAt:at,purchasePriceYen:null,allocation:'additional',recordMethod:'camera',verificationStatus:'user-confirmed'};
+      let next;
+      try{next=B.add(state,input);}catch(e){if(!e.message.includes('2分以内'))throw e;if(!await review(e.message+'\n別の1缶として追加しますか？'))return;next=B.add(state,input,{allowDuplicate:true});}
+      if(!liveOpen||token!==liveGeneration)return;
+      lastAdded=next.drinks.at(-1).id;commit(next);stopLive();afterSave();say(p.productName+'を1缶記録しました。');note(p.productName+'を確認して1缶記録しました。');
+    }catch(e){liveSay(e.message||'保存できませんでした。内容を確認してください。',true);}
+    finally{if(token===liveGeneration){liveSaving=false;$('beerLiveConfirm').disabled=false;}}
+  }
+  liveButton.onclick=startLive;$('beerLiveRetry').onclick=startLive;$('beerLiveConfirm').onclick=confirmLive;
+  $('beerLiveClose').onclick=()=>{stopLive();say('読み取りを閉じました。記録は追加していません。');};
+  liveDialog.addEventListener('cancel',()=>stopLive());
+  $('beerLivePhoto').onclick=()=>{stopLive();mode='barcode';libraryMode.value='barcode';$('beerLibraryFallback').open=true;say('バーコードの写真を選んで読み取れます。');$('beerLibraryFallback').scrollIntoView?.({block:'start'});};
   function begin(nextMode){if(busy)return;mode=nextMode;libraryMode.value=mode;pendingCapture(mode);say((mode==='barcode'?'バーコード':mode==='nutrition'?'栄養表示':'お酒')+'の写真を選んでください。撮影後に反応がない場合は「写真を選択」を利用できます。');}
   function inputTime(iso){return new Date(Date.parse(iso)+9*3600000).toISOString().slice(0,16);}
   function formLink(){ $('drinkForm').scrollIntoView?.({behavior:'smooth',block:'start'}); }
@@ -110,9 +175,10 @@
   $('autoBarcode').checked=state?.cameraPreferences.autoSaveKnownBarcode??true;
   $('autoBarcode').onchange=()=>guarded(()=>{const next=structuredClone(state);next.cameraPreferences.autoSaveKnownBarcode=$('autoBarcode').checked;commit(next);say('JAN一致時の自動保存設定を変更しました。');});
   window.BeerPhotoForm={metadata:()=>context?{recordMethod:context.recordMethod}:{recordMethod:'manual'},janFor:p=>context?.janCode||p.janCode||'',afterSave};
-  window.addEventListener('pagehide',()=>{interrupted=busy;generation++;E.cancel();resolveReview(false);context=null;clearResult();setBusy(false);});
+  window.addEventListener('pagehide',()=>{interrupted=busy;stopLive();generation++;E.cancel();resolveReview(false);context=null;clearResult();setBusy(false);});
   window.addEventListener('pageshow',returnFromCapture);
   window.addEventListener('focus',returnFromCapture);
   document.addEventListener('visibilitychange',returnFromCapture);
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'&&liveOpen){stopLive();say('カメラを停止しました。もう一度「バーコードを読み取る」を押してください。');}});
   restoreCapture();setBusy(false);returnFromCapture();
 })();
