@@ -73,7 +73,7 @@ dialog{width:min(92vw,460px);border:1px solid var(--line);border-radius:18px;pad
  window.addEventListener('unhandledrejection',show);
 })();
 </script>
-<script src="./beer-catalog.js?v=live-barcode-20261017-1"></script><script src="./beer-core.js?v=live-barcode-20261017-1"></script><script src="./beer-store.js?v=live-barcode-20261017-1"></script><script src="./beer-recognition.js?v=live-barcode-20261017-1"></script><script src="./beer-photo-engine.js?v=live-barcode-20261017-1"></script>
+<script src="./beer-catalog.js?v=catalog-auto-20261019-3270a34b2f10"></script><script src="./beer-core.js?v=catalog-auto-20261019-3270a34b2f10"></script><script src="./beer-store.js?v=catalog-auto-20261019-3270a34b2f10"></script><script src="./beer-recognition.js?v=catalog-auto-20261019-3270a34b2f10"></script><script src="./beer-photo-engine.js?v=catalog-auto-20261019-3270a34b2f10"></script>
 <script>
 'use strict';
 const B=BeerLog,$=id=>document.getElementById(id),money=n=>Math.round(n).toLocaleString('ja-JP')+'円',decimal=n=>Number(n.toFixed(1)).toLocaleString('ja-JP');
@@ -153,7 +153,7 @@ guarded(()=>{if(B.empty().version!==4)throw Error('アプリの更新を読み�
 if(!state){for(const el of document.querySelectorAll('form button,form input,form select'))el.disabled=true;}
 </script>
 <script>window.addEventListener('pageshow',event=>{if(event.persisted)location.reload();});if('serviceWorker' in navigator && /^https?:$/.test(location.protocol))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));</script>
-<script src="./beer-session-ui.js?v=live-barcode-20261017-1"></script>
-<script src="./beer-live-barcode.js?v=live-barcode-20261017-1"></script>
-<script src="./beer-camera-ui.js?v=live-barcode-20261017-1"></script>
+<script src="./beer-session-ui.js?v=catalog-auto-20261019-3270a34b2f10"></script>
+<script src="./beer-live-barcode.js?v=catalog-auto-20261019-3270a34b2f10"></script>
+<script src="./beer-camera-ui.js?v=catalog-auto-20261019-3270a34b2f10"></script>
 </html>
