@@ -1,5 +1,49 @@
 [
   {
+    "date": "2026-10-22",
+    "category": "その他",
+    "importance": "低",
+    "headline": "【重要】「JARTIS」の一時閉鎖について (PHP脆弱性対応) - 日本診療放射線技師会",
+    "summary": "【重要】「JARTIS」の一時閉鎖について (PHP脆弱性対応) 日本診療放射線技師会",
+    "why": "放射線部門の実務への影響を確認する価値があります。",
+    "source": "日本診療放射線技師会",
+    "url": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE1zMUNXUkQtdFhMdFpuaFhVSG1SN0tYMkRCOUY0MTA3QTdLc01WbkV5emVyN0xTQ29hUF9ZbTRhUzlCVHA3UVFkdUFvb2FGdUEycVE?oc=5",
+    "track": "official"
+  },
+  {
+    "date": "2026-10-23",
+    "category": "安全管理",
+    "importance": "高",
+    "headline": "医療被ばく低減施設に認定 敦賀市立敦賀病院、嶺南地域で初 - 47NEWS",
+    "summary": "医療被ばく低減施設に認定 敦賀市立敦賀病院、嶺南地域で初 47NEWS",
+    "why": "放射線部門の実務への影響を確認する価値があります。",
+    "source": "47NEWS",
+    "url": "https://news.google.com/rss/articles/CBMiS0FVX3lxTE5yYWRsbE8td1pSYk5mVU9DaDF0SGFDZnl2Ui0wVzF3Z0p1dF9JRGhET1poMl8xQk5YanFLNHdHOThSbktGbTB4b0ljUQ?oc=5",
+    "track": "general"
+  },
+  {
+    "date": "2026-10-22",
+    "category": "安全管理",
+    "importance": "高",
+    "headline": "医療被ばく低減施設に認定 敦賀市立敦賀病院、嶺南地域で初 - 中日新聞Web",
+    "summary": "医療被ばく低減施設に認定 敦賀市立敦賀病院、嶺南地域で初 中日新聞Web",
+    "why": "放射線部門の実務への影響を確認する価値があります。",
+    "source": "中日新聞Web",
+    "url": "https://news.google.com/rss/articles/CBMiVEFVX3lxTE9veWJEcjg5bjQ2bGsxSEJvZzlHbV8tR2lhdWFua2NXWDg5Unl0UWg0cUlLZldWWWx2MDZQbklsV2FZYW9WYUFmTzRMWnVQUGNHZ2Z0Xw?oc=5",
+    "track": "general"
+  },
+  {
+    "date": "2026-10-22",
+    "category": "教育",
+    "importance": "低",
+    "headline": "駒澤大学とシーメンスヘルスケアの産学連携による「画像診断人材教育センター」がオープン～アジア初（※1） - インナビネット",
+    "summary": "駒澤大学とシーメンスヘルスケアの産学連携による「画像診断人材教育センター」がオープン～アジア初（※1） インナビネット",
+    "why": "放射線部門の実務への影響を確認する価値があります。",
+    "source": "インナビネット",
+    "url": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE4zeDlBczA4YkVDQllhOWY0b25ra0NkRGxXVkljem00ZEVrSGtDSFNDX29pQ1E0U05jR1l3Mi1sS2xPVk5mcXlsaWxIRGo4N3QxdkpWTUl6c1hUX2RRTWJpTXZ5TWY3dw?oc=5",
+    "track": "general"
+  },
+  {
     "date": "2026-10-21",
     "category": "その他",
     "importance": "低",
