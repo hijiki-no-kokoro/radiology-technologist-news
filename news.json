@@ -1,5 +1,93 @@
 [
   {
+    "date": "2026-10-23",
+    "category": "その他",
+    "importance": "低",
+    "headline": "【重要】メール配信システム「ブラストメール」への不審アクセスに伴う個人情報漏えいの可能性について (お詫び) 10月23日17:20追記 - 日本診療放射線技師会",
+    "summary": "【重要】メール配信システム「ブラストメール」への不審アクセスに伴う個人情報漏えいの可能性について (お詫び) 10月23日17:20追記 日本診療放射線技師会",
+    "why": "放射線部門の実務への影響を確認する価値があります。",
+    "source": "日本診療放射線技師会",
+    "url": "https://news.google.com/rss/articles/CBMiT0FVX3lxTFBtYTJrOF9DN1ZhdWplbEVKcEhLQWFTT1c5b3R4RlVoVXAycnoyYzlxNlgwYWRVdmRqYXhGWFUtSUJLSEhKckp5bDdIQmR2b2c?oc=5",
+    "track": "official"
+  },
+  {
+    "date": "2026-10-23",
+    "category": "学術",
+    "importance": "低",
+    "headline": "2026年度 画像医療システム産業研究会 開催のお知らせ - 日本診療放射線技師会",
+    "summary": "2026年度 画像医療システム産業研究会 開催のお知らせ 日本診療放射線技師会",
+    "why": "放射線部門の実務への影響を確認する価値があります。",
+    "source": "日本診療放射線技師会",
+    "url": "https://news.google.com/rss/articles/CBMiWEFVX3lxTE9tYVNwTTR1NU1xODZSbmUxSGNIb1ZQX1o2LVluQm5NdVNZWW54am9JUm5CbndGMUFvckhzWjNZejh4dS1yTHBmb3owdEgwZFFoMTZJNTJjX1E?oc=5",
+    "track": "official"
+  },
+  {
+    "date": "2026-10-23",
+    "category": "教育",
+    "importance": "低",
+    "headline": "超音波スクリーニング研修講演会2026東京のご案内 - 日本診療放射線技師会",
+    "summary": "超音波スクリーニング研修講演会2026東京のご案内 日本診療放射線技師会",
+    "why": "放射線部門の実務への影響を確認する価値があります。",
+    "source": "日本診療放射線技師会",
+    "url": "https://news.google.com/rss/articles/CBMiVEFVX3lxTE1CUm16US1aVzcxeGRNOXNfTnl0YzZQNExJSjRVRUVTbHo1aXpyOVc2NFpLaHNJNkxZLTRYVFprU18zTHg0aWwzQnRnOUw4Z1BqRjA0aQ?oc=5",
+    "track": "official"
+  },
+  {
+    "date": "2026-10-23",
+    "category": "放射線治療",
+    "importance": "低",
+    "headline": "シーメンス・ヘルシニアーズ、エヌビディアと放射線治療AIで協業 治療計画作成を支援 - 医療テックニュース",
+    "summary": "シーメンス・ヘルシニアーズ、エヌビディアと放射線治療AIで協業 治療計画作成を支援 医療テックニュース",
+    "why": "放射線部門の実務への影響を確認する価値があります。",
+    "source": "医療テックニュース",
+    "url": "https://news.google.com/rss/articles/CBMiYEFVX3lxTFBQNGJ5S0xpY1htTnozb0xmb3BGT1dFY3p2ZWNqeThIZ2FHc1dpY3MxZUxSWFRKMks5WGwyQkF3QzNrWXFQd2lMdGVBbWhWU2dDQUcyZzJpcXFQeUNXZVhTdA?oc=5",
+    "track": "general"
+  },
+  {
+    "date": "2026-10-22",
+    "category": "放射線治療",
+    "importance": "低",
+    "headline": "駒澤大学とシーメンスヘルスケアの産学連携による「画像診断人材教育センター」がオープン～アジア初（※１）、画像診断から放射線治療までを一貫して学べる医療人材育成拠点が始動～ - Digital PR Platform",
+    "summary": "駒澤大学とシーメンスヘルスケアの産学連携による「画像診断人材教育センター」がオープン～アジア初（※１）、画像診断から放射線治療までを一貫して学べる医療人材育成拠点が始動～ Digital PR Platform",
+    "why": "放射線部門の実務への影響を確認する価値があります。",
+    "source": "Digital PR Platform",
+    "url": "https://news.google.com/rss/articles/CBMiQ0FVX3lxTFBHN3IzOTJGWktuVV8zM2tYcHlwbzU1ZmRPc1dIU0lYSUFZV0VEWmJnaWkwdlJCQ3Z5bVg5MXMydDQtWDA?oc=5",
+    "track": "general"
+  },
+  {
+    "date": "2026-10-22",
+    "category": "AI",
+    "importance": "低",
+    "headline": "日本製2nm半導体で医用AI画像診断システム開発へ、LSTCら（EE Times Japan） - Yahoo!ニュース",
+    "summary": "日本製2nm半導体で医用AI画像診断システム開発へ、LSTCら（EE Times Japan） Yahoo!ニュース",
+    "why": "放射線部門の実務への影響を確認する価値があります。",
+    "source": "Yahoo!ニュース",
+    "url": "https://news.google.com/rss/articles/CBMif0FVX3lxTE1kWnNBWUpPNlEwZ05ROGFuRktwbkVHc2ZlMkhRdlFEVmFYVG1lRUNzN1NjTXFVZWstREZ3QUtKc3UxLWdOaUQ5X2pQUk9KazZ2aXRTNUlUVlJJOHJmYXBlTnd6MVhlLUFVWEpjRE9rbVQycWl2SGx4ci1obUpndDQ?oc=5",
+    "track": "general"
+  },
+  {
+    "date": "2026-10-23",
+    "category": "学術",
+    "importance": "低",
+    "headline": "【保健･医療･福祉情報セキュアネットワーク基盤普及促進コンソーシアム】HEASNETフォーラム2026開催のご案内 - 日本医学放射線学会",
+    "summary": "【保健･医療･福祉情報セキュアネットワーク基盤普及促進コンソーシアム】HEASNETフォーラム2026開催のご案内 日本医学放射線学会",
+    "why": "放射線部門の実務への影響を確認する価値があります。",
+    "source": "日本医学放射線学会",
+    "url": "https://news.google.com/rss/articles/CBMib0FVX3lxTFBEQms3MFcwYUMzSHoxdWR0VngyLUVxZENTbmxnRUZmaVNQT1ZubDVEdTAzTmcxX3BrZExMT25kWlpZc1F1Z2liTVg0NUxmemhuLWw0SU1mOGluZ2FEZjIxUS1iQ3JULUZndHlyNVVLMA?oc=5",
+    "track": "general"
+  },
+  {
+    "date": "2026-10-23",
+    "category": "学術",
+    "importance": "低",
+    "headline": "【JIRA（日本画像医療システム工業会）】2026年度 画像医療システム産業研究会 開催のご案内 - 日本医学放射線学会",
+    "summary": "【JIRA（日本画像医療システム工業会）】2026年度 画像医療システム産業研究会 開催のご案内 日本医学放射線学会",
+    "why": "放射線部門の実務への影響を確認する価値があります。",
+    "source": "日本医学放射線学会",
+    "url": "https://news.google.com/rss/articles/CBMib0FVX3lxTE8yT01jTlU5eGl2Y1ZZeHlYQTJVWWxUSXl1R2VfWDdvOFZtdFRraUVPak9kWEhWWUp5X01XS2g4bk9BV1l6RV9tTHNrQXh3d0daTy04S2xRUmlGenZVb0V4aXBqSTZsdDNLcU02QUp5Yw?oc=5",
+    "track": "general"
+  },
+  {
     "date": "2026-10-22",
     "category": "その他",
     "importance": "低",
