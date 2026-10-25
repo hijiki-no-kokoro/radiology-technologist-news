@@ -1,6 +1,50 @@
 [
   {
     "date": "2026-10-23",
+    "category": "MRI",
+    "importance": "低",
+    "headline": "ゼロシステム、ZERO Supplyをメディエ・データおよびNextantと連携 医療材料管理とMRI検査前の確認を支援 - Infoseek",
+    "summary": "ゼロシステム、ZERO Supplyをメディエ・データおよびNextantと連携 医療材料管理とMRI検査前の確認を支援 Infoseek",
+    "why": "放射線部門の実務への影響を確認する価値があります。",
+    "source": "Infoseek",
+    "url": "https://news.google.com/rss/articles/CBMickFVX3lxTE12SWQ5NWpfb1NvOENxb0t2YXdib0l5RUNhLUlFckpFS3RGV0VqZy1GU1RQUmtzV0E4bFkybzFuR25Ray0zbnR6bVJQcFVpdjFCWWZjM3dIb05qZTdYUndMb3hua01rVG1YdEpxQlZWYl9Zdw?oc=5",
+    "track": "general"
+  },
+  {
+    "date": "2026-10-23",
+    "category": "放射線治療",
+    "importance": "低",
+    "headline": "多様ながんから血液がんまで、治療を支え続けた放射線治療装置の更新を - ReadyFor(クラウドファンディング)",
+    "summary": "多様ながんから血液がんまで、治療を支え続けた放射線治療装置の更新を ReadyFor(クラウドファンディング)",
+    "why": "放射線部門の実務への影響を確認する価値があります。",
+    "source": "ReadyFor(クラウドファンディング)",
+    "url": "https://news.google.com/rss/articles/CBMiWEFVX3lxTE5Sak1uN0dxdl9SSTFoWnNrVjEzNWIzbmpENlVvMnhITjZWM05iMWd5N0toQXFOYlRZYUhLM2hMMk5NdjR5THk4SHBueGU0Mzc0U0NCclJ3bVc?oc=5",
+    "track": "general"
+  },
+  {
+    "date": "2026-10-23",
+    "category": "学術",
+    "importance": "低",
+    "headline": "第 54 回日本放射線技術学会秋季学術大会プログラム概要 - 日本放射線技術学会",
+    "summary": "第 54 回日本放射線技術学会秋季学術大会プログラム概要 日本放射線技術学会",
+    "why": "放射線部門の実務への影響を確認する価値があります。",
+    "source": "日本放射線技術学会",
+    "url": "https://news.google.com/rss/articles/CBMiekFVX3lxTFB2YnRCNTMxb0hwdU5pdkVZOVVCY00xSEdmd0hHOVdOVE1PbHF2aW03Z3NHaVkzQjRGeTI5Z0RxYVY1YVNTMGNBWkpsRFItSG9SaE1SeWZFRWR1eVY5UlNUd0dFclFNeVFRQ2llcldPWHRrMHRMU0RidHl3?oc=5",
+    "track": "general"
+  },
+  {
+    "date": "2026-10-23",
+    "category": "学術",
+    "importance": "低",
+    "headline": "日本医学放射線学会賞 - 日本医学放射線学会",
+    "summary": "日本医学放射線学会賞 日本医学放射線学会",
+    "why": "放射線部門の実務への影響を確認する価値があります。",
+    "source": "日本医学放射線学会",
+    "url": "https://news.google.com/rss/articles/CBMibkFVX3lxTE5jRVpNc1R0YWpfU21OQkhPMkJWWUFmMVVtNlBMY19xMG41YWRwQ1FOZW5IdUVwVEpBMFVaeTRsbDJha1VkWXozNTBOdlNlOGN6aWJsdFd4N2NHbWx6S3lzZS1HRHVGM2hiSzllSGhn?oc=5",
+    "track": "general"
+  },
+  {
+    "date": "2026-10-23",
     "category": "その他",
     "importance": "低",
     "headline": "【重要】メール配信システム「ブラストメール」への不審アクセスに伴う個人情報漏えいの可能性について (お詫び) 10月23日17:20追記 - 日本診療放射線技師会",
