@@ -931,7 +931,7 @@ def canonical_title(title):
     if m and not re.search(r'[0-9０-９第部章編回版号更新]', m.group(1)):
         t = t[:m.start()]
     t = re.sub(r'\s*\d+枚目/全\d+枚.*$', '', t)                    # "3枚目/全44枚 1448871"
-    t = re.sub(r'^\s*【画像】\s*', '', t)
+    t = re.sub(r'^\s*(?:【[^】]{1,30}】|［[^］]{1,10}］|\[[^\]]{1,10}\])\s*', '', t)   # 【画像】【JIRA…】［案内板］［お知らせ］
     t = re.sub(r'^\s*\d{4}/\d{1,2}/\d{1,2}\s+(?:お知らせ|会告/告示|会告|告示)?\s*', '', t)
     return norm(t)
 
