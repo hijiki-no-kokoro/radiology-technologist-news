@@ -35,13 +35,13 @@
   {
     "date": "2026-10-15",
     "category": "血管撮影",
-    "importance": "中",
+    "importance": "高",
     "headline": "IVR手技施行に関する診療体制についてのガイドライン",
     "summary": "",
-    "why": "",
+    "why": "推奨内容の変更点を確認し、普段の撮影条件やプロトコルと照らし合わせておきましょう。",
     "source": "日本IVR学会",
     "url": "https://www.jsir.or.jp/about/guide_line/ivr-procedures/",
-    "track": "general"
+    "track": "official"
   },
   {
     "date": "2026-10-23",

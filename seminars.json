@@ -1,5 +1,5 @@
 {
- "checked_at": "2026-10-27T17:38+09:00",
+ "checked_at": "2026-10-27T17:40+09:00",
  "items": [
   {
    "title": "第4回MRI Rookies セミナー開催のお知らせ",
@@ -239,6 +239,19 @@
    "apply_start": "",
    "apply_end": "",
    "place": "奈良",
+   "category": "MRI",
+   "source": "日本磁気共鳴専門技術者認定機構"
+  },
+  {
+   "title": "第30回山梨MRI技術研究会開催のお知らせ",
+   "url": "https://plaza.umin.ac.jp/~JMRTS/dl/yamanashi30kai.pdf",
+   "kind": "JMRTS",
+   "status": "",
+   "event_start": "2026-12-05",
+   "event_end": "2026-12-05",
+   "apply_start": "",
+   "apply_end": "",
+   "place": "山梨",
    "category": "MRI",
    "source": "日本磁気共鳴専門技術者認定機構"
   },

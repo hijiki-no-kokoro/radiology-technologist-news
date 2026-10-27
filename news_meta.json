@@ -1,6 +1,6 @@
 {
-  "checked_at": "2026-10-27T17:38+09:00",
-  "added": 9,
+  "checked_at": "2026-10-27T17:40+09:00",
+  "added": 1,
   "total": 151,
   "sources": {
     "医療機能評価機構": {
@@ -62,14 +62,14 @@
       "picked": 0
     },
     "MR認定研究会・セミナー": {
-      "listed": 17
+      "listed": 18
     },
     "精中機構の講習会": {
       "listed": 5
     },
     "技師会の研修一覧": {
-      "listed": 34,
-      "upcoming": 34
+      "listed": 35,
+      "upcoming": 35
     },
     "メール通知": {
       "result": "no-items",
