@@ -424,6 +424,10 @@ def is_news_item(x):
     if '/activity/lifelong-study' in url:
         return False
 
+    # 技師会サイトの求人の掲載案内
+    if re.match(r'^求人(情報)?\s*(を)?掲載', title):
+        return False
+
     if re.search(r'^画像\s*\d+\s*/\s*\d+', title):
         return False
 
@@ -857,11 +861,13 @@ SPECIALTY_SOURCES = (
     ('日本乳癌検診学会', 'https://www.jabcs.jp/', 'blocks', 'マンモグラフィ', 'jp', None),
     ('日本CT検診学会', 'https://www.jscts.org/index.php?page=update', 'blocks', '検診', 'yy', None),
     ('日本放射線治療専門放射線技師認定機構', 'https://www.radiation-therapy.jp/news/index.shtml', 'blocks', '放射線治療', 'slash', None),
-    ('日本救急撮影技師認定機構', 'https://jert.info/feed/', 'rss', '教育', None, None),
+    ('日本救急撮影技師認定機構', 'https://jert.info/?feed=rss2', 'rss', '教育', None, None),
 )
 # 専門学会の記事で、分類が一般的なもの(その他・学術・教育・制度)になった場合は学会の分野を使う
 SPECIALTY_DEFAULT_CATEGORY = {name: cat for name, _, _, cat, *_ in SPECIALTY_SOURCES}
 SPECIALTY_DEFAULT_CATEGORY['日本磁気共鳴専門技術者認定機構'] = 'MRI'
+SPECIALTY_DEFAULT_CATEGORY['香川県診療放射線技師会'] = '教育'
+SPECIALTY_DEFAULT_CATEGORY['日本放射線技術学会 中国・四国支部'] = '教育'
 
 QABCS_FEED = 'https://www.qabcs.or.jp/rss2.xml'
 BLOCK_DATES = {
