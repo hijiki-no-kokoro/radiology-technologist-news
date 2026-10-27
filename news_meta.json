@@ -1,7 +1,7 @@
 {
-  "checked_at": "2026-10-27T17:40+09:00",
-  "added": 1,
-  "total": 151,
+  "checked_at": "2026-10-27T17:52+09:00",
+  "added": 8,
+  "total": 158,
   "sources": {
     "医療機能評価機構": {
       "picked": 3
@@ -33,6 +33,14 @@
       "listed": 79,
       "picked": 1
     },
+    "香川県診療放射線技師会": {
+      "listed": 10,
+      "picked": 5
+    },
+    "日本放射線技術学会 中国・四国支部": {
+      "listed": 10,
+      "picked": 2
+    },
     "日本放射線腫瘍学会": {
       "listed": 30,
       "picked": 1
@@ -61,6 +69,21 @@
       "listed": 5,
       "picked": 0
     },
+    "PMDA回収クラスI": {
+      "listed": 0,
+      "picked": 0
+    },
+    "PMDA回収クラスII": {
+      "listed": 0,
+      "picked": 0
+    },
+    "造影剤の供給状況": {
+      "listed": 235,
+      "limited": 28
+    },
+    "香川県技師会の予定表": {
+      "listed": 7
+    },
     "MR認定研究会・セミナー": {
       "listed": 18
     },
@@ -68,8 +91,8 @@
       "listed": 5
     },
     "技師会の研修一覧": {
-      "listed": 35,
-      "upcoming": 35
+      "listed": 42,
+      "upcoming": 39
     },
     "メール通知": {
       "result": "no-items",

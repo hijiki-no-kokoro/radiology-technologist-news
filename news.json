@@ -1,5 +1,82 @@
 [
   {
+    "date": "2026-10-24",
+    "category": "その他",
+    "importance": "中",
+    "headline": "求人情報 掲載しました",
+    "summary": "",
+    "why": "",
+    "source": "香川県診療放射線技師会",
+    "url": "https://kagawart.jp/article/data.php?nid=509",
+    "track": "official"
+  },
+  {
+    "date": "2026-10-22",
+    "category": "安全管理",
+    "importance": "中",
+    "headline": "PHP脆弱性に関するお知らせ",
+    "summary": "",
+    "why": "",
+    "source": "香川県診療放射線技師会",
+    "url": "https://kagawart.jp/article/data.php?nid=508",
+    "track": "official"
+  },
+  {
+    "date": "2026-10-17",
+    "category": "その他",
+    "importance": "中",
+    "headline": "「令和８年度 第１回RI部会」開催のお知らせ",
+    "summary": "",
+    "why": "興味のある内容なら、開催日と申込期限を確認しておきましょう。",
+    "source": "香川県診療放射線技師会",
+    "url": "https://kagawart.jp/article/data.php?nid=487",
+    "track": "official"
+  },
+  {
+    "date": "2026-10-16",
+    "category": "教育",
+    "importance": "中",
+    "headline": "スキルアップセミナー開催のお知らせ",
+    "summary": "",
+    "why": "興味のある内容なら、開催日と申込期限を確認しておきましょう。",
+    "source": "香川県診療放射線技師会",
+    "url": "https://kagawart.jp/article/data.php?nid=495",
+    "track": "official"
+  },
+  {
+    "date": "2026-10-13",
+    "category": "その他",
+    "importance": "中",
+    "headline": "「第46回 さぬき美じょん」開催のお知らせ",
+    "summary": "",
+    "why": "興味のある内容なら、開催日と申込期限を確認しておきましょう。",
+    "source": "香川県診療放射線技師会",
+    "url": "https://kagawart.jp/article/data.php?nid=490",
+    "track": "official"
+  },
+  {
+    "date": "2026-09-30",
+    "category": "教育",
+    "importance": "中",
+    "headline": "2026 年度 中国・四国支部 国際化推進セミナー",
+    "summary": "",
+    "why": "興味のある内容なら、開催日と申込期限を確認しておきましょう。",
+    "source": "日本放射線技術学会 中国・四国支部",
+    "url": "https://jsrt-chushi.jp/?p=6314",
+    "track": "general"
+  },
+  {
+    "date": "2026-09-15",
+    "category": "教育",
+    "importance": "中",
+    "headline": "2026年度 日本放射線技術学会 中国・四国支部セミナーのご案内",
+    "summary": "",
+    "why": "興味のある内容なら、開催日と申込期限を確認しておきましょう。",
+    "source": "日本放射線技術学会 中国・四国支部",
+    "url": "https://jsrt-chushi.jp/?p=6306",
+    "track": "general"
+  },
+  {
     "date": "2026-10-13",
     "category": "放射線治療",
     "importance": "中",

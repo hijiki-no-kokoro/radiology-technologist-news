@@ -1,5 +1,5 @@
 {
- "checked_at": "2026-10-27T17:40+09:00",
+ "checked_at": "2026-10-27T17:52+09:00",
  "items": [
   {
    "title": "第4回MRI Rookies セミナー開催のお知らせ",
@@ -39,6 +39,19 @@
    "place": "兵庫",
    "category": "MRI",
    "source": "日本磁気共鳴専門技術者認定機構"
+  },
+  {
+   "title": "県内ローテーション企画",
+   "url": "https://kagawart.jp/article/schedule.php?nid=306",
+   "kind": "KART",
+   "status": "",
+   "event_start": "2026-11-07",
+   "event_end": "2026-11-07",
+   "apply_start": "",
+   "apply_end": "",
+   "place": "香川",
+   "source": "香川県診療放射線技師会",
+   "category": "職能"
   },
   {
    "title": "第10回高知MRI技術研究会開催のお知らせ",
@@ -102,6 +115,19 @@
    "place": "オンライン",
    "category": "MRI",
    "source": "日本磁気共鳴専門技術者認定機構"
+  },
+  {
+   "title": "少人数施設ミーティング",
+   "url": "https://kagawart.jp/article/schedule.php?nid=307",
+   "kind": "KART",
+   "status": "",
+   "event_start": "2026-11-14",
+   "event_end": "2026-11-14",
+   "apply_start": "",
+   "apply_end": "",
+   "place": "香川",
+   "source": "香川県診療放射線技師会",
+   "category": "職能"
   },
   {
    "title": "第9回Body MRI技術研究会開催のお知らせ",
@@ -265,6 +291,32 @@
    "apply_start": "2026-09-01",
    "apply_end": "2026-11-22",
    "place": ""
+  },
+  {
+   "title": "第46回 さぬき美じょん",
+   "url": "https://kagawart.jp/article/schedule.php?nid=308",
+   "kind": "KART",
+   "status": "",
+   "event_start": "2026-12-06",
+   "event_end": "2026-12-06",
+   "apply_start": "",
+   "apply_end": "",
+   "place": "香川",
+   "source": "香川県診療放射線技師会",
+   "category": "職能"
+  },
+  {
+   "title": "スキルアップセミナー",
+   "url": "https://kagawart.jp/article/schedule.php?nid=309",
+   "kind": "KART",
+   "status": "",
+   "event_start": "2026-12-12",
+   "event_end": "2026-12-12",
+   "apply_start": "",
+   "apply_end": "",
+   "place": "香川",
+   "source": "香川県診療放射線技師会",
+   "category": "教育"
   },
   {
    "title": "告示研修（実技研修）大阪府2026/12/12",
