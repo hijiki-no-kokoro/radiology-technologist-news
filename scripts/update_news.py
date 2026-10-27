@@ -324,6 +324,9 @@ def relevant(x):
     # 医療安全情報は取得時に放射線関連だけを選んでいるので、そのまま残す
     if dom(x.get('url', '')) in SAFETY_INFO_DOMAINS:
         return True
+    # 放射線系学会のサイトから直接取った記事は、学会の性質上すべて対象にする
+    if any(dom(x.get('url', '')) == d or dom(x.get('url', '')).endswith('.' + d) for d in SOCIETY_DOMAINS):
+        return True
 
     text = article_text(x)
 
@@ -719,6 +722,101 @@ def update_seminars():
     print(f'JART seminars: {len(found)} found, {len(items)} upcoming')
 
 
+# --------------------------------------------------
+# 学会・厚労省の新着を直接取得する
+# --------------------------------------------------
+SOCIETY_DOMAINS = ('jsrt.or.jp', 'radiology.jp', 'jsnm.org')
+JSRT_NEWS = 'https://www.jsrt.or.jp/data/'
+JRS_TOP = 'https://www.radiology.jp/'
+JSNM_FEED = 'https://jsnm.org/feed/'
+MHLW_FEED = 'https://www.mhlw.go.jp/stf/news.rdf'
+DIRECT_MAX_PER_SOURCE = 5   # 初回に古い記事がまとめて入らないよう、1回あたりの上限
+DIRECT_DAYS = 21            # これより古い記事は取り込まない(学会は更新がまばらなため3週間)
+
+
+def parse_rss(xml):
+    """RSS 2.0(item/pubDate)と RSS 1.0(rdf:item/dc:date)の両方に対応。"""
+    out = []
+    for it in re.findall(r'<item\b[^>]*>(.*?)</item>', xml, re.S | re.I):
+        title = re.search(r'<title>(.*?)</title>', it, re.S)
+        link = re.search(r'<link>(.*?)</link>', it, re.S)
+        pub = re.search(r'<pubDate>(.*?)</pubDate>', it, re.S) or re.search(r'<dc:date>(.*?)</dc:date>', it, re.S)
+        if not (title and link):
+            continue
+        t = unescape(re.sub(r'<!\[CDATA\[|\]\]>', '', title.group(1))).strip()
+        try:
+            raw = pub.group(1).strip() if pub else ''
+            dt = parsedate_to_datetime(raw) if re.match(r'[A-Za-z]{3},', raw) else datetime.fromisoformat(raw.replace('Z', '+00:00'))
+            if dt.tzinfo is None:
+                dt = dt.replace(tzinfo=JST)
+            published = dt.astimezone(JST).isoformat()
+        except Exception:
+            continue
+        out.append({'title': t, 'url': unescape(link.group(1).strip()), 'published': published})
+    return out
+
+
+def parse_jsrt(html):
+    """<tr><th>2026/10/27</th>…<a href=".../data/news/70512/">［案内板］…</a></tr>"""
+    out = []
+    for row in re.split(r'<tr[\s>]', html, flags=re.I)[1:]:
+        d = re.search(r'(20\d{2})/(\d{1,2})/(\d{1,2})', row)
+        a = re.search(r'<a[^>]+href=["\'](?P<h>[^"\']*/data/news/\d+/?)["\'][^>]*>(?P<t>.*?)</a>', row, re.I | re.S)
+        if d and a:
+            dt = _to_date(*d.groups())
+            if dt:
+                out.append({'title': clean_html(a.group('t')), 'url': urljoin(JSRT_NEWS, a.group('h')),
+                            'published': datetime(dt.year, dt.month, dt.day, tzinfo=JST).isoformat()})
+    return out
+
+
+def parse_jrs(html):
+    """<dt><time datetime="2026-10-23">…</time></dt><dd><a href="member_info/…">題名</a></dd>"""
+    out = []
+    for m in re.finditer(r'<time[^>]+datetime=["\'](20\d{2}-\d{2}-\d{2})["\'][^>]*>.*?</time>\s*(?:</dt>)?\s*<dd>\s*<a[^>]+href=["\']([^"\']+)["\'][^>]*>(.*?)</a>', html, re.I | re.S):
+        out.append({'title': clean_html(m.group(3)), 'url': urljoin(JRS_TOP, m.group(2)),
+                    'published': datetime.fromisoformat(m.group(1)).replace(tzinfo=JST).isoformat()})
+    return out
+
+
+def direct_official_news():
+    """学会(技術学会・医学放射線学会・核医学会)と厚労省の新着を、記事の形で返す。"""
+    sources = (
+        ('日本放射線技術学会', JSRT_NEWS, parse_jsrt),
+        ('日本医学放射線学会', JRS_TOP, parse_jrs),
+        ('日本核医学会', JSNM_FEED, parse_rss),
+        ('厚生労働省', MHLW_FEED, parse_rss),
+    )
+    now = datetime.now(JST)
+    out = []
+    for name, url, parser in sources:
+        try:
+            items = parser(fetch(url))
+        except Exception as e:
+            print(f'{name} direct error:', e)
+            continue
+        picked = []
+        for x in sorted(items, key=lambda x: x['published'], reverse=True):
+            try:
+                age = (now - datetime.fromisoformat(x['published'])).days
+            except Exception:
+                continue
+            if age > DIRECT_DAYS or not x['title']:
+                continue
+            item = {'title': x['title'], 'url': x['url'], 'description': '', 'source': name, 'published': x['published']}
+            # 厚労省は省全体の新着なので、放射線・診療報酬に関係するものだけ
+            if name == '厚生労働省' and not (relevant(item) or re.search(r'疑義解釈|診療放射線|放射線|被ばく|画像診断|医療機器', item['title'])):
+                continue
+            if not is_news_item(item):
+                continue
+            picked.append(item)
+            if len(picked) >= DIRECT_MAX_PER_SOURCE:
+                break
+        print(f'{name}: {len(items)} listed, {len(picked)} picked')
+        out.extend(picked)
+    return out
+
+
 # 上から順に最初に当てはまったカテゴリを使う。
 # 英字の語は単語単位で判定する(「AI」「CT」「RI」が他の単語の一部に当たらないように)。
 CATEGORY_RULES = (
@@ -860,7 +958,7 @@ IMPORTANCE_HIGH_TERMS = (
     # 医療事故の再発防止情報(医療機能評価機構・PMDAの医療安全情報など)
     '医療安全情報', '注意喚起', '再発防止', '医療事故',
     # 点数の変更
-    '管理加算', '加算',
+    '管理加算', '加算', '保険診療',
     # 会員・患者情報
     '個人情報漏えい', '個人情報漏洩', '不審アクセス', 'サイバー攻撃',
     # 指針
@@ -1395,6 +1493,8 @@ def main():
 
     # 医療安全情報(新しい号だけ。既にある号は is_known で除く)
     safety_new = [x for x in direct_safety_info() if not is_known(x)]
+    # 学会・厚労省の新着(Googleニュースの件数枠とは別に入れる)
+    official_new = [x for x in direct_official_news() if not is_known(x)]
 
     # Google News RSS
     for q in QUERIES:
@@ -1465,8 +1565,8 @@ def main():
     added = []
     specialist_titles = set()
 
-    # 医療安全情報は件数枠とは別に必ず載せる
-    for x in safety_new:
+    # 医療安全情報・学会・厚労省の新着は件数枠とは別に必ず載せる
+    for x in safety_new + official_new:
         item = make_item(x)
         item['track'] = 'official'
         added.append(item)
