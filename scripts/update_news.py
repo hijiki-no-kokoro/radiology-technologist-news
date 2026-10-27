@@ -1225,6 +1225,59 @@ def update_supply():
     return news[:8]
 
 
+# --------------------------------------------------
+# 学会誌の新着論文(J-STAGEの雑誌ごとの新着RSS)
+# --------------------------------------------------
+PAPERS_JSON = ROOT / 'papers.json'
+JSTAGE_RSS = 'https://www.jstage.jst.go.jp/AF05S010NewRssDld?btnaction=JT0041&sryCd={code}&rssLang=ja'
+JOURNALS = (
+    ('日本放射線技術学会雑誌', 'jjrt', None),
+    ('日本消化器がん検診学会雑誌', 'jsgcs', '検診'),
+    ('日本乳癌検診学会誌', 'jjabcs', 'マンモグラフィ'),
+)
+PAPER_DAYS = 180     # これより古い論文は残さない
+PAPER_MAX = 150
+
+
+def update_papers():
+    """各誌の新着論文を papers.json に追記する(前回分は残し、古いものから落とす)。"""
+    try:
+        old = json.loads(PAPERS_JSON.read_text(encoding='utf-8')).get('items', [])
+    except Exception:
+        old = []
+    found = {x['url']: x for x in old}
+    now = datetime.now(JST)
+    for name, code, default_cat in JOURNALS:
+        url = JSTAGE_RSS.format(code=code)
+        try:
+            page = fetch(url)
+            items = parse_rss(page)
+        except Exception as e:
+            SOURCE_STATUS[name] = {'error': f'{type(e).__name__}: {e}'[:160]}
+            continue
+        st = {'listed': len(items)}
+        if not items:
+            st['sample'] = re.sub(r'\s+', ' ', page[:700])
+        added = 0
+        for x in items:
+            title = re.sub(r'\s+', ' ', x['title']).strip()
+            if not title or x['url'] in found:
+                continue
+            cat = category({'headline': title, 'summary': '', 'source': ''})
+            found[x['url']] = {'journal': name, 'title': title, 'url': x['url'], 'published': x['published'][:10],
+                               'added': now.date().isoformat(),
+                               'category': cat if cat != 'その他' or not default_cat else default_cat}
+            added += 1
+        st['added'] = added
+        SOURCE_STATUS[name] = st
+    cutoff = (now - timedelta(days=PAPER_DAYS)).date().isoformat()
+    keep = sorted((x for x in found.values() if max(x['published'], x.get('added', '')) >= cutoff),
+                  key=lambda x: (x.get('added', ''), x['published']), reverse=True)[:PAPER_MAX]
+    PAPERS_JSON.write_text(json.dumps({'checked_at': now.isoformat(timespec='minutes'), 'items': keep},
+                                      ensure_ascii=False, indent=1), encoding='utf-8')
+    return keep
+
+
 def update_kart_schedule():
     """香川県診療放射線技師会の予定表(今月から3か月分)を研修日程の形で返す。"""
     now = datetime.now(JST).date()
@@ -2044,6 +2097,7 @@ def main():
     official_new = [x for x in direct_official_news() if not is_known(x)]
     # PMDAの医療機器回収と、造影剤の供給状況の変化
     official_new += [x for x in direct_pmda_recalls() + update_supply() if not is_known(x)]
+    update_papers()
 
     # Google News RSS
     for q in QUERIES:

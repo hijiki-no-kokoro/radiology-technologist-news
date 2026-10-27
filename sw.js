@@ -14,7 +14,7 @@ self.addEventListener('fetch', e => {
   const url = new URL(e.request.url);
   if (e.request.method !== 'GET') return;
   const sameOrigin = url.origin === self.location.origin;
-  const isData = sameOrigin && /(news\.json|news_meta\.json|seminars\.json|supply\.json|\/archive\/)/.test(url.pathname);
+  const isData = sameOrigin && /(news\.json|news_meta\.json|seminars\.json|supply\.json|papers\.json|\/archive\/)/.test(url.pathname);
   const isPage = e.request.mode === 'navigate' || (sameOrigin && /index\.html$/.test(url.pathname));
   const isFont = /fonts\.(googleapis|gstatic)\.com$/.test(url.hostname);
   if (isData || isPage) {
