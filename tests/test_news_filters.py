@@ -118,3 +118,20 @@ def test_light_reads_are_excluded(headline, source):
 ])
 def test_practical_items_with_similar_wording_are_kept(headline):
     assert u.is_news_item(item(headline, 'mbp-japan.com'))
+
+
+# --- 検診 ---------------------------------------------------------
+
+@pytest.mark.parametrize('headline', [
+    '胃がん検診の受診率向上へ 胃部X線検査の精度管理を強化',
+    '胃透視でのバリウム誤嚥を防ぐポイント',
+    '対策型乳がん検診にトモシンセシス導入を検討',
+    '人間ドックで胸部CTを選べる自治体が増加',          # CTより検診を優先
+    'ユカリア、健診サービスで「からだ健康度AI解析」開始 胸部CTで筋肉量を可視化',
+])
+def test_screening_category(headline):
+    assert u.category(item(headline)) == '検診'
+
+
+def test_fluoroscopy_news_is_relevant():
+    assert u.relevant({'headline': '胃透視の撮影手順を標準化', 'summary': '', 'source': '日本消化器がん検診学会', 'url': 'https://news.google.com/x'})
