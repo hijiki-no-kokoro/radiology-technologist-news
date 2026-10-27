@@ -20,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&family=BIZ+UDPGothic:wght@400;700&display=swap" rel="stylesheet">
-<script>try{const t=localStorage.getItem("rtn-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;}catch(e){}</script>
+<script>try{const t=localStorage.getItem("rtn-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;const z=JSON.parse(localStorage.getItem("rtn-size")||'""');if(z==="l"||z==="xl")document.documentElement.dataset.size=z;}catch(e){}</script>
 <style>
 /* ---- 色: 病院のシーツのような青みの白と、やわらかい紺。要確認はローズ、お知らせははちみつ色 ---- */
 :root{
@@ -166,7 +166,7 @@ dialog.settings h3{margin:0 0 2px;font-size:15.5px}
 .search .clear.show{display:block}
 .seg{display:flex;background:var(--surface-2);border-radius:999px;padding:3px;flex-shrink:0}
 .seg button{border:0;background:none;border-radius:999px;padding:7px 14px;font-size:13.5px;font-weight:700;color:var(--ink-soft);cursor:pointer;white-space:nowrap}
-@media (max-width:640px){.bar-row{flex-wrap:wrap;gap:8px}.search{flex-basis:100%}.seg{width:100%}.seg button{flex:1;padding:6px 8px}}
+@media (max-width:640px){.bar-row{flex-wrap:wrap;gap:8px}.search{flex-basis:100%}.seg{width:100%}.seg button{flex:1;padding:6px 2px;font-size:12.5px}}
 .seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(45,53,80,.15)}
 .chips{display:flex;gap:6px;margin-top:9px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;margin-left:-18px;margin-right:-18px;padding-left:18px;padding-right:18px}
 .chips::-webkit-scrollbar{display:none}
@@ -265,6 +265,53 @@ dialog.settings h3{margin:0 0 2px;font-size:15.5px}
 .result-note{margin:16px 0 0;font-size:13.5px;color:var(--ink-soft)}
 .result-note button{border:0;background:none;color:var(--blue);cursor:pointer;padding:0 0 0 8px;font-weight:700}
 
+/* ---- 文字サイズ(設定) ---- */
+html[data-size="l"] body{zoom:1.1}
+html[data-size="xl"] body{zoom:1.22}
+/* ---- 今日の3本 ---- */
+.today3{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:14px 16px;margin-top:16px;box-shadow:var(--shadow)}
+.today3 h2{font-size:17px;margin:0 0 2px}
+.today3 ol{margin:8px 0 0;padding:0;list-style:none;counter-reset:t3;display:grid;gap:8px}
+.today3 li{counter-increment:t3;display:flex;gap:10px;align-items:flex-start;font-size:14.5px;line-height:1.55}
+.today3 li::before{content:counter(t3);flex:0 0 24px;height:24px;border-radius:50%;background:var(--blue-soft);color:var(--blue);font-weight:900;display:grid;place-items:center;font-size:13px}
+.today3 li.done::before{content:'✓';background:var(--sage-soft);color:var(--sage)}
+.today3 li.done a{color:var(--ink-soft)}
+.today3 small{display:block;color:var(--ink-soft);font-size:12px}
+.pill.watch{background:var(--honey-soft);color:var(--honey)}
+.pill.due{background:var(--honey-soft);color:var(--honey)}
+.pill.due.over{background:var(--rose-soft);color:var(--rose)}
+.pill.plan{background:var(--blue-soft);color:var(--blue)}
+.pill.journal{background:var(--surface-2);color:var(--ink-soft)}
+.plan-btn{border:1px solid var(--line);background:var(--surface);color:var(--ink-soft);border-radius:999px;padding:1px 10px;font-size:12px;font-weight:700;cursor:pointer;line-height:1.7}
+.plan-btn[aria-pressed="true"]{background:var(--blue);border-color:var(--blue);color:var(--on-blue)}
+.due-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:8px;font-size:12.5px;color:var(--ink-soft)}
+.due-row button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:1px 10px;font-size:12px;cursor:pointer;color:var(--ink)}
+.due-row input[type=date]{font:inherit;font-size:12.5px;border:1px solid var(--line);border-radius:8px;padding:1px 6px;background:var(--surface);color:var(--ink)}
+.allread{border:1px solid var(--line);background:var(--surface);color:var(--ink-soft);border-radius:999px;padding:5px 12px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0}
+.allread.confirm{background:var(--rose-soft);color:var(--rose);border-color:var(--rose)}
+/* ---- 受講記録 ---- */
+.rec-item{border-top:1px solid var(--line);padding:12px 0}
+.rec-item:first-child{border-top:0}
+.rec-item .t{font-weight:700;font-size:15px;line-height:1.5}
+.rec-item .m{color:var(--ink-soft);font-size:12.5px;margin-top:2px}
+.rec-fields{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;align-items:center;font-size:13px}
+.rec-fields input,.rec-fields select{font:inherit;font-size:13px;border:1px solid var(--line);border-radius:8px;padding:3px 7px;background:var(--surface);color:var(--ink)}
+.rec-fields input[type=number]{width:5.5em}
+.rec-fields input.note{flex:1 1 220px}
+.rec-sum{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 4px}
+.rec-sum span{background:var(--surface-2);border-radius:12px;padding:6px 12px;font-size:13.5px}
+.rec-sum b{font-size:16px;margin:0 2px}
+.rec-add{display:grid;gap:8px;grid-template-columns:1fr;margin-top:10px}
+@media (min-width:640px){.rec-add{grid-template-columns:2fr 1fr 1fr auto}}
+.rec-add input,.rec-add select{font:inherit;font-size:14px;border:1px solid var(--line);border-radius:10px;padding:6px 9px;background:var(--surface);color:var(--ink)}
+/* ---- スワイプ ---- */
+.swipe-row{transition:transform .18s ease}
+.swiping{transition:none}
+.toast{position:fixed;left:50%;bottom:22px;max-width:calc(100% - 32px);box-sizing:border-box;transform:translateX(-50%);background:var(--ink);color:var(--surface);border-radius:999px;padding:9px 16px;font-size:14px;z-index:50;display:flex;gap:12px;align-items:center;box-shadow:var(--shadow)}
+.toast button{background:none;border:0;color:var(--blue-soft);font-weight:700;cursor:pointer;font-size:14px}
+.watch-input{width:100%;font:inherit;font-size:14px;border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:var(--surface);color:var(--ink);box-sizing:border-box}
+.radio-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+.radio-row label{display:inline-flex;gap:6px;align-items:center;border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:14px;cursor:pointer}
 footer{padding:10px 18px 40px;color:var(--ink-soft);font-size:12.5px;text-align:center}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -300,6 +347,7 @@ footer{padding:10px 18px 40px;color:var(--ink-soft);font-size:12.5px;text-align:
         <button type="button" data-view="recent" aria-pressed="true">最近</button>
         <button type="button" data-view="past" aria-pressed="false">過去</button>
         <button type="button" data-view="saved" aria-pressed="false">あとで読む<span id="savedCount"></span></button>
+        <button type="button" data-view="record" aria-pressed="false">受講記録</button>
       </div>
     </div>
     <div class="chips" id="chips" role="group" aria-label="分野で絞り込む"></div>
@@ -314,6 +362,20 @@ footer{padding:10px 18px 40px;color:var(--ink-soft);font-size:12.5px;text-align:
       <h3>担当分野</h3>
       <p>選んだ分野の記事は、各欄の上のほうに目印つきで並びます。</p>
       <div class="focus-grid" id="focusGrid"></div>
+      <div class="set-sec">
+        <h3>気になる言葉</h3>
+        <p>入れた言葉を含む記事・論文に印を付け、上のほうに並べます。読点やスペースで区切ってください。</p>
+        <input type="text" class="watch-input" id="watchInput" placeholder="例: バリウム、トモシンセシス、告示研修">
+      </div>
+      <div class="set-sec">
+        <h3>文字の大きさ</h3>
+        <div class="radio-row" id="sizeRow"><label><input type="radio" name="size" value="">標準</label><label><input type="radio" name="size" value="l">大きめ</label><label><input type="radio" name="size" value="xl">さらに大きく</label></div>
+      </div>
+      <div class="set-sec">
+        <h3>スワイプ操作(スマホ)</h3>
+        <p>記事を左へスワイプで既読、右へスワイプで「あとで読む」。直後に「元に戻す」が出ます。</p>
+        <div class="radio-row" id="swipeRow"><label><input type="radio" name="swipe" value="on">使う</label><label><input type="radio" name="swipe" value="off">使わない</label></div>
+      </div>
       <div class="set-sec">
         <h3>「これからの日程」に出すもの</h3>
         <p>チェックを外した種類は日程の欄に出しません。開催地は研修一覧の記載と題名から判断しています。</p>
@@ -397,10 +459,80 @@ function markSeen(){
 const isSaved=n=>!!saved[n.url];
 function toggleSave(url){
   if(saved[url]){delete saved[url];}
-  else{const n=db.find(x=>x.url===url);if(!n)return;const {headline,url:u,source,date,featured_date,category,importance,why,summary}=n;saved[url]={headline,url:u,source,date,featured_date,category,importance,why,summary,savedAt:new Date().toISOString()};}
+  else{const n=db.find(x=>x.url===url)||papers.map(paperAsItem).find(x=>x.url===url)||pastPool().find(x=>x.url===url);if(!n)return;const {headline,url:u,source,date,featured_date,category,importance,why,summary,_paper}=n;saved[url]={headline,url:u,source,date,featured_date,category,importance,why,summary,_paper,savedAt:new Date().toISOString()};}
   store.set('rtn-saved',saved);
 }
 function saveBtn(n){const on=isSaved(n);return `<button type="button" class="save" data-save="${esc(n.url)}" aria-pressed="${on}" aria-label="${on?'あとで読むから外す':'あとで読むに追加'}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12v18l-6-4-6 4z"/></svg>${on?'保存済み':'あとで読む'}</button>`;}
+// ---- 学会誌の新着論文(papers.json) ----
+let papers=[];
+const paperAsItem=x=>({headline:x.title,url:x.url,source:x.journal,date:x.added||x.published,category:x.category||'学術',importance:'中',summary:x.authors?'著者: '+x.authors:'',_paper:true,published:x.published});
+// ---- 気になる言葉 ----
+let watchWords=store.get('rtn-watch',[]);
+const watchHit=n=>{const t=[n.headline,n.title,n.summary].join(' ').toLowerCase();return watchWords.find(w=>w&&t.includes(w.toLowerCase()))||'';};
+// ---- あとで読むの期限 ----
+const dueOf=n=>(saved[n.url]&&saved[n.url].due)||'';
+function duePill(n){const d=dueOf(n);if(!d)return '';const left=daysTo(d);return `<span class="pill due${left<0?' over':''}">${left<0?`期限切れ(${md(d)})`:left===0?'今日まで':`${md(d)}まで`}</span>`;}
+function setDue(url,d){if(!saved[url])return;if(d)saved[url].due=d;else delete saved[url].due;store.set('rtn-saved',saved);}
+const endOfWeek=()=>addDays(weekStart(today),6);
+const endOfMonth=()=>{const [y,m]=today.split('-').map(Number);return new Date(Date.UTC(y,m,0)).toISOString().slice(0,10);};
+// ---- 参加予定・受講記録 {key:{title,url,date,place,source,status:'plan'|'done',credits,qual,note,apply_end,status_text}} ----
+let plans=store.get('rtn-plans',{});
+const savePlans=()=>store.set('rtn-plans',plans);
+const planKey=n=>n.url||('manual:'+n.title);
+function togglePlan(n){const k=planKey(n);if(plans[k]){delete plans[k];}else{plans[k]={title:n.title||displayHeadline(n),url:n.url||'',date:n.event_date||'',place:n.event_place||'',source:n.source||'',apply_end:n._deadline||n.apply_end||'',status:'plan',credits:'',qual:'',note:''};}savePlans();}
+function planNotes(){
+  const out=[];
+  Object.values(plans).filter(p=>p.status==='plan').forEach(p=>{
+    if(p.apply_end&&p.apply_end>=today&&daysTo(p.apply_end)<=7)out.push(`<p class="qual-note"><b>参加予定</b>「${esc(p.title)}」の申込締切${daysTo(p.apply_end)===0?'は今日です':`まであと${daysTo(p.apply_end)}日(${md(p.apply_end)})`}。申込を済ませたか確認しましょう。</p>`);
+    if(p.date&&p.date>=today&&daysTo(p.date)<=3)out.push(`<p class="qual-note"><b>参加予定</b>「${esc(p.title)}」は${daysTo(p.date)===0?'今日':daysTo(p.date)===1?'明日':`${daysTo(p.date)}日後(${md(p.date)})`}の開催です。</p>`);
+    if(p.date&&p.date<today&&daysTo(p.date)>=-14)out.push(`<p class="qual-note"><b>受講記録</b>「${esc(p.title)}」(${md(p.date)})に参加したら、「受講記録」で「参加した」にして単位を入れておきましょう。</p>`);
+  });
+  return out.join('');
+}
+// ---- 今日の3本(その日の最初に選び、1日固定) ----
+function today3(){
+  const kept=store.get('rtn-today3',null);
+  if(kept&&kept.date===today&&Array.isArray(kept.urls)){const l=kept.urls.map(u=>db.find(n=>n.url===u)||papers.map(paperAsItem).find(n=>n.url===u)).filter(Boolean);if(l.length)return l;}
+  const score=n=>(impOf(n)==='高'?4:impOf(n)==='中'?1:0)+(watchHit(n)?4:0)+(isFocus(n)?2:0)+(newSet.has(n.url)?1:0);
+  const pool=db.filter(n=>isRecent(n)&&!isRead(n)&&(impOf(n)!=='低'||watchHit(n))).concat(papers.map(paperAsItem).filter(n=>!isRead(n)&&watchHit(n)));
+  const pick=pool.map(n=>({n,s:score(n)})).sort((a,b)=>(b.s-a.s)||byNewest(a.n,b.n)).slice(0,3).map(x=>x.n);
+  store.set('rtn-today3',{date:today,urls:pick.map(n=>n.url)});
+  return pick;
+}
+function renderToday3(){
+  if(q||cat!=='all')return '';
+  const l=today3();if(!l.length)return '';
+  const left=l.filter(n=>!isRead(n)).length;
+  return `<section class="today3" aria-labelledby="h-t3"><h2 id="h-t3">今日の3本</h2><p class="lead">${left?'未読の中から、要確認・気になる言葉・担当分野を優先して選んでいます':'今日の3本は読み終わりました'}</p><ol>${l.map(n=>`<li class="${isRead(n)?'done':''}"><span><a class="title" href="${esc(n.url)}" target="_blank" rel="noopener">${esc(displayHeadline(n))}</a><small>${esc(n.source||'')}${watchHit(n)?`・気になる言葉「${esc(watchHit(n))}」`:''}</small></span></li>`).join('')}</ol></section>`;
+}
+// ---- 論文の欄 ----
+let showAllPapers=false;
+function renderPapers(){
+  const all=papers.map(paperAsItem).filter(n=>matchQ(n)&&(cat==='all'||n.category===cat)&&(!unreadOnly||!isRead(n))).sort((a,b)=>(!!watchHit(b)-!!watchHit(a))||String(b.date).localeCompare(String(a.date))||String(b.published).localeCompare(String(a.published)));
+  if(!all.length)return '';
+  const shown=showAllPapers?all:all.slice(0,5);
+  return `<section class="section" aria-labelledby="h-papers"><h2 id="h-papers">学会誌の新着論文<span class="count">${all.length}件</span></h2><p class="lead">J-STAGEに載った日本放射線技術学会雑誌・日本消化器がん検診学会雑誌・日本乳癌検診学会誌の新しい論文</p><div class="list">${shown.map(n=>row(n)).join('')}${all.length>shown.length?`<button type="button" class="more" data-morepapers>残り${all.length-shown.length}件を見る</button>`:''}</div></section>`;
+}
+// ---- 受講記録の画面 ----
+function renderRecord(){
+  const list=Object.entries(plans);
+  const qualOpts=v=>`<option value="">資格を選ぶ</option>${quals.map(q=>`<option${q.name===v?' selected':''}>${esc(q.name)}</option>`).join('')}${v&&!quals.some(q=>q.name===v)?`<option selected>${esc(v)}</option>`:''}`;
+  const plan=list.filter(([,p])=>p.status==='plan').sort((a,b)=>String(a[1].date).localeCompare(String(b[1].date)));
+  const done=list.filter(([,p])=>p.status==='done').sort((a,b)=>String(b[1].date).localeCompare(String(a[1].date)));
+  const sum={};done.forEach(([,p])=>{const k=p.qual||'資格の指定なし';sum[k]=(sum[k]||0)+(parseFloat(p.credits)||0);});
+  const fy=(()=>{const [y,m]=today.split('-').map(Number);return m>=4?y:y-1;})();const fyStart=`${fy}-04-01`;
+  const fyCount=done.filter(([,p])=>p.date>=fyStart).length;
+  const item=([k,p])=>`<div class="rec-item" data-rec="${esc(k)}"><div class="t">${p.url?`<a href="${esc(p.url)}" target="_blank" rel="noopener">${esc(p.title)}</a>`:esc(p.title)}</div><div class="m">${p.date?`${p.date.replace(/-/g,'/')}`:'日付未入力'}${p.place?`・${esc(p.place)}`:''}${p.source?`・${esc(p.source)}`:''}${p.status==='plan'&&p.apply_end?`・申込締切 ${md(p.apply_end)}`:''}</div>
+    <div class="rec-fields">${p.status==='plan'?`<button type="button" class="plan-btn" data-recdone>参加した</button>`:`<label>単位 <input type="number" step="0.5" min="0" data-recf="credits" value="${esc(p.credits)}"></label><select data-recf="qual" aria-label="関係する資格">${qualOpts(p.qual)}</select><button type="button" class="plan-btn" data-recundo>予定に戻す</button>`}<input class="note" type="text" data-recf="note" placeholder="メモ(内容・感想・領収書の有無など)" value="${esc(p.note)}"><button type="button" class="fixbtn" data-recdel>記録を消す</button></div></div>`;
+  return `<div class="layout"><section class="section" aria-labelledby="h-rec1"><h2 id="h-rec1">参加予定<span class="count">${plan.length}件</span></h2><p class="lead">「これからの日程」の「参加予定」を押したものです。申込締切の1週間前と開催の3日前から上部でお知らせします。</p>${plan.length?plan.map(item).join(''):'<div class="empty">まだありません。日程の「参加予定」を押すとここに入ります。</div>'}</section>
+  <section class="section" aria-labelledby="h-rec2"><h2 id="h-rec2">参加した研修・学会<span class="count">${done.length}件</span></h2><p class="lead">単位と関係する資格を入れると、資格ごとに合計します。今年度(${fy}年4月〜)は${fyCount}件参加しています。</p>${Object.keys(sum).length?`<div class="rec-sum">${Object.entries(sum).map(([k,v])=>`<span>${esc(k)} <b>${v}</b>単位</span>`).join('')}</div>`:''}${done.length?done.map(item).join(''):'<div class="empty">まだありません。</div>'}
+  <h3 style="margin:18px 0 0;font-size:15px">一覧にない研修を記録する</h3><div class="rec-add"><input type="text" id="recTitle" placeholder="研修・学会の名前"><input type="date" id="recDate" value="${today}"><input type="number" id="recCredits" step="0.5" min="0" placeholder="単位"><button type="button" class="btn primary" data-recadd>記録する</button></div></section>
+  <p class="lead" style="text-align:center">記録はこの端末のブラウザにだけ保存されます。資格は「設定」の「資格と更新期限」で登録したものから選べます。</p></div>`;
+}
+// ---- スワイプとトースト ----
+let swipeOn=store.get('rtn-swipe','on')!=='off';
+let toastTimer;
+function toast(msg,undo){let t=document.getElementById('toast');if(!t){t=document.createElement('div');t.id='toast';t.className='toast';t.setAttribute('role','status');document.body.appendChild(t);}t.innerHTML=`<span>${esc(msg)}</span>${undo?'<button type="button">元に戻す</button>':''}`;t.hidden=false;if(undo)t.querySelector('button').onclick=()=>{undo();t.hidden=true;};clearTimeout(toastTimer);toastTimer=setTimeout(()=>{t.hidden=true;},4000);}
 // ---- 月別アーカイブ(news.json の200件より古い記事) ----
 let archiveIndex=null, archiveLoaded={}, archiveLoading=false;
 async function loadArchiveIndex(){
@@ -460,6 +592,9 @@ function openFocus(){
   const cats=CAT_ORDER.concat(['その他']);
   document.getElementById('focusGrid').innerHTML=cats.map(c=>`<label><input type="checkbox" value="${esc(c)}"${focusCats.has(c)?' checked':''}>${esc(c)}</label>`).join('');
   const cnt={};scheduleItems(true).forEach(n=>{const k=schedScope(n);cnt[k]=(cnt[k]||0)+1;});
+  document.getElementById('watchInput').value=watchWords.join('、');
+  const sz=store.get('rtn-size','');document.querySelectorAll('#sizeRow input').forEach(i=>i.checked=i.value===sz);
+  document.querySelectorAll('#swipeRow input').forEach(i=>i.checked=i.value===(swipeOn?'on':'off'));
   document.getElementById('scopeGrid').innerHTML=SCOPES.map(x=>`<label title="${esc(x.note)}"><input type="checkbox" value="${x.k}"${schedScopes.has(x.k)?' checked':''}><span>${esc(x.label)}<small class="scope-n">${cnt[x.k]||0}件・${esc(x.note)}</small></span></label>`).join('');
   document.getElementById('qualPresets').innerHTML=QUAL_PRESETS.map(p=>`<option value="${esc(p.name)}">`).join('');
   document.getElementById('qualRows').innerHTML=(quals.length?quals:[{name:'',expiry:''}]).map(qualRowHtml).join('');
@@ -511,11 +646,12 @@ let memoTimer;
 function saveMemo(url,text){if(!saved[url])return;saved[url].memo=text;clearTimeout(memoTimer);memoTimer=setTimeout(()=>store.set('rtn-saved',saved),300);}
 let hideNotes=new Set();
 function noteHtml(n){return (n.why&&!hideNotes.has(n.why))?`<div class="note"><span class="face" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3z"/></svg></span><p class="say"><small>ポイント</small>${esc(n.why)}</p></div>`:'';}
-function metaHtml(n,showImp,showDate=true){const i=IMP[impOf(n)];return `<div class="meta">${newSet.has(n.url)?'<span class="pill new">新着</span>':''}${showImp?`<span class="pill ${i.cls}">${i.label}</span>`:''}${isFocus(n)?'<span class="pill focus">担当</span>':''}<span class="pill cat">${esc(n.category||'その他')}</span>${n._fixed?'<span class="pill fixed">手直し済み</span>':''}${showDate?`<span>${dayText(feedDate(n))}</span>`:''}<button type="button" class="fixbtn" data-fix="${esc(n.url)}" aria-label="この記事の分類と重要度を直す">直す</button>${saveBtn(n)}</div>`;}
+function metaHtml(n,showImp,showDate=true){const i=IMP[impOf(n)];return `<div class="meta">${newSet.has(n.url)?'<span class="pill new">新着</span>':''}${showImp?`<span class="pill ${i.cls}">${i.label}</span>`:''}${watchHit(n)?`<span class="pill watch">${esc(watchHit(n))}</span>`:''}${isFocus(n)?'<span class="pill focus">担当</span>':''}${n._paper?'<span class="pill journal">論文</span>':''}<span class="pill cat">${esc(n.category||'その他')}</span>${duePill(n)}${n._fixed?'<span class="pill fixed">手直し済み</span>':''}${showDate?`<span>${dayText(feedDate(n))}</span>`:''}${n._paper?'':`<button type="button" class="fixbtn" data-fix="${esc(n.url)}" aria-label="この記事の分類と重要度を直す">直す</button>`}${saveBtn(n)}</div>`;}
 function itemBody(n){return `<a class="title" href="${esc(n.url)}" target="_blank" rel="noopener">${esc(displayHeadline(n))}</a><div class="src">${esc(n.source||'')}</div>${n.summary?`<p class="sum">${esc(n.summary)}</p>`:''}${alsoHtml(n)}`;}
-const mustItem=n=>`<article class="must-item${isRead(n)?' read':''}">${metaHtml(n,false)}${itemBody(n)}${memoHtml(n)}${noteHtml(n)}</article>`;
-const memoHtml=n=>view==='saved'?`<div class="memo"><textarea data-memo="${esc(n.url)}" placeholder="メモ(例: 勉強会で紹介する、あとで添付文書を確認)" aria-label="この記事のメモ">${esc(memoOf(n))}</textarea></div>`:(memoOf(n)?`<div class="memo-line"><b>メモ</b>${esc(memoOf(n))}</div>`:'');
-const row=(n,showImp=false,showDate=true)=>`<article class="row${isRead(n)?' read':''}">${metaHtml(n,showImp,showDate)}${itemBody(n)}${memoHtml(n)}${noteHtml(n)}</article>`;
+const mustItem=n=>`<article class="must-item swipe-row${isRead(n)?' read':''}" data-url="${esc(n.url)}">${metaHtml(n,false)}${itemBody(n)}${memoHtml(n)}${noteHtml(n)}</article>`;
+const dueRow=n=>`<div class="due-row" data-dueurl="${esc(n.url)}">期限: <button type="button" data-due="today">今日</button><button type="button" data-due="week">今週中</button><button type="button" data-due="month">今月中</button><input type="date" data-duedate value="${esc(dueOf(n))}" aria-label="期限の日付">${dueOf(n)?'<button type="button" data-due="">期限なし</button>':''}</div>`;
+const memoHtml=n=>view==='saved'?dueRow(n)+`<div class="memo"><textarea data-memo="${esc(n.url)}" placeholder="メモ(例: 勉強会で紹介する、あとで添付文書を確認)" aria-label="この記事のメモ">${esc(memoOf(n))}</textarea></div>`:(memoOf(n)?`<div class="memo-line"><b>メモ</b>${esc(memoOf(n))}</div>`:'');
+const row=(n,showImp=false,showDate=true)=>`<article class="row swipe-row${isRead(n)?' read':''}" data-url="${esc(n.url)}">${metaHtml(n,showImp,showDate)}${itemBody(n)}${memoHtml(n)}${noteHtml(n)}</article>`;
 const byNewest=(a,b)=>feedDate(b).localeCompare(feedDate(a));
 
 function renderChips(){
@@ -524,7 +660,8 @@ function renderChips(){
   if(cat!=='all'&&!cats.includes(cat))cats.push(cat);
   const b=(c,label,k)=>`<button type="button" data-cat="${esc(c)}" aria-pressed="${cat===c}" class="${focusCats.has(c)?'is-focus':''}">${esc(label)}<span class="n">${k}</span></button>`;
   const unread=base.filter(n=>!isRead(n)).length;
-  document.getElementById('chips').innerHTML=`<button type="button" class="unread" data-unread aria-pressed="${unreadOnly}">未読のみ<span class="n">${unread}</span></button><span class="sep" aria-hidden="true"></span>`+b('all','すべて',base.length)+cats.map(c=>b(c,c,cnt[c]||0)).join('');
+  if(view==='record'){document.getElementById('chips').innerHTML='';return;}
+  document.getElementById('chips').innerHTML=`<button type="button" class="unread" data-unread aria-pressed="${unreadOnly}">未読のみ<span class="n">${unread}</span></button>${unread?`<button type="button" class="allread" data-allread>全部既読にする</button>`:''}<span class="sep" aria-hidden="true"></span>`+b('all','すべて',base.length)+cats.map(c=>b(c,c,cnt[c]||0)).join('');
 }
 
 function filterNote(total){
@@ -573,7 +710,7 @@ function renderSupply(){
 function renderSchedule(){
   const all=scheduleItems();if(!all.length&&!schedHidden)return '';
   const items=showAllSched?all:all.slice(0,6);
-  return `<section class="section" aria-labelledby="h-sched"><h2 id="h-sched">これからの日程<span class="count">${all.length}件</span></h2><p class="lead">技師会の研修一覧と、案内記事に書かれた開催日・申込締切を近い順に並べています${schedHidden?`(設定により${schedHidden}件を非表示)`:''}</p>${all.length?'':'<div class="empty">表示する日程はありません。「設定」で出す種類を選べます。</div>'}<div class="sched">${items.map(n=>{const [y,m,d]=n.event_date.split('-').map(Number);const dt=new Date(Date.UTC(y,m-1,d));const left=Math.round((dt-Date.parse(today+'T00:00:00Z'))/864e5);const dl=n.event_kind==='申込締切';const pl=n.event_place;const plHtml=pl?(pl==='オンライン'?'<span class="pill near">オンライン</span>':NEAR.includes(pl)?`<span class="pill near">${esc(pl)}(近畿・中四国)</span>`:`<span class="pill place">${esc(pl)}</span>`):'';return `<article class="sched-item"><div class="sched-date${dl?' deadline':''}"><span class="md">${m}/${d}</span><span class="wd">${WD[dt.getUTCDay()]}曜</span></div><div class="sched-body"><div class="kind">${dl?'<b>申込締切</b>':'開催'}　${left===0?'今日':`あと${left}日`}</div><a class="title" href="${esc(n.url)}" target="_blank" rel="noopener">${esc(n.title||displayHeadline(n))}</a><div class="sched-tools">${n._urgent?`<span class="pill urgent">締切間近・${daysTo(n._deadline)===0?'今日まで':`あと${daysTo(n._deadline)}日`}</span>`:''}${n._quals&&n._quals.length?`<span class="pill qual">資格の更新に関係</span>`:''}${statusHtml(n)}${plHtml}<a class="cal" href="${calLink(n)}" target="_blank" rel="noopener">Googleカレンダーに追加</a></div></div></article>`;}).join('')}${all.length>items.length?`<button type="button" class="more sched-more" data-allsched>残り${all.length-items.length}件の日程を見る</button>`:''}</div></section>`;
+  return `<section class="section" aria-labelledby="h-sched"><h2 id="h-sched">これからの日程<span class="count">${all.length}件</span></h2><p class="lead">技師会の研修一覧と、案内記事に書かれた開催日・申込締切を近い順に並べています${schedHidden?`(設定により${schedHidden}件を非表示)`:''}</p>${all.length?'':'<div class="empty">表示する日程はありません。「設定」で出す種類を選べます。</div>'}<div class="sched">${items.map(n=>{const [y,m,d]=n.event_date.split('-').map(Number);const dt=new Date(Date.UTC(y,m-1,d));const left=Math.round((dt-Date.parse(today+'T00:00:00Z'))/864e5);const dl=n.event_kind==='申込締切';const pl=n.event_place;const plHtml=pl?(pl==='オンライン'?'<span class="pill near">オンライン</span>':NEAR.includes(pl)?`<span class="pill near">${esc(pl)}(近畿・中四国)</span>`:`<span class="pill place">${esc(pl)}</span>`):'';return `<article class="sched-item"><div class="sched-date${dl?' deadline':''}"><span class="md">${m}/${d}</span><span class="wd">${WD[dt.getUTCDay()]}曜</span></div><div class="sched-body"><div class="kind">${dl?'<b>申込締切</b>':'開催'}　${left===0?'今日':`あと${left}日`}</div><a class="title" href="${esc(n.url)}" target="_blank" rel="noopener">${esc(n.title||displayHeadline(n))}</a><div class="sched-tools">${n._urgent?`<span class="pill urgent">締切間近・${daysTo(n._deadline)===0?'今日まで':`あと${daysTo(n._deadline)}日`}</span>`:''}${n._quals&&n._quals.length?`<span class="pill qual">資格の更新に関係</span>`:''}${statusHtml(n)}${plHtml}<button type="button" class="plan-btn" data-plan="${esc(planKey(n))}" aria-pressed="${!!plans[planKey(n)]}">${plans[planKey(n)]?(plans[planKey(n)].status==='done'?'参加済み':'参加予定'):'参加予定にする'}</button><a class="cal" href="${calLink(n)}" target="_blank" rel="noopener">Googleカレンダーに追加</a></div></div></article>`;}).join('')}${all.length>items.length?`<button type="button" class="more sched-more" data-allsched>残り${all.length-items.length}件の日程を見る</button>`:''}</div></section>`;
 }
 // ---- 週のまとめ(月〜水曜に表示。閉じたらその週は出さない) ----
 function weekStart(dstr){const [y,m,d]=dstr.split('-').map(Number);const dt=new Date(Date.UTC(y,m-1,d));const wd=(dt.getUTCDay()+6)%7;dt.setUTCDate(dt.getUTCDate()-wd);return dt.toISOString().slice(0,10);}
@@ -591,7 +728,7 @@ function renderWeek(){
     <h3>今週(〜${md(thisEnd)})の締切・開催 ${sched.length}件</h3>${sched.length?`<ul>${sched.map(sl).join('')}</ul>`:'<p class="lead">ありません。</p>'}</section>`;
 }
 function renderRecent(list){
-  const ord=(a,b)=>focusFirst(a,b)||byNewest(a,b);
+  const ord=(a,b)=>(!!watchHit(b)-!!watchHit(a))||focusFirst(a,b)||byNewest(a,b);
   const hi=list.filter(n=>impOf(n)==='高').sort(ord),mid=list.filter(n=>impOf(n)==='中').sort(ord),lo=list.filter(n=>impOf(n)==='低').sort(ord);
   const loShown=(showAllLo||q||cat!=='all')?lo:lo.slice(0,SHOW_LO);
   // 同じ一言が3件以上並ぶときは、各記事ではなく見出しの下に1回だけ出す
@@ -600,12 +737,13 @@ function renderRecent(list){
   hideNotes=new Set(shared);
   const sharedNotes=shared.map(w=>`<div class="note shared"><span class="face" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3z"/></svg></span><p class="say"><small>ポイント(${nc[w]}件に共通)</small>${esc(w)}</p></div>`).join('');
   const must=hi.length?`<div class="must">${hi.map(mustItem).join('')}</div>`:`<div class="empty"><b>${q||cat!=='all'?'条件に合う確認事項はありません':'今週は急ぎの確認事項はありません'}</b>制度の変更や薬剤の供給停止などが出たら、ここに表示します。</div>`;
-  return `${renderWeek()}${filterNote(list.length)}<div class="layout recent">
+  return `${renderWeek()}${renderToday3()}${filterNote(list.length)}<div class="layout recent">
     <div class="main">
       <section class="section" aria-labelledby="h-hi"><h2 id="h-hi">確認しておきたいこと<span class="count">${hi.length}件</span></h2><p class="lead">制度・診療報酬、安全情報、薬剤の供給など、部署で対応が必要になりそうなもの</p>${must}</section>
       ${renderSchedule()}
       ${renderSupply()}
       <section class="section" aria-labelledby="h-mid"><h2 id="h-mid">研修・学会のお知らせ<span class="count">${mid.length}件</span></h2><p class="lead">学会・技師会・行政からの案内と、国内の新しい装置の話題</p>${sharedNotes}${mid.length?`<div class="list">${mid.map(n=>row(n)).join('')}</div>`:`<div class="empty">この期間のお知らせはありません。</div>`}</section>
+      ${renderPapers()}
     </div>
     <aside class="side section" aria-labelledby="h-lo"><h2 id="h-lo">ほかのニュース<span class="count">${lo.length}件</span></h2><p class="lead">一般メディアの医療・放射線の話題</p>${lo.length?`<div class="list">${loShown.map(n=>row(n)).join('')}${loShown.length<lo.length?`<button type="button" class="more" data-more>残り${lo.length-loShown.length}件を見る</button>`:''}</div>`:`<div class="empty">この期間のニュースはありません。</div>`}</aside>
   </div>`;
@@ -628,19 +766,22 @@ function renderPast(list){
 
 function savedList(){
   // 元データに残っていれば最新の内容、消えていれば保存時の写しを使う
-  return Object.values(saved).map(c=>Object.assign({},c,db.find(n=>n.url===c.url)||{},{savedAt:c.savedAt})).sort((a,b)=>String(b.savedAt).localeCompare(String(a.savedAt)));
+  return Object.values(saved).map(c=>Object.assign({},c,db.find(n=>n.url===c.url)||{},{savedAt:c.savedAt,due:c.due,_paper:c._paper})).sort((a,b)=>(!!b.due-!!a.due)||String(a.due||'').localeCompare(String(b.due||''))||String(b.savedAt).localeCompare(String(a.savedAt)));
 }
 function renderSaved(list){
   hideNotes=new Set();
   if(!Object.keys(saved).length)return `<div class="layout"><div class="empty"><b>あとで読む記事はまだありません</b>記事の右上の「あとで読む」を押すと、ここに集まります。</div></div>`;
   if(!list.length)return `${filterNote(0)}<div class="layout"><div class="empty"><b>条件に合う記事はありません</b>絞り込みを解除してください。</div></div>`;
-  return `${filterNote(list.length)}<div class="layout"><section class="section" aria-labelledby="h-saved"><div class="saved-tools"><h2 id="h-saved">あとで読む<span class="count">${list.length}件</span></h2></div><p class="lead">保存した順に新しいものから並んでいます。この端末のブラウザにだけ記録されます。</p><div class="list">${list.map(n=>row(n,true)).join('')}</div></section></div>`;
+  return `${filterNote(list.length)}<div class="layout"><section class="section" aria-labelledby="h-saved"><div class="saved-tools"><h2 id="h-saved">あとで読む<span class="count">${list.length}件</span></h2></div><p class="lead">期限を付けたものが期限の近い順に先頭、それ以外は保存した順です。この端末のブラウザにだけ記録されます。</p><div class="list">${list.map(n=>row(n,true)).join('')}</div></section></div>`;
 }
 function render(){
   renderChips();
+  if(view==='record'){document.getElementById('view').innerHTML=renderRecord();}
+  else{
   const pool=view==='saved'?savedList():view==='past'?pastPool():db.filter(inView);
   const list=pool.filter(n=>matchQ(n)&&(cat==='all'||n.category===cat)&&(!unreadOnly||!isRead(n)));
   document.getElementById('view').innerHTML=view==='recent'?renderRecent(list):view==='past'?renderPast(list):renderSaved(list);
+  }
   const sc=Object.keys(saved).length;document.getElementById('savedCount').textContent=sc?` ${sc}`:'';
   document.querySelectorAll('.seg button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.view===view)));
   document.getElementById('clearQ').classList.toggle('show',!!q);
@@ -658,7 +799,8 @@ function renderHello(){
   if(hours>=36){st.hidden=false;st.innerHTML=t0&&!isNaN(t0)?`<b>自動更新が止まっています。</b>最後の更新は${t0.toLocaleDateString('ja-JP',{timeZone:'Asia/Tokyo',month:'numeric',day:'numeric'})}(${Math.floor(hours/24)}日前)です。新しい記事が反映されていない可能性があります。`:'<b>更新時刻を確認できませんでした。</b>新しい記事が反映されていない可能性があります。';}
   const urgent=scheduleItems().filter(n=>n._urgent).length;
   const qn=quals.filter(q=>q.name&&q.expiry&&daysTo(q.expiry)<=180).sort((a,b)=>a.expiry.localeCompare(b.expiry));
-  document.getElementById('qualNotes').innerHTML=qn.map(q=>{const left=daysTo(q.expiry);const rel=scheduleItems().filter(n=>qualFor(n.title||n.headline).includes(q)).length;const [y,m,d]=q.expiry.split('-').map(Number);return `<p class="qual-note"><b>${esc(q.name)}</b>の更新期限${left<0?`を${-left}日過ぎています`:left===0?'は今日です':`まであと${left}日`}(${y}/${m}/${d})。${rel?`関係しそうな講習会が${rel}件あります。`:''}</p>`;}).join('');
+  const over=Object.values(saved).filter(c=>c.due&&c.due<=today).length;
+  document.getElementById('qualNotes').innerHTML=planNotes()+(over?`<p class="qual-note"><b>あとで読む</b>期限が今日まで・過ぎた記事が${over}件あります。</p>`:'')+qn.map(q=>{const left=daysTo(q.expiry);const rel=scheduleItems().filter(n=>qualFor(n.title||n.headline).includes(q)).length;const [y,m,d]=q.expiry.split('-').map(Number);return `<p class="qual-note"><b>${esc(q.name)}</b>の更新期限${left<0?`を${-left}日過ぎています`:left===0?'は今日です':`まであと${left}日`}(${y}/${m}/${d})。${rel?`関係しそうな講習会が${rel}件あります。`:''}</p>`;}).join('');
   const bad=meta&&meta.sources?Object.entries(meta.sources).filter(([k,v])=>k!=='メール通知'&&v&&(v.error||v.listed===0)).map(([k])=>k):[];
   const ss=document.getElementById('srcStatus');ss.hidden=!bad.length;ss.textContent=bad.length?`前回の更新で取得できなかった情報源: ${bad.join('、')}(次回の更新で再試行します)`:'';
   document.getElementById('sub').textContent=`${newSet.size?`前回から${newSet.size}件増えました。`:''}${urgent?`申込締切が近い研修が${urgent}件あります。`:''}${hi?`この1週間に確認しておきたいことが${hi}件あります。`:'この1週間、急ぎの確認事項はありません。'}${upd}`;
@@ -672,6 +814,14 @@ document.querySelector('.seg').addEventListener('click',e=>{const b=e.target.clo
 document.getElementById('chips').addEventListener('click',e=>{if(e.target.closest('[data-unread]')){unreadOnly=!unreadOnly;store.set('rtn-unread-only',unreadOnly);render();return;}const b=e.target.closest('button[data-cat]');if(!b)return;cat=b.dataset.cat;render();});
 document.getElementById('view').addEventListener('click',e=>{
   const sb=e.target.closest('[data-save]');if(sb){toggleSave(sb.dataset.save);render();return;}
+  const pb=e.target.closest('[data-plan]');if(pb){const n=scheduleItems(true).find(x=>planKey(x)===pb.dataset.plan);if(n){togglePlan(n);renderHello();render();toast(plans[pb.dataset.plan]?'参加予定に入れました':'参加予定から外しました');}return;}
+  const du=e.target.closest('[data-due]');if(du){const url=du.closest('[data-dueurl]').dataset.dueurl;const k=du.dataset.due;setDue(url,k==='today'?today:k==='week'?endOfWeek():k==='month'?endOfMonth():'');renderHello();render();return;}
+  const rec=e.target.closest('[data-rec]');
+  if(rec&&e.target.closest('[data-recdone]')){plans[rec.dataset.rec].status='done';savePlans();renderHello();render();return;}
+  if(rec&&e.target.closest('[data-recundo]')){plans[rec.dataset.rec].status='plan';savePlans();render();return;}
+  if(rec&&e.target.closest('[data-recdel]')){const k=rec.dataset.rec,old=plans[k];delete plans[k];savePlans();renderHello();render();toast('記録を消しました',()=>{plans[k]=old;savePlans();renderHello();render();});return;}
+  if(e.target.closest('[data-recadd]')){const t=document.getElementById('recTitle').value.trim();if(!t){document.getElementById('recTitle').focus();return;}plans['manual:'+Date.now()]={title:t,url:'',date:document.getElementById('recDate').value,place:'',source:'',apply_end:'',status:'done',credits:document.getElementById('recCredits').value,qual:'',note:''};savePlans();render();return;}
+  if(e.target.closest('[data-morepapers]')){showAllPapers=true;render();return;}
   const fb=e.target.closest('[data-fix]');if(fb){openFix(fb.dataset.fix);return;}
   if(e.target.closest('[data-weekclose]')){store.set('rtn-week-closed',weekStart(today));render();return;}
   const ta=e.target.closest('a.title, .week a');if(ta){const art=ta.closest('article');markRead(ta.getAttribute('href'));setTimeout(()=>{render();},400);if(art)art.classList.add('read');}
@@ -680,10 +830,32 @@ document.getElementById('view').addEventListener('click',e=>{
   if(e.target.closest('[data-more]')){showAllLo=true;render();return;}
   if(e.target.closest('[data-reset]')){cat='all';q='';document.getElementById('q').value='';render();}
 });
-document.getElementById('view').addEventListener('input',e=>{const t=e.target.closest('textarea[data-memo]');if(t)saveMemo(t.dataset.memo,t.value);});
+document.getElementById('view').addEventListener('input',e=>{const t=e.target.closest('textarea[data-memo]');if(t)saveMemo(t.dataset.memo,t.value);
+  const f=e.target.closest('[data-recf]');if(f){const k=f.closest('[data-rec]').dataset.rec;if(plans[k]){plans[k][f.dataset.recf]=f.value;savePlans();}}});
+document.getElementById('view').addEventListener('change',e=>{const d=e.target.closest('[data-duedate]');if(d){setDue(d.closest('[data-dueurl]').dataset.dueurl,d.value);renderHello();render();return;}
+  const f=e.target.closest('select[data-recf],input[data-recf=credits]');if(f)render();});
+// 全部既読(1回目で確認表示、2回目で実行)
+document.getElementById('chips').addEventListener('click',e=>{const b=e.target.closest('[data-allread]');if(!b)return;e.stopPropagation();
+  if(!b.classList.contains('confirm')){b.classList.add('confirm');b.textContent='もう一度押すと全部既読';setTimeout(()=>{if(b.isConnected){b.classList.remove('confirm');b.textContent='全部既読にする';}},4000);return;}
+  const pool=(view==='saved'?savedList():view==='past'?pastPool():db.filter(inView).concat(papers.map(paperAsItem))).filter(n=>matchQ(n)&&(cat==='all'||n.category===cat)&&!isRead(n));
+  const urls=pool.map(n=>n.url);urls.forEach(u=>readSet.add(u));store.set('rtn-read',[...readSet].slice(-3000));render();
+  toast(`${urls.length}件を既読にしました`,()=>{urls.forEach(u=>readSet.delete(u));store.set('rtn-read',[...readSet]);render();});},true);
+// スワイプ(左: 既読 / 右: あとで読む)。縦のスクロールと区別するため、横に大きく動いたときだけ反応
+(function(){let sx=0,sy=0,el=null,dx=0,locked=null;
+  const v=document.getElementById('view');
+  v.addEventListener('touchstart',e=>{if(!swipeOn||e.touches.length!==1)return;const a=e.target.closest('.swipe-row');if(!a||e.target.closest('textarea,input,select,button'))return;el=a;sx=e.touches[0].clientX;sy=e.touches[0].clientY;dx=0;locked=null;},{passive:true});
+  v.addEventListener('touchmove',e=>{if(!el)return;const x=e.touches[0].clientX-sx,y=e.touches[0].clientY-sy;if(locked===null&&(Math.abs(x)>12||Math.abs(y)>12))locked=Math.abs(x)>Math.abs(y)*1.6?'x':'y';if(locked!=='x')return;dx=x;el.classList.add('swiping');el.style.transform=`translateX(${Math.max(-110,Math.min(110,x))}px)`;},{passive:true});
+  v.addEventListener('touchend',()=>{if(!el)return;const a=el,url=a.dataset.url;el=null;a.classList.remove('swiping');a.style.transform='';if(locked!=='x'||Math.abs(dx)<90||!url)return;
+    if(dx<0){const was=readSet.has(url);markRead(url);render();toast('既読にしました',was?null:()=>{readSet.delete(url);store.set('rtn-read',[...readSet]);render();});}
+    else{toggleSave(url);render();const on=!!saved[url];toast(on?'あとで読むに入れました':'あとで読むから外しました',()=>{toggleSave(url);render();});}});
+})();
 document.getElementById('focusBtn').onclick=openFocus;
 document.getElementById('focusDlg').addEventListener('close',()=>{const d=document.getElementById('focusDlg');if(d.returnValue!=='save')return;focusCats=new Set([...d.querySelectorAll('#focusGrid input:checked')].map(i=>i.value));store.set('rtn-focus',[...focusCats]);
   schedScopes=new Set([...d.querySelectorAll('#scopeGrid input:checked')].map(i=>i.value));store.set('rtn-sched-scope',[...schedScopes]);
+  watchWords=[...new Set(document.getElementById('watchInput').value.split(/[、,，\s]+/).map(w=>w.trim()).filter(w=>w.length>=2))];store.set('rtn-watch',watchWords);
+  const szi=d.querySelector('#sizeRow input:checked');const sz=szi?szi.value:'';store.set('rtn-size',sz);if(sz)document.documentElement.dataset.size=sz;else delete document.documentElement.dataset.size;
+  const swi=d.querySelector('#swipeRow input:checked');swipeOn=!swi||swi.value==='on';store.set('rtn-swipe',swipeOn?'on':'off');
+  store.set('rtn-today3',null);
   quals=[...d.querySelectorAll('.qual-row')].map(r=>({name:r.querySelector('input[type=text]').value.trim(),expiry:r.querySelector('input[type=date]').value})).filter(q=>q.name);store.set('rtn-quals',quals);
   updateFocusBtn();renderHello();render();});
 document.getElementById('qualAdd').onclick=()=>document.getElementById('qualRows').insertAdjacentHTML('beforeend',qualRowHtml());
@@ -709,8 +881,9 @@ Promise.all([
   fetch('news.json?'+Date.now()).then(r=>r.json()),
   fetch('news_meta.json?'+Date.now()).then(r=>r.ok?r.json():null).catch(()=>null),
   fetch('seminars.json?'+Date.now()).then(r=>r.ok?r.json():null).catch(()=>null),
-  fetch('supply.json?'+Date.now()).then(r=>r.ok?r.json():null).catch(()=>null)
-]).then(([x,m,sem,sup])=>{supply=sup;window.__rawDb=Array.isArray(x)?x:[];db=window.__rawDb.map(applyFix);meta=m;seminars=sem&&Array.isArray(sem.items)?sem.items:[];markSeen();renderHello();render();})
+  fetch('supply.json?'+Date.now()).then(r=>r.ok?r.json():null).catch(()=>null),
+  fetch('papers.json?'+Date.now()).then(r=>r.ok?r.json():null).catch(()=>null)
+]).then(([x,m,sem,sup,pap])=>{supply=sup;papers=pap&&Array.isArray(pap.items)?pap.items:[];window.__rawDb=Array.isArray(x)?x:[];db=window.__rawDb.map(applyFix);meta=m;seminars=sem&&Array.isArray(sem.items)?sem.items:[];markSeen();renderHello();render();})
 .catch(()=>{document.getElementById('sub').textContent='ニュースを読み込めませんでした。';document.getElementById('view').innerHTML='<div class="layout"><div class="empty"><b>読み込みに失敗しました</b>通信状況を確認して、ページを再読み込みしてください。</div></div>';});
 </script>
 </body></html>

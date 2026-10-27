@@ -1239,6 +1239,32 @@ PAPER_DAYS = 180     # これより古い論文は残さない
 PAPER_MAX = 150
 
 
+PAPER_SKIP = re.compile(r'^(講演プログラム|プログラム|表紙|目次|奥付|会告|編集後記|投稿規定|執筆要項|正誤表|お知らせ|学会記事|会員名簿|役員名簿|索引|広告)|抄録集|講演抄録$')
+
+
+def parse_jstage_atom(xml):
+    """J-STAGEの新着(Atom)。論文名・著者・公開日・DOIは summary の中に入っている。
+
+    <entry><title>新着記事を登載しました。誌名</title><summary><![CDATA[ [ タイトル ] … [ 著者 ] … [ 公開日 ] 2026-10-21 [ DOI ] https://doi.org/… ]]></summary>
+    """
+    out = []
+    for ent in re.findall(r'<entry\b[^>]*>(.*?)</entry>', xml, re.S | re.I):
+        m = re.search(r'<summary[^>]*>(.*?)</summary>', ent, re.S | re.I)
+        if not m:
+            continue
+        txt = unescape(re.sub(r'<!\[CDATA\[|\]\]>', '', m.group(1)))
+        def field(name):
+            f = re.search(r'\[\s*' + name + r'\s*\](.*?)(?=\[\s*(?:タイトル|著者|公開日|DOI)\s*\]|$)', txt, re.S)
+            return re.sub(r'\s+', ' ', f.group(1)).strip() if f else ''
+        title, authors, day, doi = field('タイトル'), field('著者'), field('公開日'), field('DOI')
+        link = re.search(r'<link[^>]+href=["\']([^"\']+)', ent)
+        url = doi if doi.startswith('http') else (link.group(1) if link else '')
+        if not title or not url or not re.match(r'20\d{2}-\d{2}-\d{2}', day) or PAPER_SKIP.search(title):
+            continue
+        out.append({'title': title, 'url': url, 'published': day + 'T00:00:00+09:00', 'authors': authors})
+    return out
+
+
 def update_papers():
     """各誌の新着論文を papers.json に追記する(前回分は残し、古いものから落とす)。"""
     try:
@@ -1251,13 +1277,11 @@ def update_papers():
         url = JSTAGE_RSS.format(code=code)
         try:
             page = fetch(url)
-            items = parse_rss(page)
+            items = parse_jstage_atom(page) if '<feed' in page[:500] else parse_rss(page)
         except Exception as e:
             SOURCE_STATUS[name] = {'error': f'{type(e).__name__}: {e}'[:160]}
             continue
-        st = {'listed': len(items)}
-        if not items:
-            st['sample'] = re.sub(r'\s+', ' ', page[:700])
+        st = {'listed': len(items), 'feed_entries': page.count('<entry')}
         added = 0
         for x in items:
             title = re.sub(r'\s+', ' ', x['title']).strip()
@@ -1265,6 +1289,7 @@ def update_papers():
                 continue
             cat = category({'headline': title, 'summary': '', 'source': ''})
             found[x['url']] = {'journal': name, 'title': title, 'url': x['url'], 'published': x['published'][:10],
+                               'authors': x.get('authors', ''),
                                'added': now.date().isoformat(),
                                'category': cat if cat != 'その他' or not default_cat else default_cat}
             added += 1
