@@ -890,7 +890,7 @@ def parse_dated_blocks(html, base, fmt):
         title = clean_html(h.group(1) if h else seg)
         title = re.sub(r'^[\s　:：|｜]+', '', title)
         title = re.sub(r'\s+', ' ', title).strip()
-        title = re.sub(r'(?<=[^\x00-\x7f]) (?=[^\x00-\x7f])', '', title)[:90]   # タグの境目に入った空白
+        title = re.sub(r'(?<=[^\x00-\x7f]) | (?=[^\x00-\x7f])', '', title)[:90]   # タグの境目に入った空白
         if not dt or len(title) < 4 or BLOCK_SKIP.search(title):
             continue
         a = re.search(r'<a\b[^>]*href=["\']([^"\']+)["\']', seg, re.I)
