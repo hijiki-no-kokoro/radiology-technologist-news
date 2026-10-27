@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-10-27T18:19+09:00",
+  "checked_at": "2026-10-27T18:21+09:00",
   "added": 1,
   "total": 165,
   "sources": {
@@ -84,7 +84,7 @@
     "PMDA回収クラスI": {
       "listed": 0,
       "picked": 0,
-      "sample": "ファイルダウンロード</A> &#x3000;<A HREF=\"./rcidx26-1k_all.zip\">CSVダウンロード</A> </TD> </TR> </TABLE> <BODY BGCOLOR=\"white\" LINK=\"#0000FF\" ALINK=\"#008000\" VLINK=\"#800080\"> <TABLE cellSpacing=0 cellPadding=1 width=\"100%\" bgColor=#ceffff border=1> <THEAD> <TR bgColor=#7777aa> <TH noWrap><FONT color=white>番号</FONT></TH> <TH noWrap><FONT color=white>掲載年月日</FONT></TH> <TH noWrap><FONT color=white>種類</FONT></TH> <TH><FONT color=white>一般名</FONT></TH> <TH><FONT color=white>販売名</FONT></TH> <TH><FONT color=white>製造販売業者等名称</FONT></TH> <TH noWrap><FONT color=white>備考</FONT></TH> </TR> </THEAD> </TBODY> <TR><TD NOWRAP>1-2475</TD><TD NOWRAP>2026/06/01</TD><TD>医療機器</TD><TD>大動脈用ステントグラフト</TD><TD><A HREF=/rgo/MainServlet?recallno=1-2475 TARGET=_blank >ＲｅｌａｙＰｒｏ 胸部ステントグラフトシステム</A></TD><TD>テルモ株式会社</TD><TD> </TD></TR> </TBODY><script type=\"text/javascript\" src=\"/bnith__HOHGaqGpvl006I44MCP0jQxZCTdYR1uJOp5JgKlUrzQWMjvtwEHe1fy2mTxlG1F7\"></script> <script language=\"JavaScript\" type=\"text/javascript\">const _0x35e8=['visitorI",
+      "sample": "ファイルダウンロード</A> &#x3000;<A HREF=\"./rcidx26-1k_all.zip\">CSVダウンロード</A> </TD> </TR> </TABLE> <BODY BGCOLOR=\"white\" LINK=\"#0000FF\" ALINK=\"#008000\" VLINK=\"#800080\"> <TABLE cellSpacing=0 cellPadding=1 width=\"100%\" bgColor=#ceffff border=1> <THEAD> <TR bgColor=#7777aa> <TH noWrap><FONT color=white>番号</FONT></TH> <TH noWrap><FONT color=white>掲載年月日</FONT></TH> <TH noWrap><FONT color=white>種類</FONT></TH> <TH><FONT color=white>一般名</FONT></TH> <TH><FONT color=white>販売名</FONT></TH> <TH><FONT color=white>製造販売業者等名称</FONT></TH> <TH noWrap><FONT color=white>備考</FONT></TH> </TR> </THEAD> </TBODY> <TR><TD NOWRAP>1-2475</TD><TD NOWRAP>2026/06/01</TD><TD>医療機器</TD><TD>大動脈用ステントグラフト</TD><TD><A HREF=/rgo/MainServlet?recallno=1-2475 TARGET=_blank >ＲｅｌａｙＰｒｏ 胸部ステントグラフトシステム</A></TD><TD>テルモ株式会社</TD><TD> </TD></TR> </TBODY><script type=\"text/javascript\" src=\"/bnith__UdH3oq-PzyBvwXajmgZoUZtJm5336vqc_CZ-b-ryhwSkv7M3SAoenFxuo6ttlZ77\"></script> <script language=\"JavaScript\" type=\"text/javascript\">const _0x35e8=['visitorI",
       "bytes": 3119
     },
     "PMDA回収クラスII": {
@@ -98,12 +98,12 @@
     "日本放射線技術学会雑誌": {
       "listed": 13,
       "feed_entries": 13,
-      "added": 13
+      "added": 0
     },
     "日本消化器がん検診学会雑誌": {
-      "listed": 33,
+      "listed": 0,
       "feed_entries": 40,
-      "added": 33
+      "added": 0
     },
     "日本乳癌検診学会誌": {
       "listed": 0,
