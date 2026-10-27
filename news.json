@@ -257,7 +257,10 @@
     "why": "業務範囲の拡大に伴う告示研修です。未受講なら日程と申込方法を確認しておきましょう。",
     "source": "日本診療放射線技師会",
     "url": "https://news.google.com/rss/articles/CBMi0AFBVV95cUxNc3pHcTFrNlJrN1Z6eUFPYXNPOGxLWTdpdlVGSXNNUU1hc0FIeDlKSkhuQnp2TFl2M1JjQjQwRVZ1OUtVaHhRck9acEZTemkwVWZWZUhjOENmd096ajZ6VTJQaFdOSGExOWJQWGpNa0tLV2VVMVY4MEw0T1hRZ1d0TENVMGtrVzdSVWE2Qm5BWDRaazlmN183Zkl5MjlpWUlvZ1VFbkU5Ql9DRHdXU3ZoSXk5aXlmZlcxeFZjSXdCMEwtLTlEdHBIci16U1ZGaEkt?oc=5",
-    "track": "official"
+    "track": "official",
+    "event_date": "2027-01-09",
+    "event_kind": "開催",
+    "event_place": "東京"
   },
   {
     "date": "2026-10-21",
@@ -490,7 +493,10 @@
     "why": "興味のある内容なら、開催日と申込期限を確認しておきましょう。",
     "source": "日本放射線技術学会",
     "url": "https://news.google.com/rss/articles/CBMiUEFVX3lxTE93QnFESGZjTlkxZE45WjF0d2dKcW9xMDlSUmx3Z1NZWU5fcF9RdEhSb2x4ZV9sVHpXS1hCYk4wWHVQMV9lRTA4aE83a3N1bC1k?oc=5",
-    "track": "general"
+    "track": "general",
+    "event_date": "2026-10-23",
+    "event_kind": "開催",
+    "event_place": ""
   },
   {
     "date": "2026-10-16",
@@ -878,7 +884,10 @@
     "why": "業務範囲の拡大に伴う告示研修です。未受講なら日程と申込方法を確認しておきましょう。",
     "source": "日本診療放射線技師会",
     "url": "https://news.google.com/rss/articles/CBMigAFBVV95cUxQQndLXzJ4anZHRnFyTVBZUVpoVkJKM0RIYXdKazZYRmxPUVZ5NmxlTnhfYVUwLUU3Vk5FYzhqSm1uQ0ZSNGtza3NfRWJMU2RKMXk3cTJrR0d3Unp3M3VtemtJcWc4dHp0S1pjbDRWSHlpUElKX05HMVJXcWw3clA4OA?oc=5",
-    "track": "official"
+    "track": "official",
+    "event_date": "2026-10-04",
+    "event_kind": "開催",
+    "event_place": "東京"
   },
   {
     "date": "2026-10-02",
@@ -1125,7 +1134,10 @@
     "why": "業務範囲の拡大に伴う告示研修です。未受講なら日程と申込方法を確認しておきましょう。",
     "source": "日本診療放射線技師会",
     "url": "https://news.google.com/rss/articles/CBMi0wFBVV95cUxPcC1ieTFaOWhkRGN4UkV3Z1VTUkdLcno5WTJIS2U3QjBQRzZjRVY5QXlCeHBYeFhrVVZGSVhGbWNWSENCdHVFS3RxazlGdVZDc19EbHBfaEUwWVVWSGdTSFdQUnJIanl1NnkwMWNKVXQ3cFpPMkg4X0JLR0dEamFYSnB2S1VlNWxuT3gyN1FpQjc4VWk2SHBjOE1OekFIdW1mVUJkZ2FqUGJUQTlDcmlacy13RHZ6MG1FOF92alFHUDBncFRicWZaUUZ0b2V1Rzc3MWEw?oc=5",
-    "track": "official"
+    "track": "official",
+    "event_date": "2026-12-13",
+    "event_kind": "開催",
+    "event_place": "大阪"
   },
   {
     "date": "2026-09-29",
@@ -1323,7 +1335,10 @@
     "source": "日本放射線技術学会",
     "url": "https://news.google.com/rss/articles/CBMiUEFVX3lxTE55LUVJYVZlOG5mUUhPWjczN2xMNWZ0UzVkUkdYUV9Jb0NOUVpsXy1YTE9ha3pkdGhZdDd4NFltU3I2bG4tWm1fWTNHZzZpVV9r?oc=5",
     "track": "official",
-    "featured_date": "2026-09-22"
+    "featured_date": "2026-09-22",
+    "event_date": "2026-11-26",
+    "event_kind": "申込締切",
+    "event_place": "オンライン"
   },
   {
     "date": "2026-09-20",
