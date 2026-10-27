@@ -1089,9 +1089,15 @@ def direct_pmda_recalls():
     out = []
     for cls in (1, 2):
         try:
-            items = parse_pmda_recalls(fetch(PMDA_RECALL_LIST.format(fy=fy, cls=cls)), cls)
+            html = fetch(PMDA_RECALL_LIST.format(fy=fy, cls=cls))
+            items = parse_pmda_recalls(html, cls)
             picked = [x for x in items if (now - datetime.fromisoformat(x['published'])).days <= DIRECT_DAYS][:10]
-            SOURCE_STATUS[f'PMDA回収クラス{"I" if cls == 1 else "II"}'] = {'listed': len(items), 'picked': len(picked)}
+            st = {'listed': len(items), 'picked': len(picked)}
+            if not items:   # 読み取れなかったときは、原因を調べられるようページの一部を残す
+                k = html.find('recallno')
+                st['sample'] = re.sub(r'\s+', ' ', html[max(0, k - 700):k + 300] if k >= 0 else html[:600])
+                st['bytes'] = len(html)
+            SOURCE_STATUS[f'PMDA回収クラス{"I" if cls == 1 else "II"}'] = st
             out += [{'title': x['title'], 'url': x['url'], 'description': x['maker'], 'source': 'PMDA', 'published': x['published']} for x in picked]
         except Exception as e:
             print('PMDA recall error:', cls, e)
