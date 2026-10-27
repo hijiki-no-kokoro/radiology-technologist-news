@@ -41,7 +41,13 @@
     "why": "開催日程と申込期限を確認し、参加希望者がいれば勤務を調整しましょう。",
     "source": "日本放射線技術学会",
     "url": "https://news.google.com/rss/articles/CBMiUEFVX3lxTE1HTzdtX1Fwem5QN0RlWEdvR3NXZXBIVm1ic3UwS0FsNzRyRjJMcWtmeU5HTTZzVzZUcXRGbTNQZThjTzFFWjJSWkJXbEpyb3Vf?oc=5",
-    "track": "general"
+    "track": "general",
+    "also": [
+      {
+        "source": "日本診療放射線技師会",
+        "url": "https://news.google.com/rss/articles/CBMiWEFVX3lxTE9tYVNwTTR1NU1xODZSbmUxSGNIb1ZQX1o2LVluQm5NdVNZWW54am9JUm5CbndGMUFvckhzWjNZejh4dS1yTHBmb3owdEgwZFFoMTZJNTJjX1E?oc=5"
+      }
+    ]
   },
   {
     "date": "2026-10-25",
@@ -124,17 +130,6 @@
     "why": "登録メールアドレス宛の不審なメールに注意するよう、部内にも周知しておくと安心です。",
     "source": "日本診療放射線技師会",
     "url": "https://news.google.com/rss/articles/CBMiT0FVX3lxTFBtYTJrOF9DN1ZhdWplbEVKcEhLQWFTT1c5b3R4RlVoVXAycnoyYzlxNlgwYWRVdmRqYXhGWFUtSUJLSEhKckp5bDdIQmR2b2c?oc=5",
-    "track": "official"
-  },
-  {
-    "date": "2026-10-23",
-    "category": "学術",
-    "importance": "中",
-    "headline": "2026年度 画像医療システム産業研究会 開催のお知らせ - 日本診療放射線技師会",
-    "summary": "",
-    "why": "開催日程と申込期限を確認し、参加希望者がいれば勤務を調整しましょう。",
-    "source": "日本診療放射線技師会",
-    "url": "https://news.google.com/rss/articles/CBMiWEFVX3lxTE9tYVNwTTR1NU1xODZSbmUxSGNIb1ZQX1o2LVluQm5NdVNZWW54am9JUm5CbndGMUFvckhzWjNZejh4dS1yTHBmb3owdEgwZFFoMTZJNTJjX1E?oc=5",
     "track": "official"
   },
   {
@@ -616,7 +611,13 @@
     "why": "",
     "source": "日本診療放射線技師会",
     "url": "https://news.google.com/rss/articles/CBMiU0FVX3lxTE1sZ2JrcGRzQ3dqNjB4Z1VuMEMwMm9naVplN25kamJZb3NfWXBZY3VkbWs4R0dQS0Z1eXVDekoyTU9XWTc0c01tRXMyam5MY0ZtbDRz?oc=5",
-    "track": "official"
+    "track": "official",
+    "also": [
+      {
+        "source": "日本診療放射線技師会",
+        "url": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE9QRHpDU0xRdGJBSzY5WG1ubk4xcDlWdGJLYzhnblF5WEQwZUtXdHFZVnRTbndwdi1TM25xbmFpU3c2amozdWFjMzhxZWF2MFJsVEE?oc=5"
+      }
+    ]
   },
   {
     "date": "2026-10-14",
@@ -1008,17 +1009,6 @@
   },
   {
     "date": "2026-10-01",
-    "category": "その他",
-    "importance": "中",
-    "headline": "動画視聴システム更新に伴う一時休止のお知らせ（10/20 12：00〜14：00） - 日本診療放射線技師会",
-    "summary": "",
-    "why": "",
-    "source": "日本診療放射線技師会",
-    "url": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE9QRHpDU0xRdGJBSzY5WG1ubk4xcDlWdGJLYzhnblF5WEQwZUtXdHFZVnRTbndwdi1TM25xbmFpU3c2amozdWFjMzhxZWF2MFJsVEE?oc=5",
-    "track": "official"
-  },
-  {
-    "date": "2026-10-01",
     "category": "教育",
     "importance": "中",
     "headline": "2026年度調査委員会企画 第2回 診療放射線技師のための調査研究スキルアップセミナー - 日本診療放射線技師会",
@@ -1235,7 +1225,13 @@
     "source": "日本診療放射線技師会",
     "url": "https://news.google.com/rss/articles/CBMiUEFVX3lxTE9rVHJINUJKeUdPWUpLVWxTOWRoYkpzN3Bqb1F4dE81RG1UQXpFQXZnMGJ4Y0xCU1JlYnc1a3dFdGtDbkpreU9oOFpoTGdaMWRV?oc=5",
     "track": "official",
-    "featured_date": "2026-09-22"
+    "featured_date": "2026-09-22",
+    "also": [
+      {
+        "source": "日本診療放射線技師会",
+        "url": "https://news.google.com/rss/articles/CBMiVEFVX3lxTE01NXhmMDd5cGh5NEFaT0twZXF3Yk9uMjlxa1o0U1BfWUhrb3N5NDJPRDRlZ1hsTTZPVUJJSEM4QWpsc0w5VzR5VElFZGY5eE8wNGJoeg?oc=5"
+      }
+    ]
   },
   {
     "date": "2026-09-25",
@@ -1383,18 +1379,6 @@
     "source": "日本放射線技術学会",
     "url": "https://news.google.com/rss/articles/CBMiUEFVX3lxTFBKNjh2TjVSeTNEQWRxT0ZDNThQdFRTY2VUa0VaNFhTSzkyanVXbGVSQ3dXOGNmRkJ0VXRQWk1nNkdLa2hfTGZySkVSQ2lpRkdh?oc=5",
     "track": "general"
-  },
-  {
-    "date": "2026-09-19",
-    "category": "安全管理",
-    "importance": "高",
-    "headline": "令和8年度「医療放射線安全管理講習会（WEB）」の開催案内 - 日本診療放射線技師会",
-    "summary": "立入検査、タスク・シフト、グリーンラジオロジー、IVR、核医学治療などを扱う講習会。",
-    "why": "技師長が関与する立入検査対応、医療放射線安全管理、タスク・シフトをまとめて確認できます。",
-    "source": "日本診療放射線技師会",
-    "url": "https://news.google.com/rss/articles/CBMiVEFVX3lxTE01NXhmMDd5cGh5NEFaT0twZXF3Yk9uMjlxa1o0U1BfWUhrb3N5NDJPRDRlZ1hsTTZPVUJJSEM4QWpsc0w5VzR5VElFZGY5eE8wNGJoeg?oc=5",
-    "track": "official",
-    "featured_date": "2026-09-22"
   },
   {
     "date": "2026-09-18",
