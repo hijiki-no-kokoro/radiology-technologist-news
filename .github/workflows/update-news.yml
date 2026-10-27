@@ -29,6 +29,11 @@ jobs:
 
       - name: Update news
         run: python scripts/update_news.py
+        env:
+          # 要確認のメール通知(任意)。リポジトリの Settings > Secrets に登録したときだけ送信される
+          GMAIL_USER: ${{ secrets.GMAIL_USER }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          NOTIFY_TO: ${{ secrets.NOTIFY_TO }}
 
       - name: Commit updated news and daily HTML
         run: |

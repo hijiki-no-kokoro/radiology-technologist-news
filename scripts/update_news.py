@@ -1,4 +1,5 @@
-import json, re, xml.etree.ElementTree as ET
+import json, os, re, smtplib, xml.etree.ElementTree as ET
+from email.mime.text import MIMEText
 from datetime import datetime, timezone, timedelta
 from email.utils import parsedate_to_datetime
 from html import unescape
@@ -1285,6 +1286,50 @@ def write_archive_index():
     (ARCHIVE_DIR / 'index.json').write_text(json.dumps({'months': months}, ensure_ascii=False, indent=1), encoding='utf-8')
 
 
+SITE_URL = 'https://hijiki-no-kokoro.github.io/radiology-technologist-news/'
+
+
+def build_notice(items):
+    """要確認の新着をメール本文にする。"""
+    lines = [f'今日の要確認が{len(items)}件あります。', '']
+    for x in items:
+        lines.append('■ ' + str(x.get('headline') or ''))
+        if x.get('why'):
+            lines.append('  ポイント: ' + x['why'])
+        lines.append('  ' + str(x.get('source') or '') + '  ' + str(x.get('url') or ''))
+        lines.append('')
+    lines.append('一覧: ' + SITE_URL)
+    subject = f'【技師ニュース】要確認 {len(items)}件: ' + str(items[0].get('headline') or '')[:40]
+    return subject, '\n'.join(lines)
+
+
+def notify_high(items):
+    """新しく入った要確認を Gmail で自分宛てに知らせる。
+
+    GitHub の Secrets に GMAIL_USER と GMAIL_APP_PASSWORD を登録したときだけ動く
+    (NOTIFY_TO を登録すると宛先を変えられる。未登録なら GMAIL_USER 宛て)。
+    """
+    user, password = os.environ.get('GMAIL_USER'), os.environ.get('GMAIL_APP_PASSWORD')
+    if not items:
+        return 'no-items'
+    if not (user and password):
+        print('Mail notice skipped: GMAIL_USER / GMAIL_APP_PASSWORD not set')
+        return 'not-configured'
+    to = os.environ.get('NOTIFY_TO') or user
+    subject, body = build_notice(items)
+    msg = MIMEText(body, 'plain', 'utf-8')
+    msg['Subject'], msg['From'], msg['To'] = subject, user, to
+    try:
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465, timeout=30) as smtp:
+            smtp.login(user, password.replace(' ', ''))
+            smtp.send_message(msg)
+        print(f'Mail notice sent: {len(items)} items')
+        return 'sent'
+    except Exception as e:
+        print('Mail notice error:', e)
+        return 'error'
+
+
 def load():
     try:
         return json.loads(
@@ -1649,6 +1694,11 @@ def main():
     )
 
     update_seminars()
+
+    # 今回新しく入った記事のうち、毎日の整理を通って「高」になったものだけ知らせる
+    added_urls = {x['url'] for x in added}
+    new_high = [x for x in final if x.get('url') in added_urls and x.get('importance') == '高']
+    SOURCE_STATUS['メール通知'] = {'result': notify_high(new_high), 'items': len(new_high)}
 
     META_JSON.write_text(
         json.dumps({
