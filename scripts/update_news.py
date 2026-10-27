@@ -75,6 +75,8 @@ OFFICIAL = (
     'nra.go.jp',
     'pmda.go.jp',
     'mext.go.jp',
+    'med-safe.jp',
+    'jcqhc.or.jp',
 )
 
 CATEGORIES = (
@@ -316,6 +318,10 @@ def article_text(x):
 
 
 def relevant(x):
+    # 医療安全情報は取得時に放射線関連だけを選んでいるので、そのまま残す
+    if dom(x.get('url', '')) in SAFETY_INFO_DOMAINS:
+        return True
+
     text = article_text(x)
 
     if any(k.lower() in text for k in BAD_TERMS):
@@ -550,6 +556,90 @@ def direct_jart():
     return out
 
 
+# --------------------------------------------------
+# 医療安全情報(日本医療機能評価機構・PMDA)を直接取得する
+# --------------------------------------------------
+SAFETY_INFO_DOMAINS = ('med-safe.jp', 'pmda.go.jp')
+MED_SAFE_LIST = 'https://www.med-safe.jp/contents/info/'
+PMDA_SAFETY_LIST = 'https://www.pmda.go.jp/safety/info-services/medical-safety-info/0001.html'
+# 放射線部門に関係しそうな号だけを取り込む
+SAFETY_RADIOLOGY_TERMS = (
+    'MRI', 'CT', '造影', '放射線', '画像', 'X線', 'エックス線', 'レントゲン', '撮影', '透視', '血管撮影',
+    '核医学', 'RI', '被ばく', '植込', '植え込', 'ペースメーカ', '検査', '読影', '金属',
+)
+
+
+def _is_radiology_safety(title):
+    return any(_term_in(k, title.lower()) for k in SAFETY_RADIOLOGY_TERMS)
+
+
+def parse_med_safe(html, limit=3):
+    """医療機能評価機構の一覧から、新しい号(番号の大きい順)の放射線関連を返す。"""
+    found = {}
+    for m in re.finditer(r'<a[^>]+href=["\'](?P<href>[^"\']*med-safe_(?P<no>\d+)\.pdf)["\'][^>]*>(?P<text>.*?)</a>', html, re.I | re.S):
+        text = clean_html(m.group('text'))
+        no = int(m.group('no'))
+        # 「医療機器等・検査 No.239：患者に植込まれた医療機器の確認不足（第2報）」→ 題名部分
+        title = re.sub(r'^.*?No\.?\s*\d+\s*[:：]\s*', '', text).strip() or text
+        if not title or no in found or 'まとめ' in text:
+            continue
+        found[no] = {'no': no, 'title': title, 'text': text, 'url': urljoin(MED_SAFE_LIST, m.group('href'))}
+    items = [found[k] for k in sorted(found, reverse=True)]
+    # 分類名(「医療機器等・検査」など)も含めて判定する
+    return [x for x in items if _is_radiology_safety(x['text'])][:limit] if items else []
+
+
+def parse_pmda_safety(html, limit=3):
+    """PMDA医療安全情報の表から、発行年月つきで放射線関連を返す(新しい順)。"""
+    out = []
+    for row in re.split(r'<tr[\s>]', html, flags=re.I)[1:]:
+        no = re.search(r'No\.?\s*(\d+)|>\s*(\d{1,3})\s*<', row)
+        ym = re.search(r'(20\d{2})年\s*(\d{1,2})月', row)
+        link = re.search(r'<a[^>]+href=["\'](?P<href>[^"\']+\.pdf)["\'][^>]*>(?P<text>.*?)</a>', row, re.I | re.S)
+        if not (ym and link):
+            continue
+        title = clean_html(link.group('text'))
+        if not title or title.startswith('[') or '掲示用' in title:
+            continue
+        out.append({
+            'no': int(next(g for g in no.groups() if g)) if no else 0,
+            'title': title,
+            'url': urljoin(PMDA_SAFETY_LIST, link.group('href')),
+            'published': f'{int(ym.group(1)):04d}-{int(ym.group(2)):02d}-01',
+        })
+    out.sort(key=lambda x: (x['published'], x['no']), reverse=True)
+    return [x for x in out if _is_radiology_safety(x['title'])][:limit]
+
+
+def direct_safety_info():
+    """放射線に関係する医療安全情報を、記事の形(title/url/source/published)で返す。"""
+    out = []
+    now = datetime.now(JST)
+    try:
+        for x in parse_med_safe(fetch(MED_SAFE_LIST)):
+            out.append({
+                'title': f'医療安全情報 No.{x["no"]}：{x["title"]}',
+                'url': x['url'], 'description': '', 'source': '日本医療機能評価機構',
+                # 一覧に発行日がないため、初めて見つけた日を日付にする
+                'published': now.isoformat(),
+            })
+    except Exception as e:
+        print('med-safe direct error:', e)
+    try:
+        for x in parse_pmda_safety(fetch(PMDA_SAFETY_LIST)):
+            if (now.date() - datetime.fromisoformat(x['published']).date()).days > 120:
+                continue
+            out.append({
+                'title': f'PMDA医療安全情報 No.{x["no"]}：{x["title"]}',
+                'url': x['url'], 'description': '', 'source': 'PMDA',
+                'published': datetime.fromisoformat(x['published']).replace(tzinfo=JST).isoformat(),
+            })
+    except Exception as e:
+        print('PMDA direct error:', e)
+    print(f'Safety info candidates: {len(out)}')
+    return out
+
+
 # 上から順に最初に当てはまったカテゴリを使う。
 # 英字の語は単語単位で判定する(「AI」「CT」「RI」が他の単語の一部に当たらないように)。
 CATEGORY_RULES = (
@@ -675,6 +765,7 @@ OFFICIAL_SOURCE_NAMES = (
     '日本磁気共鳴医学会',
     '厚生労働省', '原子力規制委員会',
     '医薬品医療機器総合機構', 'pmda',
+    '日本医療機能評価機構',
 )
 
 # 高: 自分の部署で確認・対応が必要になりうる情報
@@ -1190,6 +1281,9 @@ def main():
         if not is_known(x):
             candidates[x['url']] = x
 
+    # 医療安全情報(新しい号だけ。既にある号は is_known で除く)
+    safety_new = [x for x in direct_safety_info() if not is_known(x)]
+
     # Google News RSS
     for q in QUERIES:
         try:
@@ -1258,6 +1352,13 @@ def main():
 
     added = []
     specialist_titles = set()
+
+    # 医療安全情報は件数枠とは別に必ず載せる
+    for x in safety_new:
+        item = make_item(x)
+        item['track'] = 'official'
+        added.append(item)
+        specialist_titles.add(canonical_title(x['title']))
 
     for x in specialist:
         if len(specialist_titles) >= 5:
