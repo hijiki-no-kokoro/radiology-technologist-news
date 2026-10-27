@@ -654,28 +654,88 @@ def is_specialist(x):
     return False
 
 
-def importance(x, official):
-    t = article_text(x)
+# Google News 経由だと URL が news.google.com になるため、配信元名でも公式情報を判定する。
+OFFICIAL_SOURCE_NAMES = (
+    '日本診療放射線技師会', 'jart',
+    '日本放射線技術学会', 'jsrt',
+    '日本医学放射線学会',
+    '日本核医学会', '日本核医学技術学会',
+    '日本放射線腫瘍学会',
+    '日本医学物理学会',
+    '日本磁気共鳴医学会',
+    '厚生労働省', '原子力規制委員会',
+    '医薬品医療機器総合機構', 'pmda',
+)
 
-    if any(
-        k.lower() in t
-        for k in (
-            '診療報酬',
-            '補助金',
-            '安全管理',
-            '被ばく',
-            '線量管理',
-            '装置更新',
-            'タスクシフト',
-            'タスクシェア',
-            '業務範囲',
-            'STAT',
-            'ガイドライン',
-        )
-    ):
+# 高: 自分の部署で確認・対応が必要になりうる情報
+IMPORTANCE_HIGH_TERMS = (
+    # 制度・報酬・法令
+    '診療報酬', '報酬改定', '補助金', '法改正', '省令', '施行規則', '医療法',
+    'タスクシフト', 'タスクシェア', '業務範囲', '指定規則',
+    # 放射線安全
+    '医療被ばく', '被ばく線量', '線量管理', '診断参考レベル', 'drl',
+    # 薬剤・装置の供給と安全性
+    '限定出荷', '出荷停止', '供給停止', '供給不足', '出荷調整',
+    'リコール', '自主回収', '安全性情報', '添付文書改訂',
+    # 会員・患者情報
+    '個人情報漏えい', '個人情報漏洩', '不審アクセス', 'サイバー攻撃',
+    # 指針
+    'ガイドライン改訂', 'ガイドライン公表', 'ガイドラインを改訂', '指針改訂',
+)
+
+# 研修・講習会などの開催案内は「高」の語を含んでも「中」までにする
+EVENT_TERMS = (
+    '研修', '講習', 'セミナー', '講演会', '学術大会', '勉強会', 'ウェビナー',
+    '開催', '開講', '募集', '参加者',
+)
+
+# 中: 国内の装置・AIの承認や導入
+IMPORTANCE_MID_TERMS = (
+    '薬事承認', '承認取得', '国内初', '日本初', '国内で初', '保険適用',
+)
+
+# 低: 業務への影響が小さい話題
+IMPORTANCE_LOW_TERMS = (
+    '逮捕', '停職', '懲戒', '書類送検', '不起訴',
+    'ペット', '動物病院', '犬', '猫',
+    '市場規模', '市場予測', '億米ドル', 'cagr',
+    'ベトナム', 'vietnam', '韓国',
+    '漫画', 'マンガ', 'インタビュー', '体験', 'フェア',
+)
+
+
+def is_official_source(x):
+    src = str(x.get('source') or '').lower()
+    return any(name.lower() in src for name in OFFICIAL_SOURCE_NAMES)
+
+
+def importance(x, official):
+    # 判定は見出しと要約だけで行う(配信元名に含まれる語で誤判定しないため)
+    t = ' '.join(
+        str(x.get(k) or '') for k in ('title', 'headline', 'description', 'summary')
+    ).lower()
+    official = official or is_official_source(x)
+
+    def has(terms):
+        return any(k.lower() in t for k in terms)
+
+    if has(IMPORTANCE_LOW_TERMS) and not official:
+        return '低'
+
+    # 「画像診断ガイドライン2026年度版の全記事の公開」のように語が離れている場合も拾う
+    guideline_release = re.search(r'(ガイドライン|指針).{0,30}(公開|公表|改訂|発刊|刊行)', t)
+    # 学会・団体の声明は撮影手技の見直しなど実務に直結する
+    official_statement = official and '声明' in t
+
+    if has(IMPORTANCE_HIGH_TERMS) or guideline_release or official_statement:
+        if has(EVENT_TERMS):
+            return '中'
         return '高'
 
     if official:
+        return '中'
+
+    if has(IMPORTANCE_MID_TERMS):
         return '中'
 
     return '低'
