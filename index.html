@@ -5,6 +5,18 @@
 <title>診療放射線技師ニュース</title>
 <meta name="description" content="診療放射線技師向けに、制度・安全管理・学会のお知らせ・装置の話題を毎朝まとめています。">
 <meta name="color-scheme" content="light dark">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="技師ニュース">
+<meta name="theme-color" content="#f3f5fb" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1b2030" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="website">
+<meta property="og:title" content="診療放射線技師ニュース">
+<meta property="og:description" content="制度・安全情報・研修の案内・装置の話題を毎朝まとめて確認できます。">
+<meta property="og:url" content="https://hijiki-no-kokoro.github.io/radiology-technologist-news/">
+<meta property="og:image" content="https://hijiki-no-kokoro.github.io/radiology-technologist-news/icon-512.png">
+<meta name="twitter:card" content="summary">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&family=BIZ+UDPGothic:wght@400;700&display=swap" rel="stylesheet">
@@ -159,6 +171,7 @@ button{font:inherit;color:inherit}
 .cal:hover{text-decoration:underline}
 .more{display:block;width:100%;border:0;border-top:1px solid var(--line);background:none;padding:11px;font-size:14px;font-weight:700;color:var(--blue);cursor:pointer}
 .more:hover{background:var(--surface-2)}
+.archive-more{border:1px solid var(--line);border-radius:16px;background:var(--surface)}
 .also{margin-top:4px;font-size:12.5px}
 .also summary{cursor:pointer;color:var(--blue);list-style:none;display:inline}
 .also summary::-webkit-details-marker{display:none}
@@ -266,6 +279,33 @@ function toggleSave(url){
   store.set('rtn-saved',saved);
 }
 function saveBtn(n){const on=isSaved(n);return `<button type="button" class="save" data-save="${esc(n.url)}" aria-pressed="${on}" aria-label="${on?'あとで読むから外す':'あとで読むに追加'}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12v18l-6-4-6 4z"/></svg>${on?'保存済み':'あとで読む'}</button>`;}
+// ---- 月別アーカイブ(news.json の200件より古い記事) ----
+let archiveIndex=null, archiveLoaded={}, archiveLoading=false;
+async function loadArchiveIndex(){
+  if(archiveIndex)return archiveIndex;
+  try{const r=await fetch('archive/index.json?'+Date.now());archiveIndex=r.ok?await r.json():{months:[]};}catch(e){archiveIndex={months:[]};}
+  if(!Array.isArray(archiveIndex.months))archiveIndex.months=[];
+  return archiveIndex;
+}
+async function loadMonths(months){
+  const todo=months.filter(m=>!archiveLoaded[m]);if(!todo.length)return;
+  archiveLoading=true;render();
+  await Promise.all(todo.map(async m=>{try{const r=await fetch(`archive/${m}.json`);archiveLoaded[m]=r.ok?await r.json():[];}catch(e){archiveLoaded[m]=[];}}));
+  archiveLoading=false;render();
+}
+const nextMonth=()=>archiveIndex&&archiveIndex.months.find(x=>!archiveLoaded[x.month]);
+function pastPool(){
+  const urls=new Set(db.map(n=>n.url));const extra=[];
+  Object.values(archiveLoaded).forEach(list=>(list||[]).forEach(n=>{if(n&&n.url&&!urls.has(n.url)){urls.add(n.url);extra.push(n);}}));
+  return db.filter(n=>!isRecent(n)).concat(extra);
+}
+async function ensureArchiveForView(){
+  if(view!=='past')return;
+  await loadArchiveIndex();
+  // 検索中は全期間から探す
+  if(q)await loadMonths(archiveIndex.months.map(x=>x.month));
+  else render();
+}
 let hideNotes=new Set();
 function noteHtml(n){return (n.why&&!hideNotes.has(n.why))?`<div class="note"><span class="face" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3z"/></svg></span><p class="say"><small>ポイント</small>${esc(n.why)}</p></div>`:'';}
 function metaHtml(n,showImp,showDate=true){const i=IMP[impOf(n)];return `<div class="meta">${newSet.has(n.url)?'<span class="pill new">新着</span>':''}${showImp?`<span class="pill ${i.cls}">${i.label}</span>`:''}<span class="pill cat">${esc(n.category||'その他')}</span>${showDate?`<span>${dayText(feedDate(n))}</span>`:''}${saveBtn(n)}</div>`;}
@@ -275,7 +315,7 @@ const row=(n,showImp=false,showDate=true)=>`<article class="row">${metaHtml(n,sh
 const byNewest=(a,b)=>feedDate(b).localeCompare(feedDate(a));
 
 function renderChips(){
-  const base=(view==='saved'?savedList():db.filter(inView)).filter(matchQ);const cnt={};base.forEach(n=>{cnt[n.category]=(cnt[n.category]||0)+1});
+  const base=(view==='saved'?savedList():view==='past'?pastPool():db.filter(inView)).filter(matchQ);const cnt={};base.forEach(n=>{cnt[n.category]=(cnt[n.category]||0)+1});
   const cats=CAT_ORDER.filter(c=>cnt[c]).concat(Object.keys(cnt).filter(c=>!CAT_ORDER.includes(c)&&c!=='その他').sort()).concat(cnt['その他']?['その他']:[]);
   if(cat!=='all'&&!cats.includes(cat))cats.push(cat);
   const b=(c,label,k)=>`<button type="button" data-cat="${esc(c)}" aria-pressed="${cat===c}">${esc(label)}<span class="n">${k}</span></button>`;
@@ -313,13 +353,19 @@ function renderRecent(list){
   </div>`;
 }
 
+function archiveMoreHtml(){
+  if(archiveLoading)return '<div class="empty">前の月の記事を読み込んでいます…</div>';
+  const nm=nextMonth();if(!nm)return archiveIndex&&archiveIndex.months.length?'<p class="lead" style="text-align:center;margin-top:6px">保存しているいちばん古い記事までを表示しています。</p>':'';
+  const [y,m]=nm.month.split('-').map(Number);
+  return `<button type="button" class="more archive-more" data-month="${esc(nm.month)}">さらに前を読み込む(${y}年${m}月・${nm.count}件)</button>`;
+}
 function renderPast(list){
   hideNotes=new Set();
-  if(!list.length)return `${filterNote(0)}<div class="layout"><div class="empty"><b>見つかりませんでした</b>キーワードを短くするか、分野を「すべて」に戻してください。</div></div>`;
+  if(!list.length)return `${filterNote(0)}<div class="layout"><div class="empty"><b>見つかりませんでした</b>キーワードを短くするか、分野を「すべて」に戻してください。</div>${archiveMoreHtml()}</div>`;
   const by={};list.forEach(n=>{(by[feedDate(n)]=by[feedDate(n)]||[]).push(n)});
   const narrowed=q||cat!=='all';
   const order={高:0,中:1,低:2};
-  return `${filterNote(list.length)}<div class="layout past">${Object.keys(by).sort((a,b)=>b.localeCompare(a)).map((d,i)=>{const items=by[d].sort((a,b)=>order[impOf(a)]-order[impOf(b)]);const [y,m,dd]=d.split('-').map(Number);const wd=WD[new Date(Date.UTC(y,m-1,dd)).getUTCDay()];const yr=String(y)!==today.slice(0,4)?`${y}年`:'';return `<details class="day"${(narrowed||i===0)?' open':''}><summary><span>${yr}${m}月${dd}日<span class="wd">(${wd})</span></span><span class="c">${items.length}件</span></summary><div class="rows">${items.map(n=>row(n,true,false)).join('')}</div></details>`;}).join('')}</div>`;
+  return `${filterNote(list.length)}<div class="layout past">${Object.keys(by).sort((a,b)=>b.localeCompare(a)).map((d,i)=>{const items=by[d].sort((a,b)=>order[impOf(a)]-order[impOf(b)]);const [y,m,dd]=d.split('-').map(Number);const wd=WD[new Date(Date.UTC(y,m-1,dd)).getUTCDay()];const yr=String(y)!==today.slice(0,4)?`${y}年`:'';return `<details class="day"${(narrowed||i===0)?' open':''}><summary><span>${yr}${m}月${dd}日<span class="wd">(${wd})</span></span><span class="c">${items.length}件</span></summary><div class="rows">${items.map(n=>row(n,true,false)).join('')}</div></details>`;}).join('')}${archiveMoreHtml()}</div>`;
 }
 
 function savedList(){
@@ -334,7 +380,7 @@ function renderSaved(list){
 }
 function render(){
   renderChips();
-  const pool=view==='saved'?savedList():db.filter(inView);
+  const pool=view==='saved'?savedList():view==='past'?pastPool():db.filter(inView);
   const list=pool.filter(n=>matchQ(n)&&(cat==='all'||n.category===cat));
   document.getElementById('view').innerHTML=view==='recent'?renderRecent(list):view==='past'?renderPast(list):renderSaved(list);
   const sc=Object.keys(saved).length;document.getElementById('savedCount').textContent=sc?` ${sc}`:'';
@@ -353,12 +399,13 @@ function renderHello(){
 
 // 操作
 let qTimer;
-document.getElementById('q').addEventListener('input',e=>{clearTimeout(qTimer);qTimer=setTimeout(()=>{q=e.target.value.trim();render();},120);});
+document.getElementById('q').addEventListener('input',e=>{clearTimeout(qTimer);qTimer=setTimeout(()=>{q=e.target.value.trim();render();ensureArchiveForView();},120);});
 document.getElementById('clearQ').onclick=()=>{const i=document.getElementById('q');i.value='';q='';render();i.focus();};
-document.querySelector('.seg').addEventListener('click',e=>{const b=e.target.closest('button[data-view]');if(!b)return;view=b.dataset.view;render();});
+document.querySelector('.seg').addEventListener('click',e=>{const b=e.target.closest('button[data-view]');if(!b)return;view=b.dataset.view;render();ensureArchiveForView();});
 document.getElementById('chips').addEventListener('click',e=>{const b=e.target.closest('button[data-cat]');if(!b)return;cat=b.dataset.cat;render();});
 document.getElementById('view').addEventListener('click',e=>{
   const sb=e.target.closest('[data-save]');if(sb){toggleSave(sb.dataset.save);render();return;}
+  const am=e.target.closest('[data-month]');if(am){loadMonths([am.dataset.month]);return;}
   if(e.target.closest('[data-more]')){showAllLo=true;render();return;}
   if(e.target.closest('[data-reset]')){cat='all';q='';document.getElementById('q').value='';render();}
 });
@@ -369,6 +416,7 @@ if('IntersectionObserver' in window){new IntersectionObserver(([en])=>bar.classL
 // 表示テーマ(自動/ライト/ダーク)。選んだものは次回も使う
 (function(){const btn=document.getElementById('themeBtn');const modes=['auto','light','dark'],label={auto:'表示: 自動',light:'表示: ライト',dark:'表示: ダーク'};let mode='auto';try{const t=localStorage.getItem('rtn-theme');if(modes.includes(t))mode=t;}catch(e){}const apply=()=>{if(mode==='auto')delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=mode;btn.textContent=label[mode];try{if(mode==='auto')localStorage.removeItem('rtn-theme');else localStorage.setItem('rtn-theme',mode);}catch(e){}};btn.onclick=()=>{mode=modes[(modes.indexOf(mode)+1)%modes.length];apply();};apply();})();
 
+if('serviceWorker' in navigator&&location.protocol==='https:'){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));}
 Promise.all([
   fetch('news.json?'+Date.now()).then(r=>r.json()),
   fetch('news_meta.json?'+Date.now()).then(r=>r.ok?r.json():null).catch(()=>null)

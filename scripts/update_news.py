@@ -8,6 +8,8 @@ from urllib.request import Request, urlopen
 
 ROOT = Path(__file__).resolve().parents[1]
 NEWS_JSON = ROOT / 'news.json'
+ARCHIVE_DIR = ROOT / 'archive'      # 200件からあふれた記事を月ごとに保存
+MAX_RECENT = 200
 META_JSON = ROOT / 'news_meta.json'  # 最終更新時刻と新着件数(画面の右上に表示)
 HTML_DIR = ROOT / 'daily_html'
 
@@ -392,7 +394,12 @@ def is_news_item(x):
         '一般向け情報',
         '技師会概要',
         '医療被ばく個別相談センター',
+        '放射線被ばく相談員',
     ):
+        return False
+
+    # 技師会サイトのメニュー(「〇〇の情報をご紹介しています。 詳細を見る」)
+    if title.endswith('詳細を見る'):
         return False
 
     if any(
@@ -1060,6 +1067,39 @@ def score(x):
     return s
 
 
+def archive_items(items):
+    """news.json から外れる記事を archive/YYYY-MM.json に追記し、月の一覧を更新する。"""
+    if not items:
+        return
+    ARCHIVE_DIR.mkdir(parents=True, exist_ok=True)
+    by_month = {}
+    for x in items:
+        month = str(feed_date(x) or x.get('date') or '')[:7]
+        if re.fullmatch(r'20\d{2}-\d{2}', month):
+            by_month.setdefault(month, []).append(x)
+    for month, new in by_month.items():
+        path = ARCHIVE_DIR / f'{month}.json'
+        try:
+            old = json.loads(path.read_text(encoding='utf-8'))
+        except Exception:
+            old = []
+        urls = {x.get('url') for x in old}
+        merged = old + [x for x in new if x.get('url') not in urls]
+        merged.sort(key=lambda x: str(feed_date(x) or ''), reverse=True)
+        path.write_text(json.dumps(merged, ensure_ascii=False, indent=1), encoding='utf-8')
+    write_archive_index()
+
+
+def write_archive_index():
+    months = []
+    for path in sorted(ARCHIVE_DIR.glob('20??-??.json'), reverse=True):
+        try:
+            months.append({'month': path.stem, 'count': len(json.loads(path.read_text(encoding='utf-8')))})
+        except Exception:
+            continue
+    (ARCHIVE_DIR / 'index.json').write_text(json.dumps({'months': months}, ensure_ascii=False, indent=1), encoding='utf-8')
+
+
 def load():
     try:
         return json.loads(
@@ -1413,7 +1453,9 @@ def main():
     if added and not final:
         final = added + db
 
-    final = final[:200]
+    # 上限を超えた古い記事は消さずに月別アーカイブへ移す
+    archive_items(final[MAX_RECENT:])
+    final = final[:MAX_RECENT]
     NEWS_JSON.write_text(
         json.dumps(final, ensure_ascii=False, indent=2),
         encoding='utf-8'
