@@ -22,10 +22,10 @@ header h1::before{content:"";width:9px;height:9px;border-radius:50%;background:v
 header p{margin:4px 0 0;color:var(--muted);font-size:13px}
 .livebadge{font-size:11px;color:var(--cyan);border:1px solid #1e5b52;background:#0e2420;padding:5px 11px;border-radius:999px;font-weight:700;letter-spacing:.03em}
 main{max-width:1180px;margin:auto;padding:22px 20px 50px}
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:22px}
-.stat{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:14px 16px}
-.stat .num{font-size:26px;font-weight:800;font-family:"JetBrains Mono",monospace}
-.stat .lbl{font-size:11.5px;color:var(--muted);margin-top:2px;letter-spacing:.02em}
+.stats{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.stat{background:var(--panel);border:1px solid var(--border);border-radius:999px;padding:5px 11px;display:flex;align-items:baseline;gap:6px}
+.stat .num{font-size:15px;font-weight:800;font-family:"JetBrains Mono",monospace;order:2}
+.stat .lbl{font-size:12px;color:var(--muted);letter-spacing:.02em;order:1}
 .stat.hi .num{color:var(--red)}.stat.mid .num{color:var(--amber)}.stat.lo .num{color:var(--green)}.stat.all .num{color:var(--cyan)}
 .stat{cursor:pointer;transition:border-color .15s,background .15s}.stat:hover{border-color:#3a4856}.stat.active{background:var(--panel2);border-color:var(--cyan)}
 .stat.hi.active{border-color:var(--red)}.stat.mid.active{border-color:var(--amber)}.stat.lo.active{border-color:var(--green)}
@@ -50,20 +50,20 @@ h2.headline{font-size:15.5px;line-height:1.6;margin:0 0 10px;font-weight:700;col
 <body>
 <header><div class="hwrap"><div><h1>診療放射線技師ニュース</h1><p>制度・学術・AI・画像診断・安全管理などを毎日チェック</p></div><span class="livebadge mono">● LIVE — 8:00 UPDATE</span></div></header>
 <main>
-<div class="stats"><div class="stat all" data-imp="all" onclick="setImp('all')"><div class="num mono" id="statAll">0</div><div class="lbl">総ニュース件数</div></div><div class="stat hi" data-imp="高" onclick="setImp('高')"><div class="num mono" id="statHi">0</div><div class="lbl">重要度 高</div></div><div class="stat mid" data-imp="中" onclick="setImp('中')"><div class="num mono" id="statMid">0</div><div class="lbl">重要度 中</div></div><div class="stat lo" data-imp="低" onclick="setImp('低')"><div class="num mono" id="statLo">0</div><div class="lbl">重要度 低</div></div></div>
-<div class="notice" id="status">毎朝8:00にニュースDBを更新します。</div>
+<div class="stats"><div class="stat all" data-imp="all" onclick="setImp('all')"><div class="num mono" id="statAll">0</div><div class="lbl">全件</div></div><div class="stat hi" data-imp="高" onclick="setImp('高')"><div class="num mono" id="statHi">0</div><div class="lbl">高</div></div><div class="stat mid" data-imp="中" onclick="setImp('中')"><div class="num mono" id="statMid">0</div><div class="lbl">中</div></div><div class="stat lo" data-imp="低" onclick="setImp('低')"><div class="num mono" id="statLo">0</div><div class="lbl">低</div></div></div>
+<div class="notice" id="status" style="display:none">毎朝8:00にニュースDBを更新します。</div>
 <div class="toolbar"><div class="search-wrap"><input class="search" id="search" placeholder="AI、MRI、補助金、被ばく…"></div></div>
 <div id="impIndicator" style="display:none;margin-bottom:12px"><span class="tag" style="cursor:pointer;padding:6px 12px" onclick="setImp('all')" id="impIndicatorText">絞り込み中 ×</span></div>
 <div class="filters"><button class="active" data-cat="all">すべて</button><button data-cat="制度">制度</button><button data-cat="職能">職能</button><button data-cat="学術">学術</button><button data-cat="AI">AI</button><button data-cat="CT">CT</button><button data-cat="MRI">MRI</button><button data-cat="一般撮影">一般撮影</button><button data-cat="安全管理">安全管理</button><button data-cat="核医学">核医学</button><button data-cat="放射線治療">放射線治療</button><button data-cat="教育">教育</button><button data-cat="診療報酬・補助金">診療報酬・補助金</button></div>
-<div class="tabs"><button class="tabbtn active" data-tab="today">今日<span class="cnt mono" id="tabTodayCnt"></span></button><button class="tabbtn" data-tab="past" id="pastTab">過去<span class="cnt mono" id="tabPastCnt"></span></button></div>
+<div class="tabs"><button class="tabbtn active" data-tab="today">直近7日<span class="cnt mono" id="tabTodayCnt"></span></button><button class="tabbtn" data-tab="past" id="pastTab">それ以前<span class="cnt mono" id="tabPastCnt"></span></button></div>
 
 <div id="todayView">
-  <section class="section"><div class="section-title"><h2>専門ニュース</h2><span class="badge">放射線・医療実務</span></div><div class="grid" id="todaySpecial"></div></section>
-  <section class="section general"><div class="section-title"><h2>一般ニュース</h2><span class="badge">一般メディア・周辺動向</span></div><div class="grid" id="todayGeneral"></div></section>
+  <section class="section"><div class="section-title"><h2>専門ニュース</h2><span class="badge">放射線・医療実務</span></div><div id="todaySpecial"></div></section>
+  <section class="section general"><div class="section-title"><h2>一般ニュース</h2><span class="badge">一般メディア・周辺動向</span></div><div id="todayGeneral"></div></section>
 </div>
 
 <div id="pastView" hidden>
-  <div class="notice">過去ニュースは検索したときだけ表示します。検索欄にキーワードを入力してください。</div>
+  <div class="notice">8日以上前のニュースです。検索欄やカテゴリで絞り込めます。</div>
   <section class="section"><div class="section-title"><h2>専門ニュース</h2><span class="badge">過去ログ</span></div><div id="pastSpecial"></div></section>
   <section class="section general"><div class="section-title"><h2>一般ニュース</h2><span class="badge">過去ログ</span></div><div id="pastGeneral"></div></section>
 </div>
@@ -73,6 +73,9 @@ const esc=s=>String(s??'').replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'
 let db=[],cat='all',q='',tab='today',imp='all';
 const today=new Date().toLocaleDateString('sv-SE',{timeZone:'Asia/Tokyo'});
 const feedDate=n=>n.featured_date||n.date;
+const RECENT_DAYS=7;
+const recentCutoff=(()=>{const [y,m,d]=today.split('-').map(Number);return new Date(Date.UTC(y,m-1,d-(RECENT_DAYS-1))).toISOString().slice(0,10);})();
+const isRecent=n=>feedDate(n)>=recentCutoff;
 const isGeneral=n=>n.track==='general';
 const isSpecial=n=>!isGeneral(n);
 function matchesFilter(n){const nImp=n.importance||'中';return(cat==='all'||n.category===cat)&&(imp==='all'||nImp===imp)&&(!q||JSON.stringify(n).toLowerCase().includes(q.toLowerCase()));}
@@ -81,11 +84,11 @@ function relatedFor(n,pastList){return pastList.filter(p=>p.category===n.categor
 function card(n,pastList){const impv=n.importance||'中',rel=relatedFor(n,pastList);const relHtml=rel.length?`<details class="related"><summary>関連する過去ニュース (${rel.length})</summary><ul>${rel.map(r=>`<li><span class="rdate">${esc(r.date)}</span><a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.headline)}</a></li>`).join('')}</ul></details>`:'';return `<article class="card"><div class="meta"><span class="tag">${esc(n.category)}</span><span class="imp ${esc(impv)}" onclick="setImp('${esc(impv)}')" title="クリックで重要度「${esc(impv)}」のニュースだけ表示">重要度 ${esc(impv)}</span><span class="date-txt">${esc(n.date)}</span></div><h2 class="headline">${esc(n.headline)}</h2><p class="summary">${esc(n.summary)}</p><div class="why"><b>技師長目線</b>${esc(n.why)}</div><a class="source" href="${esc(n.url)}" target="_blank" rel="noopener">${esc(n.source||'情報源')} ↗</a>${relHtml}</article>`;}
 function pastRow(n){const impv=n.importance||'中';return `<div class="dayrow"><span class="imp ${esc(impv)}" onclick="setImp('${esc(impv)}')">${esc(impv)}</span><div class="rowtext"><a href="${esc(n.url)}" target="_blank" rel="noopener">${esc(n.headline)}</a><div class="rowmeta"><span class="tag" style="padding:2px 7px">${esc(n.category)}</span><span>${esc(n.source||'')}</span></div></div></div>`;}
 function groupByDateHtml(list,emptyMsg){if(!list.length)return `<div class="empty">${emptyMsg}</div>`;const byDate={};list.forEach(n=>{const d=feedDate(n);(byDate[d]=byDate[d]||[]).push(n)});return Object.keys(byDate).sort((a,b)=>b.localeCompare(a)).map(d=>`<details class="daygroup" open><summary><span>${esc(d)}</span><span class="daycount">${byDate[d].length}件</span></summary><div class="daylist">${byDate[d].map(pastRow).join('')}</div></details>`).join('');}
-function render(){const filtered=db.filter(matchesFilter),specialFiltered=filtered.filter(isSpecial),generalFiltered=filtered.filter(isGeneral);const specialAll=db.filter(isSpecial),specialPastAll=specialAll.filter(n=>feedDate(n)!==today);const todaysSpecial=specialFiltered.filter(n=>feedDate(n)===today),todaysGeneral=generalFiltered.filter(n=>feedDate(n)===today);const pastSpecial=specialFiltered.filter(n=>feedDate(n)!==today),pastGeneral=generalFiltered.filter(n=>feedDate(n)!==today);document.getElementById('todaySpecial').innerHTML=todaysSpecial.map(n=>card(n,specialPastAll)).join('')||'<div class="empty">本日の専門ニュースはまだありません。</div>';document.getElementById('todayGeneral').innerHTML=todaysGeneral.map(n=>card(n,specialPastAll)).join('')||'<div class="empty">本日の一般ニュースはまだありません。</div>';document.getElementById('pastSpecial').innerHTML=groupByDateHtml(pastSpecial,'該当する過去の専門ニュースはありません。');document.getElementById('pastGeneral').innerHTML=groupByDateHtml(pastGeneral,'該当する過去の一般ニュースはありません。');document.getElementById('tabTodayCnt').textContent=`(${todaysSpecial.length+todaysGeneral.length})`;document.getElementById('tabPastCnt').textContent=`(${pastSpecial.length+pastGeneral.length})`;document.getElementById('pastTab').style.display='';document.getElementById('todayView').hidden=tab!=='today';document.getElementById('pastView').hidden=tab!=='past';}
+function render(){const filtered=db.filter(matchesFilter),specialFiltered=filtered.filter(isSpecial),generalFiltered=filtered.filter(isGeneral);const todaysSpecial=specialFiltered.filter(isRecent),todaysGeneral=generalFiltered.filter(isRecent);const pastSpecial=specialFiltered.filter(n=>!isRecent(n)),pastGeneral=generalFiltered.filter(n=>!isRecent(n));document.getElementById('todaySpecial').innerHTML=groupByDateHtml(todaysSpecial,'直近7日の専門ニュースはありません。');document.getElementById('todayGeneral').innerHTML=groupByDateHtml(todaysGeneral,'直近7日の一般ニュースはありません。');document.getElementById('pastSpecial').innerHTML=groupByDateHtml(pastSpecial,'該当する過去の専門ニュースはありません。');document.getElementById('pastGeneral').innerHTML=groupByDateHtml(pastGeneral,'該当する過去の一般ニュースはありません。');document.getElementById('tabTodayCnt').textContent=`(${todaysSpecial.length+todaysGeneral.length})`;document.getElementById('tabPastCnt').textContent=`(${pastSpecial.length+pastGeneral.length})`;document.getElementById('pastTab').style.display='';document.getElementById('todayView').hidden=tab!=='today';document.getElementById('pastView').hidden=tab!=='past';}
 document.querySelectorAll('.tabbtn').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tabbtn').forEach(x=>x.classList.remove('active'));b.classList.add('active');tab=b.dataset.tab;render()});
 document.querySelectorAll('.filters button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.filters button').forEach(x=>x.classList.remove('active'));b.classList.add('active');cat=b.dataset.cat;render()});
 document.getElementById('search').oninput=e=>{q=e.target.value.trim();render()};
 function updateStats(){document.getElementById('statAll').textContent=db.length;document.getElementById('statHi').textContent=db.filter(n=>n.importance==='高').length;document.getElementById('statMid').textContent=db.filter(n=>n.importance==='中'||!n.importance).length;document.getElementById('statLo').textContent=db.filter(n=>n.importance==='低').length;}
-fetch('news.json?'+Date.now()).then(r=>r.json()).then(x=>{db=x;document.getElementById('status').textContent=`毎朝8:00に更新中。現在 ${db.length}件のニュースを蓄積しています。`;updateStats();render()}).catch(e=>{document.getElementById('status').textContent='ニュースDBの読み込みに失敗しました。';render()});
+fetch('news.json?'+Date.now()).then(r=>r.json()).then(x=>{db=x;updateStats();render()}).catch(e=>{const s=document.getElementById('status');s.textContent='ニュースDBの読み込みに失敗しました。';s.style.display='';render()});
 </script>
 </body></html>
