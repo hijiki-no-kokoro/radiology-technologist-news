@@ -1,5 +1,82 @@
 [
   {
+    "date": "2026-10-02",
+    "category": "教育",
+    "importance": "中",
+    "headline": "「令和８年度 第２回少人数施設ミーティング」開催のお知らせ",
+    "summary": "",
+    "why": "興味のある内容なら、開催日と申込期限を確認しておきましょう。",
+    "source": "香川県診療放射線技師会",
+    "url": "https://kagawart.jp/article/data.php?nid=496",
+    "track": "official"
+  },
+  {
+    "date": "2026-10-27",
+    "category": "安全管理",
+    "importance": "高",
+    "headline": "医療機器の回収(クラスII)：放射線治療計画ソフトウェア RayStation(放射線治療計画プログラム)",
+    "summary": "レイサーチ・ジャパン株式会社",
+    "why": "自施設に該当する機器・薬剤がないか確認しておきましょう。",
+    "source": "PMDA",
+    "url": "https://www.info.pmda.go.jp/rgo/MainServlet?recallno=2-13015",
+    "track": "official"
+  },
+  {
+    "date": "2026-10-23",
+    "category": "安全管理",
+    "importance": "高",
+    "headline": "医療機器の回収(クラスII)：アーティス icono(据置型デジタル式循環器用X線透視診断装置)",
+    "summary": "シーメンスヘルスケア株式会社",
+    "why": "自施設に該当する機器・薬剤がないか確認しておきましょう。",
+    "source": "PMDA",
+    "url": "https://www.info.pmda.go.jp/rgo/MainServlet?recallno=2-13009",
+    "track": "official"
+  },
+  {
+    "date": "2026-10-16",
+    "category": "安全管理",
+    "importance": "高",
+    "headline": "医療機器の回収(クラスII)：(1)CTスキャナ Aquilion ONE TSX‐308A (2)CTスキャナ Aquilion Serve TSX‐307A (3)CTスキャナ Aquilion Serve SP TSX‐307B (4)CTスキャナ Aquilion ONE TSX‐306A(全身用X線CT診断装置)",
+    "summary": "キヤノン株式会社",
+    "why": "自施設に該当する機器・薬剤がないか確認しておきましょう。",
+    "source": "PMDA",
+    "url": "https://www.info.pmda.go.jp/rgo/MainServlet?recallno=2-12997",
+    "track": "official"
+  },
+  {
+    "date": "2026-10-16",
+    "category": "安全管理",
+    "importance": "高",
+    "headline": "医療機器の回収(クラスII)：ARCHITECT アナライザー i2000SR(免疫発光測定装置)",
+    "summary": "アボットジャパン合同会社",
+    "why": "自施設に該当する機器・薬剤がないか確認しておきましょう。",
+    "source": "PMDA",
+    "url": "https://www.info.pmda.go.jp/rgo/MainServlet?recallno=2-12995",
+    "track": "official"
+  },
+  {
+    "date": "2026-10-13",
+    "category": "安全管理",
+    "importance": "高",
+    "headline": "医療機器の回収(クラスII)：VuePoint II OCT フィクセイションシステム(脊椎内固定器具)",
+    "summary": "ニューベイシブジャパン株式会社",
+    "why": "自施設に該当する機器・薬剤がないか確認しておきましょう。",
+    "source": "PMDA",
+    "url": "https://www.info.pmda.go.jp/rgo/MainServlet?recallno=2-12987",
+    "track": "official"
+  },
+  {
+    "date": "2026-10-13",
+    "category": "安全管理",
+    "importance": "高",
+    "headline": "医療機器の回収(クラスII)：AI-RadコンパニオンCT(汎用画像診断装置ワークステーション用プログラム)",
+    "summary": "シーメンスヘルスケア株式会社",
+    "why": "自施設に該当する機器・薬剤がないか確認しておきましょう。",
+    "source": "PMDA",
+    "url": "https://www.info.pmda.go.jp/rgo/MainServlet?recallno=2-12986",
+    "track": "official"
+  },
+  {
     "date": "2026-10-08",
     "category": "マンモグラフィ",
     "importance": "中",
@@ -33,17 +110,6 @@
     "track": "official"
   },
   {
-    "date": "2026-10-24",
-    "category": "その他",
-    "importance": "中",
-    "headline": "求人情報 掲載しました",
-    "summary": "",
-    "why": "",
-    "source": "香川県診療放射線技師会",
-    "url": "https://kagawart.jp/article/data.php?nid=509",
-    "track": "official"
-  },
-  {
     "date": "2026-10-22",
     "category": "安全管理",
     "importance": "中",
@@ -56,7 +122,7 @@
   },
   {
     "date": "2026-10-17",
-    "category": "その他",
+    "category": "教育",
     "importance": "中",
     "headline": "「令和８年度 第１回RI部会」開催のお知らせ",
     "summary": "",
@@ -78,7 +144,7 @@
   },
   {
     "date": "2026-10-13",
-    "category": "その他",
+    "category": "教育",
     "importance": "中",
     "headline": "「第46回 さぬき美じょん」開催のお知らせ",
     "summary": "",

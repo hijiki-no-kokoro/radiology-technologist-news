@@ -1,7 +1,7 @@
 {
-  "checked_at": "2026-10-27T17:56+09:00",
-  "added": 1,
-  "total": 161,
+  "checked_at": "2026-10-27T17:59+09:00",
+  "added": 8,
+  "total": 167,
   "sources": {
     "医療機能評価機構": {
       "picked": 3
@@ -82,19 +82,18 @@
       "picked": 1
     },
     "日本救急撮影技師認定機構": {
-      "error": "HTTPError: HTTP Error 404: Not Found"
+      "listed": 0,
+      "picked": 0
     },
     "PMDA回収クラスI": {
       "listed": 0,
       "picked": 0,
-      "sample": "ファイルダウンロード</A> &#x3000;<A HREF=\"./rcidx26-1k_all.zip\">CSVダウンロード</A> </TD> </TR> </TABLE> <BODY BGCOLOR=\"white\" LINK=\"#0000FF\" ALINK=\"#008000\" VLINK=\"#800080\"> <TABLE cellSpacing=0 cellPadding=1 width=\"100%\" bgColor=#ceffff border=1> <THEAD> <TR bgColor=#7777aa> <TH noWrap><FONT color=white>番号</FONT></TH> <TH noWrap><FONT color=white>掲載年月日</FONT></TH> <TH noWrap><FONT color=white>種類</FONT></TH> <TH><FONT color=white>一般名</FONT></TH> <TH><FONT color=white>販売名</FONT></TH> <TH><FONT color=white>製造販売業者等名称</FONT></TH> <TH noWrap><FONT color=white>備考</FONT></TH> </TR> </THEAD> </TBODY> <TR><TD NOWRAP>1-2475</TD><TD NOWRAP>2026/06/01</TD><TD>医療機器</TD><TD>大動脈用ステントグラフト</TD><TD><A HREF=/rgo/MainServlet?recallno=1-2475 TARGET=_blank >ＲｅｌａｙＰｒｏ 胸部ステントグラフトシステム</A></TD><TD>テルモ株式会社</TD><TD> </TD></TR> </TBODY><script type=\"text/javascript\" src=\"/bnith__-jQvZF5Uu2Whp2PV2PxoAhltF1LXFqStMa5FZPxpKyhXgBw8xEk8V6pWfCFM9LvP5O4ME4BZsYk=\"></script> <script language=\"JavaScript\" type=\"text/javascript\">const _0x35e",
+      "sample": "ファイルダウンロード</A> &#x3000;<A HREF=\"./rcidx26-1k_all.zip\">CSVダウンロード</A> </TD> </TR> </TABLE> <BODY BGCOLOR=\"white\" LINK=\"#0000FF\" ALINK=\"#008000\" VLINK=\"#800080\"> <TABLE cellSpacing=0 cellPadding=1 width=\"100%\" bgColor=#ceffff border=1> <THEAD> <TR bgColor=#7777aa> <TH noWrap><FONT color=white>番号</FONT></TH> <TH noWrap><FONT color=white>掲載年月日</FONT></TH> <TH noWrap><FONT color=white>種類</FONT></TH> <TH><FONT color=white>一般名</FONT></TH> <TH><FONT color=white>販売名</FONT></TH> <TH><FONT color=white>製造販売業者等名称</FONT></TH> <TH noWrap><FONT color=white>備考</FONT></TH> </TR> </THEAD> </TBODY> <TR><TD NOWRAP>1-2475</TD><TD NOWRAP>2026/06/01</TD><TD>医療機器</TD><TD>大動脈用ステントグラフト</TD><TD><A HREF=/rgo/MainServlet?recallno=1-2475 TARGET=_blank >ＲｅｌａｙＰｒｏ 胸部ステントグラフトシステム</A></TD><TD>テルモ株式会社</TD><TD> </TD></TR> </TBODY><script type=\"text/javascript\" src=\"/bnith__xG-OQ3ZcCqtggFC94VKHUKKDU2-gmLURZSh0BhfMiY2aUTcLjHrH4W5yED6BwbbEtqpl0H9kvoE=\"></script> <script language=\"JavaScript\" type=\"text/javascript\">const _0x35e",
       "bytes": 3131
     },
     "PMDA回収クラスII": {
-      "listed": 0,
-      "picked": 0,
-      "sample": "ァイルダウンロード</A> &#x3000;<A HREF=\"./rcidx26-2k_all.zip\">CSVダウンロード</A> </TD> </TR> </TABLE> <BODY BGCOLOR=\"white\" LINK=\"#0000FF\" ALINK=\"#008000\" VLINK=\"#800080\"> <TABLE cellSpacing=0 cellPadding=1 width=\"100%\" bgColor=#ceffff border=1> <THEAD> <TR bgColor=#7777aa> <TH noWrap><FONT color=white>番号</FONT></TH> <TH noWrap><FONT color=white>掲載年月日</FONT></TH> <TH noWrap><FONT color=white>種類</FONT></TH> <TH><FONT color=white>一般名</FONT></TH> <TH><FONT color=white>販売名</FONT></TH> <TH><FONT color=white>製造販売業者等名称</FONT></TH> <TH noWrap><FONT color=white>備考</FONT></TH> </TR> </THEAD> </TBODY> <TR><TD NOWRAP>2-13015</TD><TD NOWRAP>2026/10/27</TD><TD>医療機器</TD><TD>放射線治療計画プログラム</TD><TD><A HREF=/rgo/MainServlet?recallno=2-13015 TARGET=_blank >放射線治療計画ソフトウェア ＲａｙＳｔａｔｉｏｎ</A></TD><TD>レイサーチ・ジャパン株式会社</TD><TD> </TD></TR> <TR><TD NOWRAP>2-13013</TD><TD NOWRAP>2026/10/27</TD><TD>医療機器</TD><TD>耳かけ型補聴器</TD><TD><A HREF=/rgo/MainServlet?recallno=2-13013 TARGET=_blank >補聴器 ＨＢーＴ２Ｈ</A></TD><TD>ＷＳオーディオロジージャパン株式会社</TD><TD> </",
-      "bytes": 39754
+      "listed": 30,
+      "picked": 6
     },
     "造影剤の供給状況": {
       "listed": 235,
@@ -114,8 +113,8 @@
       "upcoming": 39
     },
     "メール通知": {
-      "result": "no-items",
-      "items": 0
+      "result": "not-configured",
+      "items": 6
     }
   }
 }
