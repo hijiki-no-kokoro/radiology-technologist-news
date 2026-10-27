@@ -28,6 +28,10 @@
     "技師会の研修一覧": {
       "listed": 12,
       "upcoming": 12
+    },
+    "メール通知": {
+      "result": "no-items",
+      "items": 0
     }
   }
 }
