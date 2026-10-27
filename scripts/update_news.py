@@ -227,11 +227,18 @@ MARKET_REPORT_DOMAINS = (
     'newscast.jp', 'atpress.ne.jp'
 )
 
+SOURCE_STATUS = {}  # 取得元ごとの結果(news_meta.json に記録して、取れなくなったら気付けるように)
+
+
 def fetch(url):
     return urlopen(
         Request(
             url,
-            headers={'User-Agent': 'Mozilla/5.0 radiology-technologist-news'}
+            headers={
+                'User-Agent': 'Mozilla/5.0 (compatible; radiology-technologist-news; +https://hijiki-no-kokoro.github.io/radiology-technologist-news/)',
+                'Accept': 'text/html,application/xhtml+xml,application/xml,application/rss+xml;q=0.9,*/*;q=0.8',
+                'Accept-Language': 'ja,en;q=0.5',
+            }
         ),
         timeout=30
     ).read().decode('utf-8', 'ignore')
@@ -634,8 +641,10 @@ def direct_safety_info():
                 # 一覧に発行日がないため、初めて見つけた日を日付にする
                 'published': now.isoformat(),
             })
+        SOURCE_STATUS['医療機能評価機構'] = {'picked': sum(1 for x in out if x['source'] == '日本医療機能評価機構')}
     except Exception as e:
         print('med-safe direct error:', e)
+        SOURCE_STATUS['医療機能評価機構'] = {'error': f'{type(e).__name__}: {e}'[:160]}
     try:
         for x in parse_pmda_safety(fetch(PMDA_SAFETY_LIST)):
             if (now.date() - datetime.fromisoformat(x['published']).date()).days > 120:
@@ -645,8 +654,10 @@ def direct_safety_info():
                 'url': x['url'], 'description': '', 'source': 'PMDA',
                 'published': datetime.fromisoformat(x['published']).replace(tzinfo=JST).isoformat(),
             })
+        SOURCE_STATUS['PMDA'] = {'picked': sum(1 for x in out if x['source'] == 'PMDA')}
     except Exception as e:
         print('PMDA direct error:', e)
+        SOURCE_STATUS['PMDA'] = {'error': f'{type(e).__name__}: {e}'[:160]}
     print(f'Safety info candidates: {len(out)}')
     return out
 
@@ -706,6 +717,7 @@ def update_seminars():
                 found[x['url']] = x
         except Exception as e:
             print('JART seminar error:', page, e)
+            SOURCE_STATUS.setdefault('技師会の研修一覧', {})['error'] = f'{type(e).__name__}: {e}'[:160]
     try:
         old = json.loads(SEMINARS_JSON.read_text(encoding='utf-8')).get('items', [])
     except Exception:
@@ -720,6 +732,7 @@ def update_seminars():
     SEMINARS_JSON.write_text(json.dumps({'checked_at': datetime.now(JST).isoformat(timespec='minutes'),
                                          'items': items}, ensure_ascii=False, indent=1), encoding='utf-8')
     print(f'JART seminars: {len(found)} found, {len(items)} upcoming')
+    SOURCE_STATUS.setdefault('技師会の研修一覧', {}).update({'listed': len(found), 'upcoming': len(items)})
 
 
 # --------------------------------------------------
@@ -794,6 +807,7 @@ def direct_official_news():
             items = parser(fetch(url))
         except Exception as e:
             print(f'{name} direct error:', e)
+            SOURCE_STATUS[name] = {'error': f'{type(e).__name__}: {e}'[:160]}
             continue
         picked = []
         for x in sorted(items, key=lambda x: x['published'], reverse=True):
@@ -813,6 +827,7 @@ def direct_official_news():
             if len(picked) >= DIRECT_MAX_PER_SOURCE:
                 break
         print(f'{name}: {len(items)} listed, {len(picked)} picked')
+        SOURCE_STATUS[name] = {'listed': len(items), 'picked': len(picked)}
         out.extend(picked)
     return out
 
@@ -829,7 +844,7 @@ CATEGORY_RULES = (
     ('放射線治療', ('放射線治療', '放射線療法', '照射', '寡分割', '定位放射線', 'リニアック', '陽子線',
                     '粒子線', '重粒子', 'BNCT', 'IGRT', 'IMRT', 'SBRT', 'ZAP-X', 'サイバーナイフ', 'トモセラピー')),
     ('核医学', ('核医学', '放射性医薬品', 'RI内用', 'セラノスティクス', 'リガンド療法', '核種', 'サイクロトロン',
-                'SPECT', 'PET', 'MIBG', 'Ac225', 'Lu-177', 'ルテチウム')),
+                'SPECT', 'PET', 'MIBG', 'Ac225', 'Lu-177', 'ルテチウム', '99mTc', 'テクネチウム', 'PSMA')),
     ('CT', ('CT', 'コンピュータ断層', 'computed tomography', 'フォトンカウンティング')),
     ('MRI', ('MRI', 'MR研究会', '磁気共鳴', 'magnetic resonance', 'テスラ')),
     ('一般撮影', ('一般撮影', '単純X線', 'X線撮影', 'レントゲン', 'FPD', 'マンモグラフィ', 'マンモ',
@@ -1640,6 +1655,7 @@ def main():
             'checked_at': datetime.now(JST).isoformat(timespec='minutes'),
             'added': len(added),
             'total': len(final),
+            'sources': SOURCE_STATUS,
         }, ensure_ascii=False, indent=2),
         encoding='utf-8'
     )
