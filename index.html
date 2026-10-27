@@ -86,6 +86,7 @@ button{font:inherit;color:inherit}
 .search .clear.show{display:block}
 .seg{display:flex;background:var(--surface-2);border-radius:999px;padding:3px;flex-shrink:0}
 .seg button{border:0;background:none;border-radius:999px;padding:7px 14px;font-size:13.5px;font-weight:700;color:var(--ink-soft);cursor:pointer;white-space:nowrap}
+@media (max-width:640px){.bar-row{flex-wrap:wrap;gap:8px}.search{flex-basis:100%}.seg{width:100%}.seg button{flex:1;padding:6px 8px}}
 .seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(45,53,80,.15)}
 .chips{display:flex;gap:6px;margin-top:9px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;margin-left:-18px;margin-right:-18px;padding-left:18px;padding-right:18px}
 .chips::-webkit-scrollbar{display:none}
@@ -118,7 +119,7 @@ button{font:inherit;color:inherit}
 .src{font-size:12.5px;color:var(--ink-soft);margin-top:3px}
 .sum{margin:6px 0 0;font-size:14px;color:var(--ink-soft)}
 
-/* 技師長からの一言(吹き出し) */
+/* 記事ごとのポイント(吹き出し) */
 .note{display:flex;gap:10px;align-items:flex-start;margin-top:12px}
 .note .face{flex-shrink:0;width:34px;height:34px;border-radius:50%;background:var(--blue-soft);color:var(--blue);display:grid;place-items:center;font-family:"Zen Maru Gothic",sans-serif;font-weight:900;font-size:14px}
 .note .say{margin:0;background:var(--bubble);border:1px solid var(--line);border-radius:4px 16px 16px 16px;padding:8px 12px;font-size:14px;line-height:1.65}
@@ -132,6 +133,13 @@ button{font:inherit;color:inherit}
 .row .note{margin-top:8px}
 .row .note .face{width:26px;height:26px;font-size:12px}
 .row .note .say{font-size:13.5px;padding:6px 10px}
+.pill.new{background:var(--blue);color:var(--on-blue)}
+.save{margin-left:auto;display:inline-flex;align-items:center;gap:4px;border:1px solid var(--line);background:var(--surface);color:var(--ink-soft);border-radius:999px;padding:2px 10px 2px 8px;font-size:12px;cursor:pointer;min-height:28px}
+.save:hover{color:var(--ink);border-color:var(--blue)}
+.save[aria-pressed="true"]{background:var(--blue-soft);border-color:var(--blue-soft);color:var(--blue);font-weight:700}
+.save svg{width:14px;height:14px}
+.save[aria-pressed="true"] svg path{fill:currentColor}
+.saved-tools{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
 .more{display:block;width:100%;border:0;border-top:1px solid var(--line);background:none;padding:11px;font-size:14px;font-weight:700;color:var(--blue);cursor:pointer}
 .more:hover{background:var(--surface-2)}
 .also{margin-top:4px;font-size:12.5px}
@@ -186,6 +194,7 @@ footer{padding:10px 18px 40px;color:var(--ink-soft);font-size:12.5px;text-align:
       <div class="seg" role="group" aria-label="表示する期間">
         <button type="button" data-view="recent" aria-pressed="true">最近</button>
         <button type="button" data-view="past" aria-pressed="false">過去</button>
+        <button type="button" data-view="saved" aria-pressed="false">あとで読む<span id="savedCount"></span></button>
       </div>
     </div>
     <div class="chips" id="chips" role="group" aria-label="分野で絞り込む"></div>
@@ -222,16 +231,34 @@ function displayHeadline(n){const h=String(n.headline||''),src=String(n.source||
 function dayText(d){const [y,m,dd]=String(d).split('-').map(Number);if(!y)return esc(d);const dt=new Date(Date.UTC(y,m-1,dd));const diff=Math.round((Date.parse(today+'T00:00:00Z')-dt.getTime())/864e5);if(diff===0)return '今日';if(diff===1)return '昨日';const yr=String(y)!==today.slice(0,4)?`${y}年`:'';return `${yr}${m}/${dd}(${WD[dt.getUTCDay()]})`;}
 
 function alsoHtml(n){const a=Array.isArray(n.also)?n.also.filter(x=>x&&x.url):[];if(!a.length)return '';return `<details class="also"><summary>ほか${a.length}社も報道</summary>${a.map(x=>`<a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.source||'情報源')}</a>`).join('')}</details>`;}
+// ---- 端末内の記録(新着・あとで読む)。保存できない環境でも表示は壊さない ----
+const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+let newSet=new Set();                 // 前回見たあとに増えた記事(URL)
+let saved=store.get('rtn-saved',{});  // あとで読む {url: 記事の写し}
+function markSeen(){
+  const seen=store.get('rtn-seen',null),urls=db.map(n=>n.url).filter(Boolean);
+  if(Array.isArray(seen)){const s=new Set(seen);newSet=new Set(urls.filter(u=>!s.has(u)));}
+  // 次回のために今の記事を既読として記録(古いものから捨てて最大1000件)
+  const merged=[...new Set([...(Array.isArray(seen)?seen:[]),...urls])].slice(-1000);
+  store.set('rtn-seen',merged);
+}
+const isSaved=n=>!!saved[n.url];
+function toggleSave(url){
+  if(saved[url]){delete saved[url];}
+  else{const n=db.find(x=>x.url===url);if(!n)return;const {headline,url:u,source,date,featured_date,category,importance,why,summary}=n;saved[url]={headline,url:u,source,date,featured_date,category,importance,why,summary,savedAt:new Date().toISOString()};}
+  store.set('rtn-saved',saved);
+}
+function saveBtn(n){const on=isSaved(n);return `<button type="button" class="save" data-save="${esc(n.url)}" aria-pressed="${on}" aria-label="${on?'あとで読むから外す':'あとで読むに追加'}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h12v18l-6-4-6 4z"/></svg>${on?'保存済み':'あとで読む'}</button>`;}
 let hideNotes=new Set();
-function noteHtml(n){return (n.why&&!hideNotes.has(n.why))?`<div class="note"><span class="face" aria-hidden="true">技</span><p class="say"><small>技師長から</small>${esc(n.why)}</p></div>`:'';}
-function metaHtml(n,showImp,showDate=true){const i=IMP[impOf(n)];return `<div class="meta">${showImp?`<span class="pill ${i.cls}">${i.label}</span>`:''}<span class="pill cat">${esc(n.category||'その他')}</span>${showDate?`<span>${dayText(feedDate(n))}</span>`:''}</div>`;}
+function noteHtml(n){return (n.why&&!hideNotes.has(n.why))?`<div class="note"><span class="face" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3z"/></svg></span><p class="say"><small>ポイント</small>${esc(n.why)}</p></div>`:'';}
+function metaHtml(n,showImp,showDate=true){const i=IMP[impOf(n)];return `<div class="meta">${newSet.has(n.url)?'<span class="pill new">新着</span>':''}${showImp?`<span class="pill ${i.cls}">${i.label}</span>`:''}<span class="pill cat">${esc(n.category||'その他')}</span>${showDate?`<span>${dayText(feedDate(n))}</span>`:''}${saveBtn(n)}</div>`;}
 function itemBody(n){return `<a class="title" href="${esc(n.url)}" target="_blank" rel="noopener">${esc(displayHeadline(n))}</a><div class="src">${esc(n.source||'')}</div>${n.summary?`<p class="sum">${esc(n.summary)}</p>`:''}${alsoHtml(n)}`;}
 const mustItem=n=>`<article class="must-item">${metaHtml(n,false)}${itemBody(n)}${noteHtml(n)}</article>`;
 const row=(n,showImp=false,showDate=true)=>`<article class="row">${metaHtml(n,showImp,showDate)}${itemBody(n)}${noteHtml(n)}</article>`;
 const byNewest=(a,b)=>feedDate(b).localeCompare(feedDate(a));
 
 function renderChips(){
-  const base=db.filter(n=>inView(n)&&matchQ(n));const cnt={};base.forEach(n=>{cnt[n.category]=(cnt[n.category]||0)+1});
+  const base=(view==='saved'?savedList():db.filter(inView)).filter(matchQ);const cnt={};base.forEach(n=>{cnt[n.category]=(cnt[n.category]||0)+1});
   const cats=CAT_ORDER.filter(c=>cnt[c]).concat(Object.keys(cnt).filter(c=>!CAT_ORDER.includes(c)&&c!=='その他').sort()).concat(cnt['その他']?['その他']:[]);
   if(cat!=='all'&&!cats.includes(cat))cats.push(cat);
   const b=(c,label,k)=>`<button type="button" data-cat="${esc(c)}" aria-pressed="${cat===c}">${esc(label)}<span class="n">${k}</span></button>`;
@@ -250,7 +277,7 @@ function renderRecent(list){
   const nc={};mid.forEach(n=>{if(n.why)nc[n.why]=(nc[n.why]||0)+1});
   const shared=Object.keys(nc).filter(w=>nc[w]>=3);
   hideNotes=new Set(shared);
-  const sharedNotes=shared.map(w=>`<div class="note shared"><span class="face" aria-hidden="true">技</span><p class="say"><small>技師長から(研修の案内${nc[w]}件に共通)</small>${esc(w)}</p></div>`).join('');
+  const sharedNotes=shared.map(w=>`<div class="note shared"><span class="face" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3z"/></svg></span><p class="say"><small>ポイント(${nc[w]}件に共通)</small>${esc(w)}</p></div>`).join('');
   const must=hi.length?`<div class="must">${hi.map(mustItem).join('')}</div>`:`<div class="empty"><b>${q||cat!=='all'?'条件に合う確認事項はありません':'今週は急ぎの確認事項はありません'}</b>制度の変更や薬剤の供給停止などが出たら、ここに表示します。</div>`;
   return `${filterNote(list.length)}<div class="layout recent">
     <div class="main">
@@ -270,10 +297,22 @@ function renderPast(list){
   return `${filterNote(list.length)}<div class="layout past">${Object.keys(by).sort((a,b)=>b.localeCompare(a)).map((d,i)=>{const items=by[d].sort((a,b)=>order[impOf(a)]-order[impOf(b)]);const [y,m,dd]=d.split('-').map(Number);const wd=WD[new Date(Date.UTC(y,m-1,dd)).getUTCDay()];const yr=String(y)!==today.slice(0,4)?`${y}年`:'';return `<details class="day"${(narrowed||i===0)?' open':''}><summary><span>${yr}${m}月${dd}日<span class="wd">(${wd})</span></span><span class="c">${items.length}件</span></summary><div class="rows">${items.map(n=>row(n,true,false)).join('')}</div></details>`;}).join('')}</div>`;
 }
 
+function savedList(){
+  // 元データに残っていれば最新の内容、消えていれば保存時の写しを使う
+  return Object.values(saved).map(c=>Object.assign({},c,db.find(n=>n.url===c.url)||{},{savedAt:c.savedAt})).sort((a,b)=>String(b.savedAt).localeCompare(String(a.savedAt)));
+}
+function renderSaved(list){
+  hideNotes=new Set();
+  if(!Object.keys(saved).length)return `<div class="layout"><div class="empty"><b>あとで読む記事はまだありません</b>記事の右上の「あとで読む」を押すと、ここに集まります。</div></div>`;
+  if(!list.length)return `${filterNote(0)}<div class="layout"><div class="empty"><b>条件に合う記事はありません</b>絞り込みを解除してください。</div></div>`;
+  return `${filterNote(list.length)}<div class="layout"><section class="section" aria-labelledby="h-saved"><div class="saved-tools"><h2 id="h-saved">あとで読む<span class="count">${list.length}件</span></h2></div><p class="lead">保存した順に新しいものから並んでいます。この端末のブラウザにだけ記録されます。</p><div class="list">${list.map(n=>row(n,true)).join('')}</div></section></div>`;
+}
 function render(){
   renderChips();
-  const list=db.filter(n=>inView(n)&&matchQ(n)&&(cat==='all'||n.category===cat));
-  document.getElementById('view').innerHTML=view==='recent'?renderRecent(list):renderPast(list);
+  const pool=view==='saved'?savedList():db.filter(inView);
+  const list=pool.filter(n=>matchQ(n)&&(cat==='all'||n.category===cat));
+  document.getElementById('view').innerHTML=view==='recent'?renderRecent(list):view==='past'?renderPast(list):renderSaved(list);
+  const sc=Object.keys(saved).length;document.getElementById('savedCount').textContent=sc?` ${sc}`:'';
   document.querySelectorAll('.seg button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.view===view)));
   document.getElementById('clearQ').classList.toggle('show',!!q);
 }
@@ -283,8 +322,8 @@ function renderHello(){
   document.getElementById('today').innerHTML=`${m}月${d}日<span class="wd">${wd}曜日</span>`;
   const hi=db.filter(n=>isRecent(n)&&impOf(n)==='高').length;
   let upd='';
-  if(meta&&meta.checked_at){const t=new Date(meta.checked_at);if(!isNaN(t)){const hm=t.toLocaleTimeString('ja-JP',{timeZone:'Asia/Tokyo',hour:'numeric',minute:'2-digit'});const sameDay=t.toLocaleDateString('sv-SE',{timeZone:'Asia/Tokyo'})===today;upd=`${sameDay?'今日':t.toLocaleDateString('ja-JP',{timeZone:'Asia/Tokyo',month:'numeric',day:'numeric'})} ${hm}に更新${Number.isFinite(meta.added)&&meta.added>0?`、新着${meta.added}件`:''}。`;}}
-  document.getElementById('sub').textContent=`${hi?`この1週間に確認しておきたいことが${hi}件あります。`:'この1週間、急ぎの確認事項はありません。'}${upd}`;
+  if(meta&&meta.checked_at){const t=new Date(meta.checked_at);if(!isNaN(t)){const hm=t.toLocaleTimeString('ja-JP',{timeZone:'Asia/Tokyo',hour:'numeric',minute:'2-digit'});const sameDay=t.toLocaleDateString('sv-SE',{timeZone:'Asia/Tokyo'})===today;upd=`${sameDay?'今日':t.toLocaleDateString('ja-JP',{timeZone:'Asia/Tokyo',month:'numeric',day:'numeric'})} ${hm}に更新。`;}}
+  document.getElementById('sub').textContent=`${newSet.size?`前回から${newSet.size}件増えました。`:''}${hi?`この1週間に確認しておきたいことが${hi}件あります。`:'この1週間、急ぎの確認事項はありません。'}${upd}`;
 }
 
 // 操作
@@ -294,6 +333,7 @@ document.getElementById('clearQ').onclick=()=>{const i=document.getElementById('
 document.querySelector('.seg').addEventListener('click',e=>{const b=e.target.closest('button[data-view]');if(!b)return;view=b.dataset.view;render();});
 document.getElementById('chips').addEventListener('click',e=>{const b=e.target.closest('button[data-cat]');if(!b)return;cat=b.dataset.cat;render();});
 document.getElementById('view').addEventListener('click',e=>{
+  const sb=e.target.closest('[data-save]');if(sb){toggleSave(sb.dataset.save);render();return;}
   if(e.target.closest('[data-more]')){showAllLo=true;render();return;}
   if(e.target.closest('[data-reset]')){cat='all';q='';document.getElementById('q').value='';render();}
 });
@@ -307,7 +347,7 @@ if('IntersectionObserver' in window){new IntersectionObserver(([en])=>bar.classL
 Promise.all([
   fetch('news.json?'+Date.now()).then(r=>r.json()),
   fetch('news_meta.json?'+Date.now()).then(r=>r.ok?r.json():null).catch(()=>null)
-]).then(([x,m])=>{db=Array.isArray(x)?x:[];meta=m;renderHello();render();})
+]).then(([x,m])=>{db=Array.isArray(x)?x:[];meta=m;markSeen();renderHello();render();})
 .catch(()=>{document.getElementById('sub').textContent='ニュースを読み込めませんでした。';document.getElementById('view').innerHTML='<div class="layout"><div class="empty"><b>読み込みに失敗しました</b>通信状況を確認して、ページを再読み込みしてください。</div></div>';});
 </script>
 </body></html>
