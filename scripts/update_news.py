@@ -90,6 +90,7 @@ OFFICIAL = (
     'jsgcs.or.jp',
     'qabcs.or.jp',
     'jastro.or.jp', 'jsmp.org', 'jsmrm.jp', 'jsir.or.jp', 'jsum.or.jp', 'jsnmt.org', 'jsct-tech.org',
+    'kagawart.jp', 'jsrt-chushi.jp', 'info.pmda.go.jp',
 )
 
 CATEGORIES = (
@@ -246,18 +247,29 @@ MARKET_REPORT_DOMAINS = (
 SOURCE_STATUS = {}  # 取得元ごとの結果(news_meta.json に記録して、取れなくなったら気付けるように)
 
 
+_HEADERS = {
+    'User-Agent': 'Mozilla/5.0 (compatible; radiology-technologist-news; +https://hijiki-no-kokoro.github.io/radiology-technologist-news/)',
+    'Accept': 'text/html,application/xhtml+xml,application/xml,application/rss+xml;q=0.9,*/*;q=0.8',
+    'Accept-Language': 'ja,en;q=0.5',
+}
+
+
+def fetch_bytes(url):
+    with urlopen(Request(url, headers=_HEADERS), timeout=60) as r:
+        return r.read(), r.headers.get_content_charset()
+
+
 def fetch(url):
-    return urlopen(
-        Request(
-            url,
-            headers={
-                'User-Agent': 'Mozilla/5.0 (compatible; radiology-technologist-news; +https://hijiki-no-kokoro.github.io/radiology-technologist-news/)',
-                'Accept': 'text/html,application/xhtml+xml,application/xml,application/rss+xml;q=0.9,*/*;q=0.8',
-                'Accept-Language': 'ja,en;q=0.5',
-            }
-        ),
-        timeout=30
-    ).read().decode('utf-8', 'ignore')
+    """ページの文字コード(ヘッダーか meta の指定、なければUTF-8)で読む。PMDAの回収一覧はEUC-JP。"""
+    raw, cs = fetch_bytes(url)
+    if not cs:
+        m = re.search(rb'<meta[^>]+charset=["\']?([A-Za-z0-9_\-]+)', raw[:3000], re.I) or re.search(rb'encoding=["\']([A-Za-z0-9_\-]+)', raw[:200])
+        cs = m.group(1).decode() if m else 'utf-8'
+    try:
+        return raw.decode(cs, 'ignore')
+    except LookupError:
+        return raw.decode('utf-8', 'ignore')
+
 
 
 def clean_html(s):
@@ -346,6 +358,9 @@ def article_text(x):
 def relevant(x):
     # 医療安全情報は取得時に放射線関連だけを選んでいるので、そのまま残す
     if dom(x.get('url', '')) in SAFETY_INFO_DOMAINS:
+        return True
+    # 医薬品の供給状況は、取得時に造影剤・放射性医薬品だけを選んでいる
+    if x.get('url', '').startswith(SUPPLY_PAGE + '#'):
         return True
     # 放射線系学会のサイトから直接取った記事は、学会の性質上すべて対象にする
     if any(dom(x.get('url', '')) == d or dom(x.get('url', '')).endswith('.' + d) for d in SOCIETY_DOMAINS):
@@ -595,7 +610,7 @@ def direct_jart():
 # --------------------------------------------------
 # 医療安全情報(日本医療機能評価機構・PMDA)を直接取得する
 # --------------------------------------------------
-SAFETY_INFO_DOMAINS = ('med-safe.jp', 'pmda.go.jp')
+SAFETY_INFO_DOMAINS = ('med-safe.jp', 'pmda.go.jp', 'info.pmda.go.jp')
 MED_SAFE_LIST = 'https://www.med-safe.jp/contents/info/'
 PMDA_SAFETY_LIST = 'https://www.pmda.go.jp/safety/info-services/medical-safety-info/0001.html'
 # 放射線部門に関係しそうな号だけを取り込む
@@ -773,6 +788,8 @@ def update_seminars():
         except Exception as e:
             print('JART seminar error:', page, e)
             SOURCE_STATUS.setdefault('技師会の研修一覧', {})['error'] = f'{type(e).__name__}: {e}'[:160]
+    for x in update_kart_schedule():
+        found[x['url']] = x
     try:
         ev = parse_jmrts(fetch(JMRTS_TOP))[1]
         for x in ev:
@@ -810,13 +827,18 @@ def update_seminars():
 # 学会・厚労省の新着を直接取得する
 # --------------------------------------------------
 SOCIETY_DOMAINS = ('jsrt.or.jp', 'radiology.jp', 'jsnm.org', 'jsgcs.or.jp', 'jastro.or.jp', 'jsmp.org', 'jsmrm.jp',
-                   'jsir.or.jp', 'jsum.or.jp', 'jsnmt.org', 'jsct-tech.org')
+                   'jsir.or.jp', 'jsum.or.jp', 'jsnmt.org', 'jsct-tech.org', 'kagawart.jp', 'jsrt-chushi.jp')
 JSRT_NEWS = 'https://www.jsrt.or.jp/data/'
 JRS_TOP = 'https://www.radiology.jp/'
 JSNM_FEED = 'https://jsnm.org/feed/'
 MHLW_FEED = 'https://www.mhlw.go.jp/stf/news.rdf'
 JSGCS_TOP = 'https://www.jsgcs.or.jp/'
 JMRTS_TOP = 'https://plaza.umin.ac.jp/~JMRTS/'
+KART_TOP = 'https://kagawart.jp/'
+KART_SCHEDULE = 'https://kagawart.jp/article/schedulelist.php?y={y}&m={m}'
+JSRT_CHUSHI_FEED = 'https://jsrt-chushi.jp/?feed=rss2'
+# 地元の会は更新がまばらなので、取り込む期間を長めに
+LOCAL_DAYS = {'香川県診療放射線技師会': 45, '日本放射線技術学会 中国・四国支部': 60}
 
 # 分野ごとの専門学会。(表示名, URL, 読み方, 既定の分類, リンク条件, 読み始める目印)
 # 読み方: rss = RSS、list = 日付とリンクが並ぶお知らせ一覧(parse_dated_links)
@@ -979,6 +1001,179 @@ def parse_jmrts(html, today=None):
     return news, events
 
 
+# --------------------------------------------------
+# PMDA: 医療機器の回収(クラスI・II)のうち放射線関連
+# --------------------------------------------------
+PMDA_RECALL_LIST = 'https://www.info.pmda.go.jp/kaisyuu/rcidx{fy:02d}-{cls}k.html'
+RECALL_DEVICE_TERMS = (
+    'X線', 'エックス線', 'Ｘ線', 'CT', 'ＣＴ', '断層撮影', 'MR', 'ＭＲ', '磁気共鳴', '放射線治療', '線形加速', '粒子線',
+    '核医学', 'ガンマカメラ', 'PET', 'ＰＥＴ', 'SPECT', 'ＳＰＥＣＴ', '超音波画像診断', '乳房', 'マンモ', '透視', '血管撮影',
+    '造影剤注入', 'インジェクタ', '画像診断', '画像処理', '線量計', '撮影装置', 'イメージング', 'FPD', 'ＦＰＤ', '放射線',
+)
+
+
+def parse_pmda_recalls(html, cls):
+    """<tr><td>2-13015</td><td>2026/10/27</td><td>医療機器</td><td>一般名</td><td><a href="/rgo/MainServlet?recallno=…">販売名</a></td><td>業者</td>"""
+    out = []
+    for row in re.split(r'<tr[\s>]', html, flags=re.I)[1:]:
+        cells = re.findall(r'<td[^>]*>(.*?)</td>', row, re.S | re.I)
+        if len(cells) < 6:
+            continue
+        no, day, kind, generic, product_html, maker = cells[:6]
+        d = re.search(r'(20\d{2})/(\d{1,2})/(\d{1,2})', day)
+        a = re.search(r'href=["\']([^"\']+)["\']', product_html)
+        generic, product, maker = clean_html(generic), clean_html(product_html), clean_html(maker)
+        if not (d and a) or not any(t in generic + product for t in RECALL_DEVICE_TERMS):
+            continue
+        dt = _to_date(*d.groups())
+        out.append({
+            'title': f'医療機器の回収(クラス{"I" if cls == 1 else "II"})：{product}({generic})',
+            'url': urljoin('https://www.info.pmda.go.jp/kaisyuu/', a.group(1)),
+            'published': datetime(dt.year, dt.month, dt.day, tzinfo=JST).isoformat(),
+            'maker': maker,
+        })
+    return out
+
+
+def direct_pmda_recalls():
+    now = datetime.now(JST)
+    fy = (now.year if now.month >= 4 else now.year - 1) % 100   # 年度は4月始まり
+    out = []
+    for cls in (1, 2):
+        try:
+            items = parse_pmda_recalls(fetch(PMDA_RECALL_LIST.format(fy=fy, cls=cls)), cls)
+            picked = [x for x in items if (now - datetime.fromisoformat(x['published'])).days <= DIRECT_DAYS][:10]
+            SOURCE_STATUS[f'PMDA回収クラス{"I" if cls == 1 else "II"}'] = {'listed': len(items), 'picked': len(picked)}
+            out += [{'title': x['title'], 'url': x['url'], 'description': x['maker'], 'source': 'PMDA', 'published': x['published']} for x in picked]
+        except Exception as e:
+            print('PMDA recall error:', cls, e)
+            SOURCE_STATUS[f'PMDA回収クラス{"I" if cls == 1 else "II"}'] = {'error': f'{type(e).__name__}: {e}'[:160]}
+    return out
+
+
+# --------------------------------------------------
+# 厚労省「医療用医薬品供給状況」(Excel)のうち造影剤・放射性医薬品
+# --------------------------------------------------
+SUPPLY_PAGE = 'https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/kenkou_iryou/iryou/kouhatu-iyaku/04_00003.html'
+SUPPLY_JSON = ROOT / 'supply.json'
+IMAGING_DRUG_CLASSES = ('Ｘ線造影剤', 'X線造影剤', '放射性医薬品')
+IMAGING_DRUG_INGREDIENTS = re.compile(r'ガド|ペルフルブタン|マンガン|フェルモキシ|フェルカルボ|超常磁性')
+
+
+def _excel_day(v):
+    try:
+        n = int(float(v))
+        return (datetime(1899, 12, 30) + timedelta(days=n)).date().isoformat() if n > 30000 else ''
+    except (TypeError, ValueError):
+        return ''
+
+
+def supply_category(cls, ingredient):
+    if 'バリウム' in ingredient:
+        return '検診'
+    if cls == '放射性医薬品':
+        return '核医学'
+    if re.search(r'ガド|マンガン|フェル|超常磁性', ingredient):
+        return 'MRI'
+    if 'ペルフルブタン' in ingredient:
+        return '超音波'
+    return 'CT'
+
+
+def parse_supply_rows(rows):
+    """Excelの行(見出し行を含む)から、造影剤・放射性医薬品だけを取り出す。見出しの文字で列を探す。"""
+    rows = list(rows)
+    # 表の上に題名の行があることもあるので、「成分名」を含む行を見出しとみなす
+    h = next((i for i, r in enumerate(rows[:15]) if any('成分名' in str(v or '') for v in r)), 0)
+    rows = rows[h:]
+    head = [str(c or '') for c in rows[0]]
+    def col(keys, default=None):
+        for i, h in enumerate(head):
+            if all(k in h for k in keys):
+                return i
+        return default if default is not None and default < len(head) else None
+    # 見出しの文字で探し、見つからなければ 2026年10月時点の列の位置を使う
+    c = {'cls': col(('薬効分類',), 1), 'ing': col(('成分名',), 2), 'spec': col(('規格',), 3), 'yj': col(('YJ',), 4),
+         'name': col(('品名',), 5), 'maker': col(('製造販売業者',), 6), 'status': col(('出荷対応',), 11),
+         'changed': col(('更新日',), 12), 'reason': col(('理由',)), 'outlook': col(('見込み',)),
+         'new': col(('今回掲載時',), 20)}
+    if None in (c['cls'], c['ing'], c['name'], c['status']):
+        raise ValueError('供給状況の見出しが見つかりません: ' + ' / '.join(h[:10] for h in head[:12]))
+    get = lambda r, k: (str(r[c[k]]).strip() if c[k] is not None and c[k] < len(r) and r[c[k]] is not None else '')
+    out = []
+    for r in rows[1:]:
+        cls, ing = get(r, 'cls'), get(r, 'ing')
+        if not (cls in IMAGING_DRUG_CLASSES or IMAGING_DRUG_INGREDIENTS.search(ing)):
+            continue
+        out.append({
+            'class': cls, 'ingredient': ing, 'spec': get(r, 'spec'), 'yj': get(r, 'yj'), 'product': get(r, 'name'),
+            'maker': get(r, 'maker'), 'status': re.sub(r'^[①-⑤]', '', get(r, 'status')),
+            'changed': _excel_day(r[c['changed']]) if c['changed'] is not None and c['changed'] < len(r) else '',
+            'reason': re.sub(r'^[0-9０-９]+[．.]', '', get(r, 'reason')), 'outlook': re.sub(r'^[ア-エ][．.]\s*', '', get(r, 'outlook')),
+            'new': get(r, 'new').lower().startswith('new'),
+            'category': supply_category(cls, ing),
+        })
+    return out
+
+
+def update_supply():
+    """供給状況の一覧を supply.json に保存し、今回の掲載で状況が変わった品目を記事の形で返す。"""
+    try:
+        page = fetch(SUPPLY_PAGE)
+        m = re.search(r'href=["\']([^"\']+\.xlsx)["\'][^>]*>([^<]*供給状況[^<]*)', page)
+        if not m:
+            raise ValueError('Excelへのリンクが見つかりません')
+        xurl = urljoin(SUPPLY_PAGE, m.group(1))
+        as_of = re.search(r'（([^）]*現在)）', m.group(2))
+        import io
+        import openpyxl
+        raw, _ = fetch_bytes(xurl)
+        wb = openpyxl.load_workbook(io.BytesIO(raw), read_only=True, data_only=True)
+        rows = parse_supply_rows(wb.worksheets[0].iter_rows(values_only=True))
+    except Exception as e:
+        print('Supply error:', e)
+        SOURCE_STATUS['造影剤の供給状況'] = {'error': f'{type(e).__name__}: {e}'[:160]}
+        return []
+    limited = [x for x in rows if x['status'] and '通常出荷' not in x['status']]
+    SUPPLY_JSON.write_text(json.dumps({
+        'as_of': as_of.group(1) if as_of else '', 'source': SUPPLY_PAGE, 'checked_at': datetime.now(JST).isoformat(timespec='minutes'),
+        'items': sorted(limited, key=lambda x: ('供給停止' not in x['status'], x['ingredient'], x['product'])),
+    }, ensure_ascii=False, indent=1), encoding='utf-8')
+    SOURCE_STATUS['造影剤の供給状況'] = {'listed': len(rows), 'limited': len(limited)}
+    today = datetime.now(JST).date().isoformat()
+    news = []
+    for x in rows:
+        if not x['new']:
+            continue
+        state = x['status'] if '通常出荷' not in x['status'] else '通常出荷に回復'
+        news.append({
+            'title': f'{"放射性医薬品" if x["class"] == "放射性医薬品" else "造影剤"}の{"供給回復" if state == "通常出荷に回復" else state}：{x["product"]}({x["ingredient"]})',
+            'url': f'{SUPPLY_PAGE}#{x["yj"] or x["product"]}-{x["status"]}',
+            'description': '', 'source': '厚生労働省(医薬品供給状況)', 'published': (x['changed'] or today) + 'T00:00:00+09:00',
+        })
+    return news[:8]
+
+
+def update_kart_schedule():
+    """香川県診療放射線技師会の予定表(今月から3か月分)を研修日程の形で返す。"""
+    now = datetime.now(JST).date()
+    out = []
+    for k in range(4):
+        y, m = now.year + (now.month - 1 + k) // 12, (now.month - 1 + k) % 12 + 1
+        url = KART_SCHEDULE.format(y=y, m=m)
+        try:
+            for x in parse_dated_links(fetch(url), url, r'schedule\.php\?nid='):
+                day = x['published'][:10]
+                out.append({'title': x['title'], 'url': x['url'], 'kind': 'KART', 'status': '', 'event_start': day, 'event_end': day,
+                            'apply_start': '', 'apply_end': '', 'place': '香川', 'source': '香川県診療放射線技師会',
+                            'category': (lambda c: c if c != 'その他' else '職能')(category({'headline': x['title'], 'summary': '', 'source': ''}))})
+        except Exception as e:
+            SOURCE_STATUS['香川県技師会の予定表'] = {'error': f'{type(e).__name__}: {e}'[:160]}
+            return out
+    SOURCE_STATUS['香川県技師会の予定表'] = {'listed': len(out)}
+    return out
+
+
 def direct_official_news():
     """学会(技術学会・医学放射線学会・核医学会)と厚労省の新着を、記事の形で返す。"""
     sources = (
@@ -988,6 +1183,8 @@ def direct_official_news():
         ('厚生労働省', MHLW_FEED, parse_rss),
         ('日本消化器がん検診学会', JSGCS_TOP, parse_jsgcs),
         ('日本磁気共鳴専門技術者認定機構', JMRTS_TOP, lambda html: parse_jmrts(html)[0]),
+        ('香川県診療放射線技師会', KART_TOP, lambda html: parse_dated_links(html, KART_TOP, r'data\.php\?nid=')),
+        ('日本放射線技術学会 中国・四国支部', JSRT_CHUSHI_FEED, parse_rss),
     ) + tuple(
         (name, url, parse_rss if kind == 'rss' else (lambda html, _u=url, _f=flt, _s=start: parse_dated_links(html, _u, _f, _s)))
         for name, url, kind, _cat, flt, start in SPECIALTY_SOURCES
@@ -1007,7 +1204,7 @@ def direct_official_news():
                 age = (now - datetime.fromisoformat(x['published'])).days
             except Exception:
                 continue
-            if age > DIRECT_DAYS or not x['title']:
+            if age > LOCAL_DAYS.get(name, DIRECT_DAYS) or not x['title']:
                 continue
             item = {'title': x['title'], 'url': x['url'], 'description': '', 'source': name, 'published': x['published']}
             # 厚労省は省全体の新着なので、放射線に関係するもの(毎日の整理で残る基準と同じ)だけ
@@ -1032,7 +1229,7 @@ CATEGORY_RULES = (
               '職能', '告示研修', '静脈路', '筋注')),
     ('安全管理', ('安全管理', '医療安全', '放射線安全', '放射線防護', '被ばく', '線量管理', '線量測定',
                   '診断参考レベル', 'DRL', '品質管理', '個人情報', '脆弱性', 'サイバー',
-                  '限定出荷', '出荷停止', '供給停止', '供給不足', 'リコール', '自主回収')),
+                  '限定出荷', '出荷停止', '供給停止', '供給不足', '供給回復', 'リコール', '自主回収', '医療機器の回収')),
     ('放射線治療', ('放射線治療', '放射線療法', '照射', '寡分割', '定位放射線', 'リニアック', '陽子線',
                     '粒子線', '重粒子', 'BNCT', 'IGRT', 'IMRT', 'SBRT', 'ZAP-X', 'サイバーナイフ', 'トモセラピー')),
     ('核医学', ('核医学', '放射性医薬品', 'RI内用', 'セラノスティクス', 'リガンド療法', '核種', 'サイクロトロン',
@@ -1161,6 +1358,7 @@ OFFICIAL_SOURCE_NAMES = (
     '日本消化器がん検診学会', '精中機構',
     '日本放射線腫瘍学会', '日本医学物理学会', '日本磁気共鳴医学会', '日本磁気共鳴専門技術者認定機構',
     '日本ivr学会', '日本超音波医学会', '日本核医学技術学会', '日本ct技術学会',
+    '香川県診療放射線技師会', '中国・四国支部',
 )
 
 # 高: 自分の部署で確認・対応が必要になりうる情報
@@ -1172,7 +1370,7 @@ IMPORTANCE_HIGH_TERMS = (
     '医療被ばく', '被ばく線量', '線量管理', '診断参考レベル', 'drl',
     # 薬剤・装置の供給と安全性
     '限定出荷', '出荷停止', '供給停止', '供給不足', '出荷調整',
-    'リコール', '自主回収', '安全性情報', '添付文書改訂',
+    'リコール', '自主回収', '安全性情報', '添付文書改訂', '医療機器の回収',
     # 医療事故の再発防止情報(医療機能評価機構・PMDAの医療安全情報など)
     '医療安全情報', '注意喚起', '再発防止', '医療事故',
     # 点数の変更
@@ -1191,6 +1389,7 @@ EVENT_TERMS = (
 
 # 中: 国内の装置・AIの承認や導入
 IMPORTANCE_MID_TERMS = (
+    '供給回復',
     '薬事承認', '承認取得', '国内初', '日本初', '国内で初', '保険適用',
 )
 
@@ -1247,7 +1446,9 @@ def importance(x, official):
 TECHNOLOGIST_NOTES = (
     (('限定出荷', '出荷停止', '供給停止', '供給不足', '出荷調整'),
      '自施設で使っている薬剤か確認し、代替品や検査予定への影響を把握しておきましょう。'),
-    (('リコール', '自主回収', '安全性情報', '添付文書改訂'),
+    (('供給回復',),
+     '供給が通常に戻りました。代替品に切り替えていた場合は戻す時期を確認しましょう。'),
+    (('リコール', '自主回収', '安全性情報', '添付文書改訂', '医療機器の回収'),
      '自施設に該当する機器・薬剤がないか確認しておきましょう。'),
     (('個人情報漏えい', '個人情報漏洩', '不審アクセス'),
      '登録しているメールアドレスに不審なメールが届いていないか注意しましょう。'),
@@ -1764,6 +1965,8 @@ def main():
     safety_new = [x for x in direct_safety_info() if not is_known(x)]
     # 学会・厚労省の新着(Googleニュースの件数枠とは別に入れる)
     official_new = [x for x in direct_official_news() if not is_known(x)]
+    # PMDAの医療機器回収と、造影剤の供給状況の変化
+    official_new += [x for x in direct_pmda_recalls() + update_supply() if not is_known(x)]
 
     # Google News RSS
     for q in QUERIES:

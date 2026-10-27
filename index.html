@@ -109,6 +109,13 @@ dialog.settings h3{margin:0 0 2px;font-size:15.5px}
 .qual-note{background:var(--blue-soft);color:var(--ink);border-radius:12px;padding:9px 12px;font-size:13.5px}
 .qual-note b{color:var(--blue)}
 .pill.urgent{background:var(--rose-soft);color:var(--rose)}
+.supply summary{cursor:pointer;font-weight:700;list-style:none;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.supply summary::-webkit-details-marker{display:none}
+.supply summary::after{content:'＋';margin-left:auto;color:var(--ink-soft)}
+.supply[open] summary::after{content:'－'}
+.supply ul{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:8px}
+.supply li{border-top:1px solid var(--line);padding-top:8px;font-size:14px;line-height:1.6}
+.supply li .meta{color:var(--ink-soft);font-size:12.5px}
 .pill.qual{background:transparent;color:var(--blue);border:1px solid var(--blue);padding:0 9px}
 .row.read .title,.must-item.read .title{color:var(--ink-soft);font-weight:400}
 .row.read,.must-item.read{background:color-mix(in srgb,var(--surface) 70%,var(--bg))}
@@ -517,6 +524,14 @@ function statusHtml(n){
   if(n.status)return `<span class="pill soon">${esc(n.status)}</span>`;
   return '';
 }
+// ---- 造影剤・放射性医薬品の供給状況(厚労省の一覧のうち、通常出荷でないもの) ----
+let supply=null;
+function renderSupply(){
+  if(!supply||!Array.isArray(supply.items)||!supply.items.length)return '';
+  const items=supply.items.filter(x=>cat==='all'||x.category===cat);if(!items.length)return '';
+  const stop=items.filter(x=>/供給停止/.test(x.status)).length;
+  return `<section class="section" aria-labelledby="h-supply"><h2 id="h-supply">造影剤・放射性医薬品の供給状況<span class="count">${items.length}品目</span></h2><p class="lead">厚生労働省「医療用医薬品供給状況」のうち、限定出荷・供給停止になっているもの${supply.as_of?`(${esc(supply.as_of)})`:''}</p><details class="supply"><summary>${stop?`<span class="pill urgent">供給停止 ${stop}品目</span>`:''}<span class="pill">限定出荷 ${items.length-stop}品目</span>一覧を見る</summary><ul>${items.map(x=>`<li><b>${esc(x.product)}</b>　<span class="pill${/供給停止/.test(x.status)?' urgent':''}">${esc(x.status)}</span><div class="meta">${esc(x.ingredient)}・${esc(x.maker)}${x.category?`・${esc(x.category)}`:''}${x.changed?`・${esc(x.changed.slice(5).replace('-','/'))}更新`:''}${x.outlook?`・解除見込み: ${esc(x.outlook)}`:''}</div></li>`).join('')}</ul><p class="lead" style="margin-top:10px"><a href="${esc(supply.source)}" target="_blank" rel="noopener">厚生労働省のページで確認する</a></p></details></section>`;
+}
 function renderSchedule(){
   const all=scheduleItems();if(!all.length)return '';
   const items=showAllSched?all:all.slice(0,6);
@@ -551,6 +566,7 @@ function renderRecent(list){
     <div class="main">
       <section class="section" aria-labelledby="h-hi"><h2 id="h-hi">確認しておきたいこと<span class="count">${hi.length}件</span></h2><p class="lead">制度・診療報酬、安全情報、薬剤の供給など、部署で対応が必要になりそうなもの</p>${must}</section>
       ${renderSchedule()}
+      ${renderSupply()}
       <section class="section" aria-labelledby="h-mid"><h2 id="h-mid">研修・学会のお知らせ<span class="count">${mid.length}件</span></h2><p class="lead">学会・技師会・行政からの案内と、国内の新しい装置の話題</p>${sharedNotes}${mid.length?`<div class="list">${mid.map(n=>row(n)).join('')}</div>`:`<div class="empty">この期間のお知らせはありません。</div>`}</section>
     </div>
     <aside class="side section" aria-labelledby="h-lo"><h2 id="h-lo">ほかのニュース<span class="count">${lo.length}件</span></h2><p class="lead">一般メディアの医療・放射線の話題</p>${lo.length?`<div class="list">${loShown.map(n=>row(n)).join('')}${loShown.length<lo.length?`<button type="button" class="more" data-more>残り${lo.length-loShown.length}件を見る</button>`:''}</div>`:`<div class="empty">この期間のニュースはありません。</div>`}</aside>
@@ -653,8 +669,9 @@ if('serviceWorker' in navigator&&location.protocol==='https:'){window.addEventLi
 Promise.all([
   fetch('news.json?'+Date.now()).then(r=>r.json()),
   fetch('news_meta.json?'+Date.now()).then(r=>r.ok?r.json():null).catch(()=>null),
-  fetch('seminars.json?'+Date.now()).then(r=>r.ok?r.json():null).catch(()=>null)
-]).then(([x,m,sem])=>{window.__rawDb=Array.isArray(x)?x:[];db=window.__rawDb.map(applyFix);meta=m;seminars=sem&&Array.isArray(sem.items)?sem.items:[];markSeen();renderHello();render();})
+  fetch('seminars.json?'+Date.now()).then(r=>r.ok?r.json():null).catch(()=>null),
+  fetch('supply.json?'+Date.now()).then(r=>r.ok?r.json():null).catch(()=>null)
+]).then(([x,m,sem,sup])=>{supply=sup;window.__rawDb=Array.isArray(x)?x:[];db=window.__rawDb.map(applyFix);meta=m;seminars=sem&&Array.isArray(sem.items)?sem.items:[];markSeen();renderHello();render();})
 .catch(()=>{document.getElementById('sub').textContent='ニュースを読み込めませんでした。';document.getElementById('view').innerHTML='<div class="layout"><div class="empty"><b>読み込みに失敗しました</b>通信状況を確認して、ページを再読み込みしてください。</div></div>';});
 </script>
 </body></html>
