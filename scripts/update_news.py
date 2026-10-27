@@ -87,6 +87,8 @@ OFFICIAL = (
     'mext.go.jp',
     'med-safe.jp',
     'jcqhc.or.jp',
+    'jsgcs.or.jp',
+    'qabcs.or.jp',
 )
 
 CATEGORIES = (
@@ -722,6 +724,43 @@ def parse_jart_seminars(html, base='https://www.jart.jp/'):
     return list(out.values())
 
 
+ROMAJI_PREF = {
+    'hokkaido': '北海道', 'sapporo': '北海道', 'aomori': '青森', 'iwate': '岩手', 'miyagi': '宮城', 'sendai': '宮城',
+    'akita': '秋田', 'yamagata': '山形', 'fukushima': '福島', 'ibaraki': '茨城', 'tochigi': '栃木', 'gunma': '群馬',
+    'saitama': '埼玉', 'chiba': '千葉', 'tokyo': '東京', 'kanagawa': '神奈川', 'yokohama': '神奈川', 'niigata': '新潟',
+    'toyama': '富山', 'ishikawa': '石川', 'kanazawa': '石川', 'fukui': '福井', 'yamanashi': '山梨', 'nagano': '長野',
+    'gifu': '岐阜', 'shizuoka': '静岡', 'aichi': '愛知', 'nagoya': '愛知', 'mie': '三重', 'shiga': '滋賀', 'kyoto': '京都',
+    'osaka': '大阪', 'hyogo': '兵庫', 'kobe': '兵庫', 'nara': '奈良', 'wakayama': '和歌山', 'tottori': '鳥取',
+    'shimane': '島根', 'okayama': '岡山', 'hiroshima': '広島', 'yamaguchi': '山口', 'tokushima': '徳島',
+    'kagawa': '香川', 'takamatsu': '香川', 'ehime': '愛媛', 'matsuyama': '愛媛', 'kochi': '高知', 'fukuoka': '福岡',
+    'saga': '佐賀', 'nagasaki': '長崎', 'kumamoto': '熊本', 'oita': '大分', 'miyazaki': '宮崎', 'kagoshima': '鹿児島',
+    'okinawa': '沖縄', 'web': 'オンライン', 'online': 'オンライン',
+}
+
+
+def parse_qabcs_seminars(xml):
+    """精中機構の講習会RSS(日付=開催日)から、技師向け(撮影・超音波技術)の講習会だけを返す。"""
+    out = []
+    for x in parse_rss(xml):
+        url, title = x['url'], x['title']
+        path = re.sub(r'^https?://[^/]+', '', url).lower()
+        # URLの _g は技師向け、_d は医師向け
+        is_tech = bool(re.search(r'_g/', path)) or ('技術' in title and '医師' not in title)
+        if not is_tech:
+            continue
+        place = next((p for p in PREFECTURES if p in title), '')
+        if not place:
+            m = re.search(r'_([a-z]+)\.html', path)
+            place = ROMAJI_PREF.get(m.group(1), '') if m else ''
+        day = x['published'][:10]
+        out.append({
+            'title': title, 'url': url, 'kind': '精中機構', 'status': '',
+            'event_start': day, 'event_end': day, 'apply_start': '', 'apply_end': '', 'place': place,
+            'category': '超音波' if '/us/' in path or '超音波' in title else 'マンモグラフィ',
+        })
+    return out
+
+
 def update_seminars():
     """技師会の研修日程を seminars.json に保存する。取れなかった日は前回分を残す。"""
     today = datetime.now(JST).date().isoformat()
@@ -733,6 +772,14 @@ def update_seminars():
         except Exception as e:
             print('JART seminar error:', page, e)
             SOURCE_STATUS.setdefault('技師会の研修一覧', {})['error'] = f'{type(e).__name__}: {e}'[:160]
+    try:
+        q = parse_qabcs_seminars(fetch(QABCS_FEED))
+        for x in q:
+            found[x['url']] = x
+        SOURCE_STATUS['精中機構の講習会'] = {'listed': len(q)}
+    except Exception as e:
+        print('QABCS seminar error:', e)
+        SOURCE_STATUS['精中機構の講習会'] = {'error': f'{type(e).__name__}: {e}'[:160]}
     try:
         old = json.loads(SEMINARS_JSON.read_text(encoding='utf-8')).get('items', [])
     except Exception:
@@ -753,11 +800,13 @@ def update_seminars():
 # --------------------------------------------------
 # 学会・厚労省の新着を直接取得する
 # --------------------------------------------------
-SOCIETY_DOMAINS = ('jsrt.or.jp', 'radiology.jp', 'jsnm.org')
+SOCIETY_DOMAINS = ('jsrt.or.jp', 'radiology.jp', 'jsnm.org', 'jsgcs.or.jp')
 JSRT_NEWS = 'https://www.jsrt.or.jp/data/'
 JRS_TOP = 'https://www.radiology.jp/'
 JSNM_FEED = 'https://jsnm.org/feed/'
 MHLW_FEED = 'https://www.mhlw.go.jp/stf/news.rdf'
+JSGCS_TOP = 'https://www.jsgcs.or.jp/'
+QABCS_FEED = 'https://www.qabcs.or.jp/rss2.xml'
 DIRECT_MAX_PER_SOURCE = 5   # 初回に古い記事がまとめて入らないよう、1回あたりの上限
 DIRECT_DAYS = 21            # これより古い記事は取り込まない(学会は更新がまばらなため3週間)
 
@@ -807,6 +856,21 @@ def parse_jrs(html):
     return out
 
 
+def parse_jsgcs(html):
+    """<article><span class="date">2026.10.13</span>…<a href=".../archives/51">題名</a></article>"""
+    out = {}
+    for art in re.findall(r'<article\b[^>]*>(.*?)</article>', html, re.S | re.I):
+        d = re.search(r'(20\d{2})[./](\d{1,2})[./](\d{1,2})', art)
+        a = re.search(r'<a[^>]+href=["\']([^"\']+)["\'][^>]*>(.*?)</a>', art, re.S | re.I)
+        if d and a:
+            dt = _to_date(*d.groups())
+            url = urljoin(JSGCS_TOP, a.group(1))
+            if dt and url not in out:
+                out[url] = {'title': clean_html(a.group(2)), 'url': url,
+                            'published': datetime(dt.year, dt.month, dt.day, tzinfo=JST).isoformat()}
+    return list(out.values())
+
+
 def direct_official_news():
     """学会(技術学会・医学放射線学会・核医学会)と厚労省の新着を、記事の形で返す。"""
     sources = (
@@ -814,6 +878,7 @@ def direct_official_news():
         ('日本医学放射線学会', JRS_TOP, parse_jrs),
         ('日本核医学会', JSNM_FEED, parse_rss),
         ('厚生労働省', MHLW_FEED, parse_rss),
+        ('日本消化器がん検診学会', JSGCS_TOP, parse_jsgcs),
     )
     now = datetime.now(JST)
     out = []
@@ -981,6 +1046,7 @@ OFFICIAL_SOURCE_NAMES = (
     '厚生労働省', '原子力規制委員会',
     '医薬品医療機器総合機構', 'pmda',
     '日本医療機能評価機構',
+    '日本消化器がん検診学会', '精中機構',
 )
 
 # 高: 自分の部署で確認・対応が必要になりうる情報
