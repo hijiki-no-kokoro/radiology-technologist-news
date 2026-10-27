@@ -12,7 +12,7 @@
   },
   {
     "date": "2026-10-26",
-    "category": "その他",
+    "category": "放射線治療",
     "importance": "低",
     "headline": "dMMRの再発高・中リスク早期子宮体癌に術後放射線療法＋ペムブロリズマブは3年無再発生存達成率の有意な延長を認めず【ESMO 2026】 - 日経メディカル",
     "summary": "",
@@ -23,7 +23,7 @@
   },
   {
     "date": "2026-10-26",
-    "category": "その他",
+    "category": "放射線治療",
     "importance": "低",
     "headline": "局所進行直腸癌の術前療法で短期放射線療法＋抗PD-1抗体camrelizumab＋CAPOXは長期化学放射線療法＋CAPOXよりもEFSを有意に延長【ESMO 2026】 - 日経メディカル",
     "summary": "",
@@ -179,7 +179,7 @@
   },
   {
     "date": "2026-10-23",
-    "category": "その他",
+    "category": "安全管理",
     "importance": "高",
     "headline": "【重要】メール配信システム「ブラストメール」への不審アクセスに伴う個人情報漏えいの可能性について (お詫び) 10月23日17:20追記 - 日本診療放射線技師会",
     "summary": "",
@@ -267,7 +267,7 @@
   },
   {
     "date": "2026-10-22",
-    "category": "その他",
+    "category": "安全管理",
     "importance": "中",
     "headline": "【重要】「JARTIS」の一時閉鎖について (PHP脆弱性対応) - 日本診療放射線技師会",
     "summary": "",
@@ -317,7 +317,7 @@
   },
   {
     "date": "2026-10-21",
-    "category": "教育",
+    "category": "職能",
     "importance": "中",
     "headline": "告示研修（実技研修）東京都2027/1/9 - 日本診療放射線技師会",
     "summary": "",
@@ -427,29 +427,7 @@
   },
   {
     "date": "2026-10-20",
-    "category": "MRI",
-    "importance": "低",
-    "headline": "脳PET-MRIシステム市場の2035年予測：神経変性疾患の増加が成長を後押し - ニュースと統計 - IndexBox",
-    "summary": "",
-    "why": "",
-    "source": "IndexBox",
-    "url": "https://news.google.com/rss/articles/CBMizAFBVV95cUxNRTNfcFh5ZnZ1Yi1FYnVid1hjNThaZkxfUmdaLTl1b0FEU0p5blJjaUI1ZlJXY3A2S3Z6TUIwNDZqTHRwb3l4YjN2ZG5yN0duV1lVVWVZTHduWUEtcDZRLWtkMnZjdEV6c18wX0FwMTJiN29WUHN5SjV0cl8tc0tTcmpGY1IyVnFNUFRQZDctOXNWbUdtWEUtWk9aeVh4UmVkQlRYaHVGcFU4bnYtb3hRNlJKX1Q5aGJBb2cybUJWcDdwblRfVUpRUEptWkM?oc=5",
-    "track": "general"
-  },
-  {
-    "date": "2026-10-20",
-    "category": "核医学",
-    "importance": "低",
-    "headline": "核医学機器市場の最新動向：力強い成長と競争、2026年から2033年にかけて予測CAGR - pando.life",
-    "summary": "",
-    "why": "",
-    "source": "pando.life",
-    "url": "https://news.google.com/rss/articles/CBMiSkFVX3lxTE15cFlPQXNoWElvdW1SQm1mRENSUmhTMGExWVk1WmVDUEw3WGY0d1hjek82X2RUbElJRVYteVB1QUQyT2FyMTVNclZn?oc=5",
-    "track": "general"
-  },
-  {
-    "date": "2026-10-20",
-    "category": "一般撮影",
+    "category": "安全管理",
     "importance": "中",
     "headline": "［お知らせ］2026年度 第3回単純X線撮影における品質管理セミナー - 公益社団法人 日本放射線技術学会",
     "summary": "",
@@ -460,7 +438,7 @@
   },
   {
     "date": "2026-10-19",
-    "category": "教育",
+    "category": "制度",
     "importance": "中",
     "headline": "令和8年度 医療事故調査制度に係る「管理者・実務者セミナー」の開催について - 日本診療放射線技師会",
     "summary": "",
@@ -488,7 +466,7 @@
   },
   {
     "date": "2026-10-19",
-    "category": "その他",
+    "category": "教育",
     "importance": "中",
     "headline": "【お詫びとご案内】eラーニング視聴不具合の復旧と年会費の納入について - 日本診療放射線技師会",
     "summary": "",
@@ -499,7 +477,7 @@
   },
   {
     "date": "2026-10-19",
-    "category": "その他",
+    "category": "一般撮影",
     "importance": "低",
     "headline": "【画像】レントゲン画像に写ったハート形の物体、放射線技師が即答した正体 - ライブドアニュース",
     "summary": "",
@@ -692,19 +670,8 @@
     "track": "general"
   },
   {
-    "date": "2026-10-17",
-    "category": "核医学",
-    "importance": "低",
-    "headline": "核医学市場の成長見通し：年平均成長率4％の成長、課題、販売量、シェア、および2026年か - pando.life",
-    "summary": "",
-    "why": "",
-    "source": "pando.life",
-    "url": "https://news.google.com/rss/articles/CBMiSkFVX3lxTE9hN04yN3V5VUItbThHNExqV0VKTEp2VGQ4SnVpWVdnWVFWOUZyR1lrSmc5dnhzWTRPU3BkOUtSQnhzY0hnaTBXWDVB?oc=5",
-    "track": "general"
-  },
-  {
     "date": "2026-10-16",
-    "category": "核医学",
+    "category": "放射線治療",
     "importance": "低",
     "headline": "がん治療における放射線療法と核医学の画期的な進歩。 - Vietnam.vn",
     "summary": "",
@@ -715,7 +682,7 @@
   },
   {
     "date": "2026-10-15",
-    "category": "その他",
+    "category": "教育",
     "importance": "中",
     "headline": "eラーニングが視聴できない事案について - 日本診療放射線技師会",
     "summary": "",
@@ -748,17 +715,6 @@
   },
   {
     "date": "2026-10-15",
-    "category": "CT",
-    "importance": "低",
-    "headline": "320スライスCTシステム市場、2035年まで拡大へ：心臓・神経画像診断需要が成長をけん引 - ニュースと統計 - IndexBox",
-    "summary": "",
-    "why": "",
-    "source": "IndexBox",
-    "url": "https://news.google.com/rss/articles/CBMizwFBVV95cUxNSWRjRFVGUGptQXFlWW9rUzdhbWp4VDhSa0ktUGgwekJqTl9MOWI2dl9iSmZ3eUp1X2duLUVLVVl5QVFJUVZHSllzYWZWMmlSbXpNMjFjUnQ0TXFNQjIxVWVzMDRvUTI1dXFkMlc4Y045RG1YS1c4ZUJkczNnbEJacnBZN3pKbEoxblFmUzd2aGJKNjhOa2d2ZmxRSjhLV1JiVS1VV2FNbkNidkhoQ2tYZEVaZ1dUU0VfWkZDZHp0eTFFc1ZnSXhEaFBwSUZMUlk?oc=5",
-    "track": "general"
-  },
-  {
-    "date": "2026-10-15",
     "category": "その他",
     "importance": "低",
     "headline": "駒沢大学とシーメンス、画像診断の人材育成拠点 操作やメンテなど - 日本経済新聞",
@@ -770,28 +726,7 @@
   },
   {
     "date": "2026-10-14",
-    "category": "AI",
-    "importance": "低",
-    "headline": "AI医療画像・放射線診断市場、2035年に220億米ドルへ―画像診断の高度化と診療効率化が24.3％成長を牽引 - アットプレス",
-    "summary": "",
-    "why": "",
-    "source": "アットプレス",
-    "url": "https://news.google.com/rss/articles/CBMiTkFVX3lxTE1CMm1JTGtrYzdwWGVzcGpzSVVydTlHTGFTWTNydExNa0p6MUNfbHJDd3VFQmhaQVhMRGd0TzRTVzMyUkJzcXkwRVR4eDdBQQ?oc=5",
-    "track": "general",
-    "also": [
-      {
-        "source": "Newscast.jp",
-        "url": "https://news.google.com/rss/articles/CBMiT0FVX3lxTE1PejE5SVI1b1MyR01SUFMzRldqekNQNkh4a19JeldxWkxwZl9BZGdUVDNLTVo3eXZDR2pTRk4wcXRKZkhHSndMS2p4N2kyRzg?oc=5"
-      },
-      {
-        "source": "ニコニコニュース",
-        "url": "https://news.google.com/rss/articles/CBMib0FVX3lxTFBjanZkdFQtbzNLdEVTWElBWHp6Mkk1dWtzcUduaTUzb0tTTGxQM2s2c1BrZHVmVXdmSGVTRHpVaTFfb3ZnemVkdnlLQS1DSzVqM0NUQUZnRXV4QkJrWEtacERQdm9JSjQ4UGdzWjFWVQ?oc=5"
-      }
-    ]
-  },
-  {
-    "date": "2026-10-14",
-    "category": "教育",
+    "category": "職能",
     "importance": "中",
     "headline": "告示研修（実技研修）2026年度 開催日程（2026/10/14更新） - 日本診療放射線技師会",
     "summary": "",
@@ -860,17 +795,6 @@
   },
   {
     "date": "2026-10-14",
-    "category": "CT",
-    "importance": "低",
-    "headline": "フォトンカウンティングCT市場、2035年に89億4,000万米ドルへ拡大予測｜SNS Insider調査 - ニコニコニュース",
-    "summary": "",
-    "why": "",
-    "source": "ニコニコニュース",
-    "url": "https://news.google.com/rss/articles/CBMiVEFVX3lxTE9OcWRNa2RxalgtZF9NSl8tajdqbDY4TG5iSmhsQmJTYjdBMFh2OTZxWTU1ZkpIQ1p3dDNrLTk4ZDlORjV5Tng1WW9aMXRmX3NpLWYwdw?oc=5",
-    "track": "general"
-  },
-  {
-    "date": "2026-10-14",
     "category": "放射線治療",
     "importance": "低",
     "headline": "がん放射線治療やロボット手術 「獣医学教育医療センター」 新棟整備の構想を発表 鳥取大（山陰中央新報） - Yahoo!ニュース",
@@ -889,17 +813,6 @@
     "why": "",
     "source": "TRILL",
     "url": "https://news.google.com/rss/articles/CBMiT0FVX3lxTFBTNmItOWVhR1NLa09IdnBYRTNLNDhSUzZ5eG0yaU01dmZteHhrYnlDM3pzMkg4TVp1SmliR0tCMTVIZmNmOTR6blU4RGpMWWM?oc=5",
-    "track": "general"
-  },
-  {
-    "date": "2026-10-13",
-    "category": "AI",
-    "importance": "低",
-    "headline": "AI医療画像市場の概要：製品、サービス、および2026年から2033年にかけての年平均成 - pando.life",
-    "summary": "",
-    "why": "",
-    "source": "pando.life",
-    "url": "https://news.google.com/rss/articles/CBMiSkFVX3lxTE45eDhHc2xjMHh3ZTE1X1NXNHE1UmJDMURpbkZ1NFJBcFBIdkwwXzRLWW1pZmFhSUZLa0Y4V1I4Mm9fZU1Gd3NXajVR?oc=5",
     "track": "general"
   },
   {
@@ -926,17 +839,6 @@
   },
   {
     "date": "2026-10-13",
-    "category": "放射線治療",
-    "importance": "低",
-    "headline": "リニアックベースの放射線手術システム市場、がん罹患率の上昇と精密放射線治療需要を背景に2035年まで成長予測 - IndexBox",
-    "summary": "",
-    "why": "",
-    "source": "IndexBox",
-    "url": "https://news.google.com/rss/articles/CBMi9wFBVV95cUxOemcwWmdJekdwLUJ4akNGcWFrVUlBNkFGOUxJUlVtaU1LN3FSMkY3NkhCaUMxT0FCX2c3aEpMZEVsdzFFWDA0czIxaXB1MllKYUJ2V05nMFE0RnhCOUR3YWxPem1RZDh0OU5SNUhxNnZiaVk3ZXVKNjR5djFzMGlkQm1aVVdlT3NieHpXNFAzWmpsbVFrMFhiaGFyWW5kQXQ1dy1WQktXaFluN1htUE1VZXJCYXMtUUs1OF8zZ1VfZUoyV2czRW1fOVRFOUgxdDJtZ2lJYTJlZFBrcVBpdzA0VFVxalpCem1xNXA3VzRXbkZGdHIwaXVZ?oc=5",
-    "track": "general"
-  },
-  {
-    "date": "2026-10-13",
     "category": "診療報酬・補助金",
     "importance": "低",
     "headline": "画像診断管理加算2「175点→166点」は本当に減収なのか？ ～一部委託の活用は、検査数拡大と病院収益向上のチャンス～ - mbp-japan.com",
@@ -948,7 +850,7 @@
   },
   {
     "date": "2026-10-13",
-    "category": "その他",
+    "category": "核医学",
     "importance": "低",
     "headline": "α線放出核種Ac225を用いる放射線リガンド療法薬RYZ101、ソマトスタチン受容体陽性GEP-NETのPFSを標準治療よりも有意に延長 - 日経メディカル",
     "summary": "",
@@ -958,19 +860,8 @@
     "track": "general"
   },
   {
-    "date": "2026-10-12",
-    "category": "安全管理",
-    "importance": "低",
-    "headline": "放射線線量計市場2035年展望：原子力拡大と安全規制が成長を牽引 - ニュースと統計 - IndexBox",
-    "summary": "",
-    "why": "",
-    "source": "IndexBox",
-    "url": "https://news.google.com/rss/articles/CBMi2gFBVV95cUxOMW9ySXlPaXkxWk9INTEzUlpHelgyVzdfVERyb2FyM3poSGh4RWJydTctQzZUNjhtZklRbjRkakdjR0dfdUdiVVBBQVdFRWhfMmo2Zk1pTldOSzJlTHFqbUFiVlMxVEl6bm4zQ1lJdFFERHp4UlVodk5XUnBvcEkxSGtXTlUtbG1hbU5DOG1SZndyQzJCcUVtRUhmb0Rka3BvWGtVSVN1QjYyQV94cFVDUkVBQ2R0OTIxRDRKX1NvVlJRd0dXMFppRjQ2QVVERTY0TUVaM0JJSGZidw?oc=5",
-    "track": "general"
-  },
-  {
     "date": "2026-10-09",
-    "category": "教育",
+    "category": "制度",
     "importance": "中",
     "headline": "2026年度 放射線科専門医 施設認定の更新申請・新規申請について - 公益社団法人日本医学放射線学会",
     "summary": "",
@@ -995,17 +886,6 @@
         "url": "https://news.google.com/rss/articles/CBMiakFVX3lxTE9oWnlCLTYxQ3poMWFfYlFuT2hsMm0tNlVfSktQSHNLSXhILTdHY0VGNlEyb0Q3QTlzbmVXekJMTFJfTXRMSWxKZHlmUURBZjJyTlJGMUZ1S1l2Yy1zUEhDZTI2Zk82aWRSU3c?oc=5"
       }
     ]
-  },
-  {
-    "date": "2026-10-08",
-    "category": "MRI",
-    "importance": "低",
-    "headline": "MRI造影剤市場2035年予測：MRI検査件数の拡大が成長を牽引 - ニュースと統計 - IndexBox",
-    "summary": "",
-    "why": "",
-    "source": "IndexBox",
-    "url": "https://news.google.com/rss/articles/CBMi6wFBVV95cUxQdFZtakdGZ21yNE9aWUhYRFU4am9KUHpYVXJiVTNObGs0cGlkYXVRbHJ6aXpLY3BEczJJbG5SczdnTzJzR2JaZEIwZ3QwOG5tWmM4ajF2eDg2VUpta1BMUGtkRDZhcFRIeEF1MEdBTGxwa1I1SG9WUk9ycXU3ckJYVExUdmhVc0wyTGRuRzZTWkZYbzRlYk1HN2hOTXBvSlVlSVRxWTNjckNjdGpJREk3V2lvRXZ2Ykc5cm5LRVlHYi02YlozQUdqclJlMEZWWVZaSTRERWMySUl4ajJlalJpUWd3LVNLaWxIQjBZ?oc=5",
-    "track": "general"
   },
   {
     "date": "2026-10-10",
@@ -1066,17 +946,6 @@
     "date": "2026-10-08",
     "category": "放射線治療",
     "importance": "低",
-    "headline": "放射線治療機器市場―2026年～2032年の世界市場予測 - Newscast.jp",
-    "summary": "",
-    "why": "",
-    "source": "Newscast.jp",
-    "url": "https://news.google.com/rss/articles/CBMiT0FVX3lxTFB1bF9vZUtBZm9YVlAtUUxFMnNocFUyYXZOUWZwSVNDcE42NjRtdjQyZjdvRWhmUWpENWt6YmhqSVkycmpSSHNRTl9mZGNlR2M?oc=5",
-    "track": "general"
-  },
-  {
-    "date": "2026-10-08",
-    "category": "放射線治療",
-    "importance": "低",
     "headline": "トー市の指導者たちは、2台目の放射線治療装置がまだ稼働していない理由を説明できるだろうか。 - Vietnam.vn",
     "summary": "",
     "why": "",
@@ -1106,19 +975,8 @@
     ]
   },
   {
-    "date": "2026-10-07",
-    "category": "核医学",
-    "importance": "低",
-    "headline": "グローバル核医学ソフトウェア市場におけるトップ10企業 - Spherical Insights",
-    "summary": "",
-    "why": "",
-    "source": "Spherical Insights",
-    "url": "https://news.google.com/rss/articles/CBMi3wFBVV95cUxPUjdhYTMwUnpSU1RZcHBYaTBZM2sySlJaVTdhcHhNemdoYVZ2TE5MSEJYMWJocXlzZ1lEaXFZOFB1WlJoODRsQ2J2V2E5UGQ4Q2dLVU90b1FHZzNRWHZYeVBRVVlleEp1QjlXVEVRdkptOE9kLTZ4SmVnZjUwWFBPOEZ5Y3ZSUmpyQXNBbXJRbHJBMHdMX2VabmxhSko4SmJjYzNFajh6ekxiblhMSkpOMWtOQmtmZ1p2cEVvVlNRaE9RdGFFZXpFS0FIR283dFI4TWtBRHBXSUZ0RjNzekU4?oc=5",
-    "track": "general"
-  },
-  {
     "date": "2026-10-06",
-    "category": "その他",
+    "category": "核医学",
     "importance": "低",
     "headline": "病院はサイクロトロンシステム用の放射線遮蔽装置を用意した。 - Vietnam.vn",
     "summary": "",
@@ -1129,7 +987,7 @@
   },
   {
     "date": "2026-10-06",
-    "category": "その他",
+    "category": "安全管理",
     "importance": "高",
     "headline": "ガストログラフィン®経口・注腸用「限定出荷」継続のお知らせ - 日本診療放射線技師会",
     "summary": "",
@@ -1217,7 +1075,7 @@
   },
   {
     "date": "2026-10-03",
-    "category": "教育",
+    "category": "職能",
     "importance": "中",
     "headline": "告示研修（実技研修）東京都2026/10/4 - 日本診療放射線技師会",
     "summary": "",
@@ -1311,7 +1169,7 @@
   },
   {
     "date": "2026-10-02",
-    "category": "CT",
+    "category": "放射線治療",
     "importance": "低",
     "headline": "計画用 CT は放射線治療の出発点増加する高精度放射線治療へSOMATOM go.Sim が果たす役割 - Siemens Healthineers",
     "summary": "",
@@ -1355,7 +1213,7 @@
   },
   {
     "date": "2026-10-01",
-    "category": "教育",
+    "category": "職能",
     "importance": "中",
     "headline": "ワクチン筋注行為実技研修 開催要項更新のお知らせ - 日本診療放射線技師会",
     "summary": "",
@@ -1507,19 +1365,8 @@
     "track": "general"
   },
   {
-    "date": "2026-10-01",
-    "category": "核医学",
-    "importance": "低",
-    "headline": "日本のPETがん治療薬市場の見通し：2026年から2033年にかけて年平均成長率（CAG - pando.life",
-    "summary": "",
-    "why": "",
-    "source": "pando.life",
-    "url": "https://news.google.com/rss/articles/CBMiSkFVX3lxTE5nMi1mVnBNWFd5dUNlQzBfalUxYmRDdkJoTm5NamlvLUtUTTNrUWR2ckEtOHhWQmZKc2ZWeXVUdmlZZFNwYi1BQUVR?oc=5",
-    "track": "general"
-  },
-  {
     "date": "2026-09-30",
-    "category": "CT",
+    "category": "核医学",
     "importance": "低",
     "headline": "試薬不足のためPET/CT装置が稼働していない。ホーチミン市保健局はサイクロトロンの建設を繰り返し提案している。 - Vietnam.vn",
     "summary": "",
@@ -1529,19 +1376,8 @@
     "track": "general"
   },
   {
-    "date": "2026-09-29",
-    "category": "その他",
-    "importance": "中",
-    "headline": "Untitled - 日本診療放射線技師会",
-    "summary": "",
-    "why": "",
-    "source": "日本診療放射線技師会",
-    "url": "https://news.google.com/rss/articles/CBMi_gJBVV95cUxNYldvdUt2UmFFRVRxSVhYX2d3SFI1NmViZzJEdktVM0JqMENjM01oc3VyZTVKTGRobkJDNWVJUHRrWWxaMDFfRm9XV1Z6aWg2dWVBOGNJUmV3S2xNd0ZsNFJ4R1ZtWEo0bFpVRUNFd1JkbWRhVjBncmJtdmxzZW1tWEl3OE1xQy1CaFI5NkZuTjgtTS1LdVJxOTg5T2JLQXZBVVp1bklxXzgtRDdWMGlqVXBndWVERVF1d05HcjZxNXY0b0F6NFdscHJaczFlU2pTcXFDcURLLUdhMUphamhIQTVJa2x4U0dTblhtNjQ0NFM4T1Z6OERVR1FSeW9iX0ZUY0lZTmY4N0psRjRuVXVBOW1jb05iN1dzLXNNS3BmRDFfZWNqalVnOE9JMkotYzZValVFdFRjTkotNjF1NjdxMEVERFZHaXpaMWVQTFhoRFBxdzhpWjdBYnBYWDlzSzB5bFl4a04xRnpScDlEQV8wVXNXZlpRQ2FldWsza05B?oc=5",
-    "track": "official"
-  },
-  {
     "date": "2026-09-28",
-    "category": "教育",
+    "category": "職能",
     "importance": "中",
     "headline": "告示研修（実技研修）大阪府2026/12/13 - 日本診療放射線技師会",
     "summary": "",
@@ -1549,17 +1385,6 @@
     "source": "日本診療放射線技師会",
     "url": "https://news.google.com/rss/articles/CBMi0wFBVV95cUxPcC1ieTFaOWhkRGN4UkV3Z1VTUkdLcno5WTJIS2U3QjBQRzZjRVY5QXlCeHBYeFhrVVZGSVhGbWNWSENCdHVFS3RxazlGdVZDc19EbHBfaEUwWVVWSGdTSFdQUnJIanl1NnkwMWNKVXQ3cFpPMkg4X0JLR0dEamFYSnB2S1VlNWxuT3gyN1FpQjc4VWk2SHBjOE1OekFIdW1mVUJkZ2FqUGJUQTlDcmlacy13RHZ6MG1FOF92alFHUDBncFRicWZaUUZ0b2V1Rzc3MWEw?oc=5",
     "track": "official"
-  },
-  {
-    "date": "2026-09-29",
-    "category": "CT",
-    "importance": "低",
-    "headline": "世界の脳向けPET・CTシステム市場分析：動向、予測、および成長機会（2026年 - pando.life",
-    "summary": "",
-    "why": "",
-    "source": "pando.life",
-    "url": "https://news.google.com/rss/articles/CBMiSkFVX3lxTE9GN29DamZlUnJNVS1EZC1xYnN3NFpfVjBsTkZvM085M20zNDdQWHVuVk01em1VY3A2Vzl0OU90cWFiNThNMTFUb0NB?oc=5",
-    "track": "general"
   },
   {
     "date": "2026-09-29",
@@ -1581,17 +1406,6 @@
     "why": "",
     "source": "日経メディカル",
     "url": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxNc2R0blNONDY2YWgxSndPUjhvZ0FsMVVhWTN0YkVtenRfRC1hTEx2SzB5eWtfbnhONzA5WFJabkZabXdpTzV4UmF4a0UxSmlpSU9hZkRuQnpVWkNYWnZJTFVoZTBSTGxra2J1R3FkM1VWMEZvaV9XUElVSWs0TDQ0RHIzZV93aXVW?oc=5",
-    "track": "general"
-  },
-  {
-    "date": "2026-09-28",
-    "category": "CT",
-    "importance": "低",
-    "headline": "アジア太平洋地域放射性医薬品市場、2035年60億5,000万米ドル規模へ｜CAGR 10.09％、PET・SPECT診断とセラノスティクス、精密医療の進展が成長機会を創... - アットプレス",
-    "summary": "",
-    "why": "",
-    "source": "アットプレス",
-    "url": "https://news.google.com/rss/articles/CBMiTkFVX3lxTE5uYmk4X0JwSmIxOFpKeEdZOEJ0RXpBOW1FRjBvNHpUellZM0ZvUXREYjlZYzVER1lUNHJENEQ0c1JmOFk3VWFzc2E5MlVkZw?oc=5",
     "track": "general"
   },
   {
@@ -1640,17 +1454,6 @@
   },
   {
     "date": "2026-09-28",
-    "category": "その他",
-    "importance": "低",
-    "headline": "日本医療画像市場の評価：現在の状況と今後の成長可能性、2026年から2033年にかけて - pando.life",
-    "summary": "",
-    "why": "",
-    "source": "pando.life",
-    "url": "https://news.google.com/rss/articles/CBMiSkFVX3lxTE1CSVBTck1Mb0hFemRLMzlnNXdTUDdROE5jR3JXYnI5cTVUbTl4YUFyNUlsbDR3Tnd5QTdYbTJyblgwd1RsRUNsLXBB?oc=5",
-    "track": "general"
-  },
-  {
-    "date": "2026-09-28",
     "category": "安全管理",
     "importance": "中",
     "headline": "厚生労働省より「医療情報システム安全管理ガイドライン対応研修プログラム」のご案内 - 日本診療放射線技師会",
@@ -1672,17 +1475,6 @@
     "track": "general"
   },
   {
-    "date": "2026-09-27",
-    "category": "核医学",
-    "importance": "低",
-    "headline": "日本の日本PETがん治療薬市場2026年版 - pando.life",
-    "summary": "",
-    "why": "",
-    "source": "pando.life",
-    "url": "https://news.google.com/rss/articles/CBMiSkFVX3lxTE4zNkQ2V3RrZGpNS2VkVzlVczR1Q3U2WHFjc2p5aU9xdlFmR194R09VS3dMVDNodlpVTHNjdGx5Y0hwRUdINHdLQ3V3?oc=5",
-    "track": "general"
-  },
-  {
     "date": "2026-09-26",
     "category": "学術",
     "importance": "中",
@@ -1695,7 +1487,7 @@
   },
   {
     "date": "2026-09-24",
-    "category": "教育",
+    "category": "職能",
     "importance": "中",
     "headline": "告示研修（実技研修）2026年度 開催日程（2026/9/24更新） - 日本診療放射線技師会",
     "summary": "",
@@ -1718,18 +1510,7 @@
   },
   {
     "date": "2026-09-25",
-    "category": "核医学",
-    "importance": "低",
-    "headline": "PET核医学イメージングメーカーランキング - pando.life",
-    "summary": "",
-    "why": "",
-    "source": "pando.life",
-    "url": "https://news.google.com/rss/articles/CBMiSkFVX3lxTE1EUk14blVmM0tTa3pWa2pTM0RWOGZ2WE5XQXRVVHRtYUloNlBZSjlZSFdTa1RyTHlJM1lIMFhnUTFWVUdOVkw2aUVR?oc=5",
-    "track": "general"
-  },
-  {
-    "date": "2026-09-25",
-    "category": "核医学",
+    "category": "放射線治療",
     "importance": "低",
     "headline": "『ラジエーションハウス』21巻は11月18日発売｜唯織と裕乃、放射線治療科での新たな挑戦の続きへ - tonomatsuri.com",
     "summary": "",
@@ -1747,17 +1528,6 @@
     "why": "開催日程と申込期限を確認し、参加希望者がいれば勤務を調整しましょう。",
     "source": "公益社団法人 日本放射線技術学会",
     "url": "https://news.google.com/rss/articles/CBMiUEFVX3lxTE5VRHdMOV9OT3BnSkw0ZGZrMVRWVzNaajVFVnVwRkw3d2NOXzR3bXRLTW55anhDblRySkZJT0JreHFMME5IcXRVTVZZQzBPSHdD?oc=5",
-    "track": "general"
-  },
-  {
-    "date": "2026-09-23",
-    "category": "核医学",
-    "importance": "低",
-    "headline": "サービス市場としてのグローバル放射線学のトップ20企業 - Spherical Insights",
-    "summary": "",
-    "why": "",
-    "source": "Spherical Insights",
-    "url": "https://news.google.com/rss/articles/CBMi2wFBVV95cUxOcnB2eTF3SDRPS240NllkZUxjZVVXZjEyTl9EYXNsdnBkZEVHaTJIMHFncHgxMHFGMkdtTEd6dnc0OUxMMnlfdU84anpiQXNtOS1xQ2NfZ0ljR1dEV1A4NzZIS0RPTTFPRW5fV3A2OWIwWmtGQVF1aWVvQUU5T0lRSkhydUhkN3BXNjh5SUdYOGREMWNuNklXQXdUTWZxcHJZa0lHVlI0aWR4M05pMnVYUTZFV195YkxTVVBYTllfaHVHaWs5RGUyX0lIWXI3WklmTVNnY1ZKM0tueHM?oc=5",
     "track": "general"
   },
   {
@@ -1921,7 +1691,7 @@
   },
   {
     "date": "2026-09-20",
-    "category": "学術",
+    "category": "教育",
     "importance": "中",
     "headline": "［会告］2027年度 国外の大学等への短期留学生の募集について - 日本放射線技術学会",
     "summary": "",
@@ -1932,24 +1702,13 @@
   },
   {
     "date": "2026-09-20",
-    "category": "学術",
+    "category": "教育",
     "importance": "中",
     "headline": "［お知らせ］2027年度 短期留学生募集要項 - 日本放射線技術学会",
     "summary": "",
     "why": "応募条件と締切を確認し、関心のありそうなスタッフに共有しましょう。",
     "source": "日本放射線技術学会",
     "url": "https://news.google.com/rss/articles/CBMiUEFVX3lxTE1YMkJENHRwZU93eGJySzYwT01nNGtScU45NXlOOVAyTmZaMjdiaTFFOTZZZE1pVVNBNDFZN1ZjQWxOSnFyQmJOVkd3aVRQM0lO?oc=5",
-    "track": "general"
-  },
-  {
-    "date": "2026-09-19",
-    "category": "核医学",
-    "importance": "低",
-    "headline": "グローバル医療放射線検知市場におけるトップ20企業 - Spherical Insights",
-    "summary": "",
-    "why": "",
-    "source": "Spherical Insights",
-    "url": "https://news.google.com/rss/articles/CBMi4gFBVV95cUxNN2loLXN2b0dQLXU4cEtsdlF4UGZSYUwtZGMtWWtJNE9PWVlkNEVkTkVOVWVEX1pRb0k5TFlMNndoLTBWTkVtTGhwMWRLcG9UTHlRUXNuQmNxVHZMeHJUdHRSd1pmRjNsWDNrNUFyNEwxaWpDV2RqZ0NlR3ltTWhyNUkwTTYydFdLVTRuNTJFRHBLcW12ZXc3Vm5EWVI2WXRWRlZ1UEExNUZ4aGxDcVIwNERCYjFCR0hfcTE0X1dvTjN2ZWhhWE9EbFhESHhPVUlaQnQ4SmM4ZkpKMjhKOTRRNFlR?oc=5",
     "track": "general"
   },
   {
@@ -1994,17 +1753,6 @@
     "why": "",
     "source": "Vietnam.vn",
     "url": "https://news.google.com/rss/articles/CBMigAFBVV95cUxObmV4NTlRTktPQVVWMmh6eTJacUJYTlR2RHlLOWtvQnAta2hKSmJvSEE0Z0dnUmVRUl8wMFc3SEV5MFFVOGpNUnkxR0RLQUlMUlV2OWxQSm11c2l0cTU5QmZQX25uRXM5bk1XVGJJeUxtWU9fNWdIb0poaS12anVEbA?oc=5",
-    "track": "general"
-  },
-  {
-    "date": "2026-09-17",
-    "category": "放射線治療",
-    "importance": "低",
-    "headline": "放射線治療市場の規模、シェア、および成長分析：種類別、技術別、用途別、装置タイプ別、エンドユーザー別、治療法別、地域別―2026年から2033年までの業界予測 - Newscast.jp",
-    "summary": "",
-    "why": "",
-    "source": "Newscast.jp",
-    "url": "https://news.google.com/rss/articles/CBMiT0FVX3lxTE1CV1FhdndIR1d5Q05UUVo3bE1NMzNtTUpiNWdjRW45elhfSktrb3Qxdno2OU1yV2l5VEJCWG5ZVW1NRjR0SVVkTWFnVTZJazg?oc=5",
     "track": "general"
   },
   {
