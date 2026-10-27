@@ -51,3 +51,12 @@ def test_atom_feed_is_used(monkeypatch, tmp_path):
     monkeypatch.setattr(u, 'fetch', lambda url: ATOM)
     out = u.update_papers()
     assert len(out) == 1 and out[0]['category'] == 'CT' and out[0]['authors'].startswith('池野')
+
+
+def test_supplement_and_italic():
+    xml = '''<feed><entry><summary><![CDATA[ [ タイトル ] 胃がん検診の未来 [ 著者 ] [ 公開日 ] 2026-10-15 [ DOI ] https://doi.org/10.11404/jsgcs.64.993 ]]></summary>
+<id>tag:jstage.jst.go.jp:/WhatsNew/ja/NewArticle/jsgcs_64_Supplement2_64_64.993</id></entry>
+<entry><summary><![CDATA[ [ タイトル ] <I>Helicobacter pylori</I> 未感染胃の検討 [ 著者 ] 山田 [ 公開日 ] 2026-10-20 [ DOI ] https://doi.org/10.11404/jsgcs.64.500 ]]></summary>
+<id>tag:jstage.jst.go.jp:/WhatsNew/ja/NewArticle/jsgcs_64_5_64_500</id></entry></feed>'''
+    items = u.parse_jstage_atom(xml)
+    assert [x['title'] for x in items] == ['Helicobacter pylori 未感染胃の検討']

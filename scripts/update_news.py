@@ -1239,7 +1239,7 @@ PAPER_DAYS = 180     # これより古い論文は残さない
 PAPER_MAX = 150
 
 
-PAPER_SKIP = re.compile(r'^(講演プログラム|プログラム|表紙|目次|奥付|会告|編集後記|投稿規定|執筆要項|正誤表|お知らせ|学会記事|会員名簿|役員名簿|索引|広告)|抄録集|講演抄録$')
+PAPER_SKIP = re.compile(r'^(講演プログラム|プログラム|日程表|会場案内|扉|表紙|目次|奥付|会告|編集後記|投稿規定|執筆要項|正誤表|お知らせ|学会記事|会員名簿|役員名簿|索引|広告)|抄録集|講演抄録$')
 
 
 def parse_jstage_atom(xml):
@@ -1257,6 +1257,11 @@ def parse_jstage_atom(xml):
             f = re.search(r'\[\s*' + name + r'\s*\](.*?)(?=\[\s*(?:タイトル|著者|公開日|DOI)\s*\]|$)', txt, re.S)
             return re.sub(r'\s+', ' ', f.group(1)).strip() if f else ''
         title, authors, day, doi = field('タイトル'), field('著者'), field('公開日'), field('DOI')
+        title = clean_html(title)   # <I>Helicobacter pylori</I> などの斜体タグ
+        # 学術集会の抄録号(Supplement)は講演名が大量に並ぶので除く
+        ident = re.search(r'<id>(.*?)</id>', ent, re.S)
+        if ident and re.search(r'supplement', ident.group(1), re.I):
+            continue
         link = re.search(r'<link[^>]+href=["\']([^"\']+)', ent)
         url = doi if doi.startswith('http') else (link.group(1) if link else '')
         if not title or not url or not re.match(r'20\d{2}-\d{2}-\d{2}', day) or PAPER_SKIP.search(title):
