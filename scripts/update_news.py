@@ -1167,7 +1167,10 @@ def parse_supply_rows(rows):
          'new': col(('今回掲載時',), 20)}
     if None in (c['cls'], c['ing'], c['name'], c['status']):
         raise ValueError('供給状況の見出しが見つかりません: ' + ' / '.join(h[:10] for h in head[:12]))
-    get = lambda r, k: (str(r[c[k]]).strip() if c[k] is not None and c[k] < len(r) and r[c[k]] is not None else '')
+    # 全角英数(１００ｍＬ「Ｆ」)は読みやすいよう半角にそろえる
+    def get(r, k):
+        v = str(r[c[k]]).strip() if c[k] is not None and c[k] < len(r) and r[c[k]] is not None else ''
+        return unicodedata.normalize('NFKC', v) if k in ('spec', 'name', 'maker') else v
     out = []
     for r in rows[1:]:
         cls, ing = get(r, 'cls'), get(r, 'ing')
