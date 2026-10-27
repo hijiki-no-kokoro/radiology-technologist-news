@@ -70,7 +70,7 @@ button{font:inherit;color:inherit}
 .themebtn:hover{color:var(--ink)}
 .hello h1{font-size:clamp(26px,6vw,34px);font-weight:900;line-height:1.35;margin:14px 0 4px;letter-spacing:.01em}
 .hello .sub{margin:0;color:var(--ink-soft);font-size:14px}
-.hello .sub b{color:var(--rose);font-weight:700}
+.hello h1 .wd{font-size:.55em;font-weight:700;color:var(--ink-soft);margin-left:.5em;letter-spacing:.04em}
 
 /* ---- 検索と絞り込み(スクロールしても上に残る) ---- */
 .bar{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);padding:10px 0 8px;border-bottom:1px solid transparent}
@@ -170,7 +170,7 @@ footer{padding:10px 18px 40px;color:var(--ink-soft);font-size:12.5px;text-align:
       </p>
       <button type="button" class="themebtn" id="themeBtn">表示: 自動</button>
     </div>
-    <h1 id="greet">おはようございます</h1>
+    <h1 id="today">&nbsp;</h1>
     <p class="sub" id="sub">ニュースを読み込んでいます…</p>
   </header>
 </div>
@@ -279,13 +279,12 @@ function render(){
 }
 
 function renderHello(){
-  const h=Number(new Date().toLocaleString('en-US',{timeZone:'Asia/Tokyo',hour:'numeric',hour12:false}))%24;
-  document.getElementById('greet').textContent=(h>=4&&h<11)?'おはようございます':(h>=11&&h<18)?'こんにちは':'おつかれさまです';
   const [y,m,d]=today.split('-').map(Number);const wd=WD[new Date(Date.UTC(y,m-1,d)).getUTCDay()];
+  document.getElementById('today').innerHTML=`${m}月${d}日<span class="wd">${wd}曜日</span>`;
   const hi=db.filter(n=>isRecent(n)&&impOf(n)==='高').length;
   let upd='';
   if(meta&&meta.checked_at){const t=new Date(meta.checked_at);if(!isNaN(t)){const hm=t.toLocaleTimeString('ja-JP',{timeZone:'Asia/Tokyo',hour:'numeric',minute:'2-digit'});const sameDay=t.toLocaleDateString('sv-SE',{timeZone:'Asia/Tokyo'})===today;upd=`${sameDay?'今日':t.toLocaleDateString('ja-JP',{timeZone:'Asia/Tokyo',month:'numeric',day:'numeric'})} ${hm}に更新${Number.isFinite(meta.added)&&meta.added>0?`、新着${meta.added}件`:''}。`;}}
-  document.getElementById('sub').innerHTML=`${m}月${d}日(${wd})。${hi?`この1週間の確認事項は<b>${hi}件</b>です。`:'この1週間、急ぎの確認事項はありません。'}${upd}`;
+  document.getElementById('sub').textContent=`${hi?`この1週間に確認しておきたいことが${hi}件あります。`:'この1週間、急ぎの確認事項はありません。'}${upd}`;
 }
 
 // 操作
