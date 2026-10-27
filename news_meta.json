@@ -1,7 +1,7 @@
 {
-  "checked_at": "2026-10-27T17:52+09:00",
-  "added": 8,
-  "total": 158,
+  "checked_at": "2026-10-27T17:55+09:00",
+  "added": 4,
+  "total": 161,
   "sources": {
     "医療機能評価機構": {
       "picked": 3
@@ -68,6 +68,21 @@
     "日本CT技術学会": {
       "listed": 5,
       "picked": 0
+    },
+    "日本乳癌検診学会": {
+      "listed": 30,
+      "picked": 1
+    },
+    "日本CT検診学会": {
+      "listed": 340,
+      "picked": 1
+    },
+    "日本放射線治療専門放射線技師認定機構": {
+      "listed": 1,
+      "picked": 1
+    },
+    "日本救急撮影技師認定機構": {
+      "error": "HTTPError: HTTP Error 404: Not Found"
     },
     "PMDA回収クラスI": {
       "listed": 0,
