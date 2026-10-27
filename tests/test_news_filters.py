@@ -125,7 +125,6 @@ def test_practical_items_with_similar_wording_are_kept(headline):
 @pytest.mark.parametrize('headline', [
     '胃がん検診の受診率向上へ 胃部X線検査の精度管理を強化',
     '胃透視でのバリウム誤嚥を防ぐポイント',
-    '対策型乳がん検診にトモシンセシス導入を検討',
     '人間ドックで胸部CTを選べる自治体が増加',          # CTより検診を優先
     'ユカリア、健診サービスで「からだ健康度AI解析」開始 胸部CTで筋肉量を可視化',
 ])
@@ -135,3 +134,38 @@ def test_screening_category(headline):
 
 def test_fluoroscopy_news_is_relevant():
     assert u.relevant({'headline': '胃透視の撮影手順を標準化', 'summary': '', 'source': '日本消化器がん検診学会', 'url': 'https://news.google.com/x'})
+
+
+# --- 血管撮影・超音波 ------------------------------------------------
+
+@pytest.mark.parametrize('headline, expected', [
+    ('血管撮影室の被ばく低減に向けたIVR医との連携', '安全管理'),       # 被ばくは安全管理を優先(従来どおり)
+    ('最新のバイプレーン血管撮影装置を導入 脳血管内治療に対応', '血管撮影'),
+    ('IVRナースと技師のチーム医療', '血管撮影'),
+    ('心臓カテーテル検査室をリニューアル', '血管撮影'),
+    ('超音波スクリーニング研修講演会2026東京のご案内', '超音波'),
+    ('腹部エコー検査の描出のコツ', '超音波'),
+    ('マンモグラフィーと超音波検査の併用は慎重にすべき？乳がん検診', 'マンモグラフィ'),   # マンモを優先
+])
+def test_angio_and_ultrasound_category(headline, expected):
+    assert u.category(item(headline)) == expected
+
+
+def test_politician_pages_are_excluded():
+    assert not u.is_news_item(item('大阪市の胃がん検診｜50歳以上の対象・料金・予約', '選挙ドットコム'))
+
+
+# --- マンモグラフィ --------------------------------------------------
+
+@pytest.mark.parametrize('headline', [
+    '対策型乳がん検診にトモシンセシス導入を検討',
+    '「痛くない乳がん検診」の効果は？',
+    '検診マンモグラフィ撮影認定技師の更新講習',
+    '乳房撮影時のポジショニングの工夫',
+])
+def test_mammography_category(headline):
+    assert u.category(item(headline)) == 'マンモグラフィ'
+
+
+def test_gastric_screening_stays_in_screening():
+    assert u.category(item('胃がん検診の胃部X線検査で使うバリウムの改良')) == '検診'

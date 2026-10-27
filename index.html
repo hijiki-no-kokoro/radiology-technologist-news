@@ -287,7 +287,7 @@ const recentCutoff=(()=>{const [y,m,d]=today.split('-').map(Number);return new D
 const isRecent=n=>feedDate(n)>=recentCutoff;
 const IMP={高:{cls:'hi',label:'要確認'},中:{cls:'mid',label:'お知らせ'},低:{cls:'lo',label:'話題'}};
 const impOf=n=>IMP[n.importance]?n.importance:'中';
-const CAT_ORDER=['制度','職能','診療報酬・補助金','安全管理','学術','教育','AI','検診','CT','MRI','一般撮影','核医学','放射線治療'];
+const CAT_ORDER=['制度','職能','診療報酬・補助金','安全管理','学術','教育','AI','検診','マンモグラフィ','CT','MRI','一般撮影','血管撮影','超音波','核医学','放射線治療'];
 const WD='日月火水木金土';
 
 // 検索対象は人が読む文字だけ(URL内の英数字に「CT」「AI」が当たらないように)
