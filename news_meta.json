@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-10-27T18:01+09:00",
+  "checked_at": "2026-10-27T18:02+09:00",
   "added": 1,
   "total": 165,
   "sources": {
@@ -81,16 +81,11 @@
       "listed": 1,
       "picked": 1
     },
-    "日本救急撮影技師認定機構": {
-      "listed": 0,
-      "picked": 0,
-      "sample": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><rss version=\"2.0\" xmlns:content=\"http://purl.org/rss/1.0/modules/content/\" xmlns:wfw=\"http://wellformedweb.org/CommentAPI/\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:atom=\"http://www.w3.org/2005/Atom\" xmlns:sy=\"http://purl.org/rss/1.0/modules/syndication/\" xmlns:slash=\"http://purl.org/rss/1.0/modules/slash/\" > <channel> <title>日本救急撮影技師認定機構</title> <atom:link href=\"https://jert.info/99/feed/\" rel=\"self\" type=\"application/rss+xml\" /> <link>https://jert.info/99</link> <description>Japan organization for Emergency Radiological Technologists</description> <lastBuildDate>Mon, 26 Oct 2026 00:09:32 +0000</lastBuildDate> <language>ja</langu"
-    },
     "PMDA回収クラスI": {
       "listed": 0,
       "picked": 0,
-      "sample": "ファイルダウンロード</A> &#x3000;<A HREF=\"./rcidx26-1k_all.zip\">CSVダウンロード</A> </TD> </TR> </TABLE> <BODY BGCOLOR=\"white\" LINK=\"#0000FF\" ALINK=\"#008000\" VLINK=\"#800080\"> <TABLE cellSpacing=0 cellPadding=1 width=\"100%\" bgColor=#ceffff border=1> <THEAD> <TR bgColor=#7777aa> <TH noWrap><FONT color=white>番号</FONT></TH> <TH noWrap><FONT color=white>掲載年月日</FONT></TH> <TH noWrap><FONT color=white>種類</FONT></TH> <TH><FONT color=white>一般名</FONT></TH> <TH><FONT color=white>販売名</FONT></TH> <TH><FONT color=white>製造販売業者等名称</FONT></TH> <TH noWrap><FONT color=white>備考</FONT></TH> </TR> </THEAD> </TBODY> <TR><TD NOWRAP>1-2475</TD><TD NOWRAP>2026/06/01</TD><TD>医療機器</TD><TD>大動脈用ステントグラフト</TD><TD><A HREF=/rgo/MainServlet?recallno=1-2475 TARGET=_blank >ＲｅｌａｙＰｒｏ 胸部ステントグラフトシステム</A></TD><TD>テルモ株式会社</TD><TD> </TD></TR> </TBODY><script type=\"text/javascript\" src=\"/bnith__U0UNsMY1H8DwN5Vjcivgw1Ivnq34wsca-mRx4D0b79x-EJaX3gOjefez-FodO5u4jCGVQi5LxjU=\"></script> <script language=\"JavaScript\" type=\"text/javascript\">const _0x35e",
-      "bytes": 3131
+      "sample": "ファイルダウンロード</A> &#x3000;<A HREF=\"./rcidx26-1k_all.zip\">CSVダウンロード</A> </TD> </TR> </TABLE> <BODY BGCOLOR=\"white\" LINK=\"#0000FF\" ALINK=\"#008000\" VLINK=\"#800080\"> <TABLE cellSpacing=0 cellPadding=1 width=\"100%\" bgColor=#ceffff border=1> <THEAD> <TR bgColor=#7777aa> <TH noWrap><FONT color=white>番号</FONT></TH> <TH noWrap><FONT color=white>掲載年月日</FONT></TH> <TH noWrap><FONT color=white>種類</FONT></TH> <TH><FONT color=white>一般名</FONT></TH> <TH><FONT color=white>販売名</FONT></TH> <TH><FONT color=white>製造販売業者等名称</FONT></TH> <TH noWrap><FONT color=white>備考</FONT></TH> </TR> </THEAD> </TBODY> <TR><TD NOWRAP>1-2475</TD><TD NOWRAP>2026/06/01</TD><TD>医療機器</TD><TD>大動脈用ステントグラフト</TD><TD><A HREF=/rgo/MainServlet?recallno=1-2475 TARGET=_blank >ＲｅｌａｙＰｒｏ 胸部ステントグラフトシステム</A></TD><TD>テルモ株式会社</TD><TD> </TD></TR> </TBODY><script type=\"text/javascript\" src=\"/bnith__mUcLOemc7wgEQ5CEDl8fu7FkAK5keSR2a4EAUmbbYDoQ7ybIiWkN5WDiljldFsGN\"></script> <script language=\"JavaScript\" type=\"text/javascript\">const _0x35e8=['visitorI",
+      "bytes": 3119
     },
     "PMDA回収クラスII": {
       "listed": 26,
