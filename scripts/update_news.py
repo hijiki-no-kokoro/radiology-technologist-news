@@ -10,7 +10,8 @@ ROOT = Path(__file__).resolve().parents[1]
 NEWS_JSON = ROOT / 'news.json'
 ARCHIVE_DIR = ROOT / 'archive'      # 200件からあふれた記事を月ごとに保存
 MAX_RECENT = 200
-META_JSON = ROOT / 'news_meta.json'  # 最終更新時刻と新着件数(画面の右上に表示)
+META_JSON = ROOT / 'news_meta.json'
+SEMINARS_JSON = ROOT / 'seminars.json'  # 技師会の研修・講習会の日程  # 最終更新時刻と新着件数(画面の右上に表示)
 HTML_DIR = ROOT / 'daily_html'
 
 
@@ -645,6 +646,77 @@ def direct_safety_info():
         print('PMDA direct error:', e)
     print(f'Safety info candidates: {len(out)}')
     return out
+
+
+# --------------------------------------------------
+# 技師会(JART)の研修・講習会一覧から日程を読む
+# 例: 「告示研修 受付前 告示研修（実技研修）東京都2026/11/23 受付期間：2026/9/18〜2026/11/8
+#      開催日：2026/11/23〜2026/11/23 開催地域：東京都 …」
+# --------------------------------------------------
+JART_SEMINAR_PAGES = ('https://www.jart.jp/', 'https://www.jart.jp/seminar/')
+_JDATE = r'(20\d{2})\s*[/年]\s*(\d{1,2})\s*[/月]\s*(\d{1,2})日?(?:\s*[（(][^）)]*[）)])?'
+_JRANGE = _JDATE + r'\s*[〜～\-－~]\s*' + _JDATE
+
+
+def _jd(g):
+    d = _to_date(g[0], g[1], g[2])
+    return d.isoformat() if d else ''
+
+
+def parse_jart_seminars(html, base='https://www.jart.jp/'):
+    out = {}
+    for m in re.finditer(r'<a[^>]+href=["\'](?P<href>[^"\']*/seminar/[^"\']+)["\'][^>]*>(?P<text>.*?)</a>', html, re.I | re.S):
+        text = re.sub(r'\s+', ' ', clean_html(m.group('text'))).strip()
+        ev = re.search(r'開催日\s*[:：]\s*' + _JRANGE, text)
+        if not ev:
+            continue
+        ap = re.search(r'受付期間\s*[:：]\s*' + _JRANGE, text)
+        head = text.split('受付期間')[0] if '受付期間' in text else text.split('開催日')[0]
+        st = re.search(r'(申込み可|受付前|申込み不可|受付終了|満員|定員に達しました)', head)
+        status = st.group(1) if st else ''
+        kind, title = '', head
+        if st:
+            kind = head[:st.start()].strip()
+            title = head[st.end():].strip()
+        place = ''
+        pm = re.search(r'開催地域\s*[:：]\s*(\S+)', text)
+        if pm:
+            place = pm.group(1)
+        url = urljoin(base, m.group('href'))
+        g = ev.groups()
+        out[url] = {
+            'title': title, 'url': url, 'kind': kind, 'status': status,
+            'event_start': _jd(g[:3]), 'event_end': _jd(g[3:6]),
+            'apply_start': _jd(ap.groups()[:3]) if ap else '', 'apply_end': _jd(ap.groups()[3:6]) if ap else '',
+            'place': place,
+        }
+    return list(out.values())
+
+
+def update_seminars():
+    """技師会の研修日程を seminars.json に保存する。取れなかった日は前回分を残す。"""
+    today = datetime.now(JST).date().isoformat()
+    found = {}
+    for page in JART_SEMINAR_PAGES:
+        try:
+            for x in parse_jart_seminars(fetch(page), page):
+                found[x['url']] = x
+        except Exception as e:
+            print('JART seminar error:', page, e)
+    try:
+        old = json.loads(SEMINARS_JSON.read_text(encoding='utf-8')).get('items', [])
+    except Exception:
+        old = []
+    if not found:
+        items = old
+    else:
+        items = list(found.values())
+    # 終わった研修は外す。何年も続く常設のオンライン講座は「随時」として残す
+    items = [x for x in items if (x.get('event_end') or x.get('event_start') or '') >= today]
+    items.sort(key=lambda x: (x.get('event_start') or '9999', x.get('title') or ''))
+    SEMINARS_JSON.write_text(json.dumps({'checked_at': datetime.now(JST).isoformat(timespec='minutes'),
+                                         'items': items}, ensure_ascii=False, indent=1), encoding='utf-8')
+    print(f'JART seminars: {len(found)} found, {len(items)} upcoming')
 
 
 # 上から順に最初に当てはまったカテゴリを使う。
@@ -1460,6 +1532,8 @@ def main():
         json.dumps(final, ensure_ascii=False, indent=2),
         encoding='utf-8'
     )
+
+    update_seminars()
 
     META_JSON.write_text(
         json.dumps({

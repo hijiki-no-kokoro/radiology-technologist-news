@@ -1,5 +1,5 @@
 // 診療放射線技師ニュース: オフラインでも前回の内容を表示するためのキャッシュ
-const VERSION = 'rtn-v1';
+const VERSION = 'rtn-v2';
 const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png', 'favicon-32.png'];
 
 self.addEventListener('install', e => {
@@ -14,7 +14,7 @@ self.addEventListener('fetch', e => {
   const url = new URL(e.request.url);
   if (e.request.method !== 'GET') return;
   const sameOrigin = url.origin === self.location.origin;
-  const isData = sameOrigin && /(news\.json|news_meta\.json|\/archive\/)/.test(url.pathname);
+  const isData = sameOrigin && /(news\.json|news_meta\.json|seminars\.json|\/archive\/)/.test(url.pathname);
   const isPage = e.request.mode === 'navigate' || (sameOrigin && /index\.html$/.test(url.pathname));
   const isFont = /fonts\.(googleapis|gstatic)\.com$/.test(url.hostname);
   if (isData || isPage) {

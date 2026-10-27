@@ -190,6 +190,9 @@ dialog.settings p{margin:0 0 14px;color:var(--ink-soft);font-size:13.5px}
 .sched-tools{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;margin-top:4px;font-size:12.5px}
 .pill.near{background:var(--sage-soft);color:var(--sage)}
 .pill.place{background:var(--surface-2);color:var(--ink-soft);font-weight:400}
+.pill.open{background:var(--sage-soft);color:var(--sage)}
+.pill.soon{background:var(--surface-2);color:var(--ink-soft)}
+.sched-more{border-top:1px solid var(--line)}
 .cal{color:var(--blue);text-decoration:none;font-weight:700}
 .cal:hover{text-decoration:underline}
 .more{display:block;width:100%;border:0;border-top:1px solid var(--line);background:none;padding:11px;font-size:14px;font-weight:700;color:var(--blue);cursor:pointer}
@@ -274,7 +277,7 @@ footer{padding:10px 18px 40px;color:var(--ink-soft);font-size:12.5px;text-align:
 
 <script>
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-let db=[],meta=null,cat='all',q='',view='recent';
+let db=[],meta=null,seminars=[],cat='all',q='',view='recent',showAllSched=false;
 const SHOW_LO=6;                    // ほかのニュースは最初に6件だけ
 let showAllLo=false;
 const today=new Date().toLocaleDateString('sv-SE',{timeZone:'Asia/Tokyo'});
@@ -382,11 +385,33 @@ function filterNote(total){
 }
 
 const NEAR=['大阪','兵庫','京都','滋賀','奈良','和歌山','鳥取','島根','岡山','広島','山口','徳島','香川','愛媛','高知'];
-function calLink(n){const d=n.event_date.replace(/-/g,'');const [y,m,dd]=n.event_date.split('-').map(Number);const next=new Date(Date.UTC(y,m-1,dd+1)).toISOString().slice(0,10).replace(/-/g,'');const t=(n.event_kind==='申込締切'?'【申込締切】':'')+displayHeadline(n);return 'https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent(t)+'&dates='+d+'/'+next+'&details='+encodeURIComponent(n.url||'');}
+function calLink(n){const d=n.event_date.replace(/-/g,'');const [y,m,dd]=n.event_date.split('-').map(Number);const next=new Date(Date.UTC(y,m-1,dd+1)).toISOString().slice(0,10).replace(/-/g,'');const t=(n.event_kind==='申込締切'?'【申込締切】':'')+(n.title||displayHeadline(n));const det=(n.url||'')+(n.apply_end?`\n申込締切: ${n.apply_end}`:'');return 'https://calendar.google.com/calendar/render?action=TEMPLATE&text='+encodeURIComponent(t)+'&dates='+d+'/'+next+'&details='+encodeURIComponent(det);}
+const SEM_CAT={告示研修:'職能',生涯教育:'教育',認定資格:'教育'};
+const md=d=>{const [,m,dd]=String(d).split('-').map(Number);return `${m}/${dd}`;};
+const normTitle=t=>String(t||'').replace(/\s+-\s+[^-]{1,40}$/,'').replace(/[\s（）()]/g,'');
+function scheduleItems(){
+  const out=[],seen=new Set();
+  // 技師会の研修一覧(受付状態・申込締切つき)。何か月も続く常設講座と受付終了は除く
+  seminars.forEach(x=>{
+    if(!x.event_start||(x.event_end||x.event_start)<today)return;
+    const span=(Date.parse(x.event_end||x.event_start)-Date.parse(x.event_start))/864e5;
+    if(span>60||/申込み不可|受付終了|満員|定員/.test(x.status||''))return;
+    const it={event_date:x.event_start<today?today:x.event_start,event_kind:'開催',title:x.title,url:x.url,event_place:/^jart$/i.test(String(x.place||'').trim())?'':String(x.place||'').replace(/(都|府|県)$/,''),status:x.status,apply_start:x.apply_start,apply_end:x.apply_end,category:SEM_CAT[x.kind]||'教育',source:'日本診療放射線技師会',headline:x.title};
+    seen.add(normTitle(x.title));seen.add(x.url);out.push(it);
+  });
+  // ニュース記事から読み取った日程(研修一覧と重複するものは除く)
+  db.forEach(n=>{if(n.event_date&&n.event_date>=today&&!seen.has(n.url)&&!seen.has(normTitle(displayHeadline(n))))out.push(n);});
+  return out.filter(n=>matchQ(n)&&(cat==='all'||n.category===cat)).sort((a,b)=>a.event_date.localeCompare(b.event_date));
+}
+function statusHtml(n){
+  if(n.status==='申込み可')return `<span class="pill open">受付中${n.apply_end?`・${md(n.apply_end)}まで`:''}</span>`;
+  if(n.status==='受付前')return `<span class="pill soon">受付前${n.apply_start?`・${md(n.apply_start)}から`:''}</span>`;
+  return '';
+}
 function renderSchedule(){
-  const items=db.filter(n=>n.event_date&&n.event_date>=today&&matchQ(n)&&(cat==='all'||n.category===cat)).sort((a,b)=>a.event_date.localeCompare(b.event_date)).slice(0,6);
-  if(!items.length)return '';
-  return `<section class="section" aria-labelledby="h-sched"><h2 id="h-sched">これからの日程<span class="count">${items.length}件</span></h2><p class="lead">案内に書かれた開催日と申込締切を、近い順に並べています</p><div class="sched">${items.map(n=>{const [y,m,d]=n.event_date.split('-').map(Number);const dt=new Date(Date.UTC(y,m-1,d));const left=Math.round((dt-Date.parse(today+'T00:00:00Z'))/864e5);const dl=n.event_kind==='申込締切';const pl=n.event_place;const plHtml=pl?(pl==='オンライン'?'<span class="pill near">オンライン</span>':NEAR.includes(pl)?`<span class="pill near">${esc(pl)}(近畿・中四国)</span>`:`<span class="pill place">${esc(pl)}</span>`):'';return `<article class="sched-item"><div class="sched-date${dl?' deadline':''}"><span class="md">${m}/${d}</span><span class="wd">${WD[dt.getUTCDay()]}曜</span></div><div class="sched-body"><div class="kind">${dl?'<b>申込締切</b>':'開催'}　${left===0?'今日':`あと${left}日`}</div><a class="title" href="${esc(n.url)}" target="_blank" rel="noopener">${esc(displayHeadline(n))}</a><div class="sched-tools">${plHtml}<a class="cal" href="${calLink(n)}" target="_blank" rel="noopener">Googleカレンダーに追加</a></div></div></article>`;}).join('')}</div></section>`;
+  const all=scheduleItems();if(!all.length)return '';
+  const items=showAllSched?all:all.slice(0,6);
+  return `<section class="section" aria-labelledby="h-sched"><h2 id="h-sched">これからの日程<span class="count">${all.length}件</span></h2><p class="lead">技師会の研修一覧と、案内記事に書かれた開催日・申込締切を近い順に並べています</p><div class="sched">${items.map(n=>{const [y,m,d]=n.event_date.split('-').map(Number);const dt=new Date(Date.UTC(y,m-1,d));const left=Math.round((dt-Date.parse(today+'T00:00:00Z'))/864e5);const dl=n.event_kind==='申込締切';const pl=n.event_place;const plHtml=pl?(pl==='オンライン'?'<span class="pill near">オンライン</span>':NEAR.includes(pl)?`<span class="pill near">${esc(pl)}(近畿・中四国)</span>`:`<span class="pill place">${esc(pl)}</span>`):'';return `<article class="sched-item"><div class="sched-date${dl?' deadline':''}"><span class="md">${m}/${d}</span><span class="wd">${WD[dt.getUTCDay()]}曜</span></div><div class="sched-body"><div class="kind">${dl?'<b>申込締切</b>':'開催'}　${left===0?'今日':`あと${left}日`}</div><a class="title" href="${esc(n.url)}" target="_blank" rel="noopener">${esc(n.title||displayHeadline(n))}</a><div class="sched-tools">${statusHtml(n)}${plHtml}<a class="cal" href="${calLink(n)}" target="_blank" rel="noopener">Googleカレンダーに追加</a></div></div></article>`;}).join('')}${all.length>items.length?`<button type="button" class="more sched-more" data-allsched>残り${all.length-items.length}件の日程を見る</button>`:''}</div></section>`;
 }
 function renderRecent(list){
   const ord=(a,b)=>focusFirst(a,b)||byNewest(a,b);
@@ -465,6 +490,7 @@ document.getElementById('chips').addEventListener('click',e=>{const b=e.target.c
 document.getElementById('view').addEventListener('click',e=>{
   const sb=e.target.closest('[data-save]');if(sb){toggleSave(sb.dataset.save);render();return;}
   const am=e.target.closest('[data-month]');if(am){loadMonths([am.dataset.month]);return;}
+  if(e.target.closest('[data-allsched]')){showAllSched=true;render();return;}
   if(e.target.closest('[data-more]')){showAllLo=true;render();return;}
   if(e.target.closest('[data-reset]')){cat='all';q='';document.getElementById('q').value='';render();}
 });
@@ -483,8 +509,9 @@ if('IntersectionObserver' in window){new IntersectionObserver(([en])=>bar.classL
 if('serviceWorker' in navigator&&location.protocol==='https:'){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));}
 Promise.all([
   fetch('news.json?'+Date.now()).then(r=>r.json()),
-  fetch('news_meta.json?'+Date.now()).then(r=>r.ok?r.json():null).catch(()=>null)
-]).then(([x,m])=>{db=Array.isArray(x)?x:[];meta=m;markSeen();renderHello();render();})
+  fetch('news_meta.json?'+Date.now()).then(r=>r.ok?r.json():null).catch(()=>null),
+  fetch('seminars.json?'+Date.now()).then(r=>r.ok?r.json():null).catch(()=>null)
+]).then(([x,m,sem])=>{db=Array.isArray(x)?x:[];meta=m;seminars=sem&&Array.isArray(sem.items)?sem.items:[];markSeen();renderHello();render();})
 .catch(()=>{document.getElementById('sub').textContent='ニュースを読み込めませんでした。';document.getElementById('view').innerHTML='<div class="layout"><div class="empty"><b>読み込みに失敗しました</b>通信状況を確認して、ページを再読み込みしてください。</div></div>';});
 </script>
 </body></html>
