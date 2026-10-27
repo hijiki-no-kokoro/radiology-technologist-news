@@ -270,7 +270,8 @@ html[data-size="l"] body{zoom:1.1}
 html[data-size="xl"] body{zoom:1.22}
 /* ---- 今日の3本 ---- */
 .today3{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:14px 16px;margin-top:16px;box-shadow:var(--shadow)}
-.today3 h2{font-size:17px;margin:0 0 2px}
+.today3 h2{font-size:17px;margin:0 0 2px;display:flex;align-items:center;gap:8px}
+.today3 .lead{margin:0;color:var(--ink-soft);font-size:13.5px}
 .today3 ol{margin:8px 0 0;padding:0;list-style:none;counter-reset:t3;display:grid;gap:8px}
 .today3 li{counter-increment:t3;display:flex;gap:10px;align-items:flex-start;font-size:14.5px;line-height:1.55}
 .today3 li::before{content:counter(t3);flex:0 0 24px;height:24px;border-radius:50%;background:var(--blue-soft);color:var(--blue);font-weight:900;display:grid;place-items:center;font-size:13px}
@@ -556,15 +557,23 @@ function renderRecord(){
   const qualOpts=v=>`<option value="">資格を選ぶ</option>${quals.map(q=>`<option${q.name===v?' selected':''}>${esc(q.name)}</option>`).join('')}${v&&!quals.some(q=>q.name===v)?`<option selected>${esc(v)}</option>`:''}`;
   const plan=list.filter(([,p])=>p.status==='plan').sort((a,b)=>String(a[1].date).localeCompare(String(b[1].date)));
   const done=list.filter(([,p])=>p.status==='done').sort((a,b)=>String(b[1].date).localeCompare(String(a[1].date)));
-  const sum={};done.forEach(([,p])=>{const k=p.qual||'資格の指定なし';sum[k]=(sum[k]||0)+(parseFloat(p.credits)||0);});
   const fy=(()=>{const [y,m]=today.split('-').map(Number);return m>=4?y:y-1;})();const fyStart=`${fy}-04-01`;
   const fyCount=done.filter(([,p])=>p.date>=fyStart).length;
   const item=([k,p])=>`<div class="rec-item" data-rec="${esc(k)}"><div class="t">${p.url?`<a href="${esc(p.url)}" target="_blank" rel="noopener">${esc(p.title)}</a>`:esc(p.title)}</div><div class="m">${p.date?`${p.date.replace(/-/g,'/')}`:'日付未入力'}${p.place?`・${esc(p.place)}`:''}${p.source?`・${esc(p.source)}`:''}${p.status==='plan'&&p.apply_end?`・申込締切 ${md(p.apply_end)}`:''}</div>
     <div class="rec-fields">${p.status==='plan'?`<button type="button" class="plan-btn" data-recdone>参加した</button>`:`<label>単位 <input type="number" step="0.5" min="0" data-recf="credits" value="${esc(p.credits)}"></label><select data-recf="qual" aria-label="関係する資格">${qualOpts(p.qual)}</select><button type="button" class="plan-btn" data-recundo>予定に戻す</button>`}<input class="note" type="text" data-recf="note" placeholder="メモ(内容・感想・領収書の有無など)" value="${esc(p.note)}"><button type="button" class="fixbtn" data-recdel>記録を消す</button></div></div>`;
   return `<div class="layout"><section class="section" aria-labelledby="h-rec1"><h2 id="h-rec1">参加予定<span class="count">${plan.length}件</span></h2><p class="lead">「これからの日程」の「参加予定」を押したものです。申込締切の1週間前と開催の3日前から上部でお知らせします。</p>${plan.length?plan.map(item).join(''):'<div class="empty">まだありません。日程の「参加予定」を押すとここに入ります。</div>'}</section>
-  <section class="section" aria-labelledby="h-rec2"><h2 id="h-rec2">参加した研修・学会<span class="count">${done.length}件</span></h2><p class="lead">単位と関係する資格を入れると、資格ごとに合計します。今年度(${fy}年4月〜)は${fyCount}件参加しています。</p>${Object.keys(sum).length?`<div class="rec-sum">${Object.entries(sum).map(([k,v])=>`<span>${esc(k)} <b>${v}</b>単位</span>`).join('')}</div>`:''}${done.length?done.map(item).join(''):'<div class="empty">まだありません。</div>'}
+  <section class="section" aria-labelledby="h-rec2"><h2 id="h-rec2">参加した研修・学会<span class="count">${done.length}件</span></h2><p class="lead">単位と関係する資格を入れると、資格ごとに合計します。今年度(${fy}年4月〜)は${fyCount}件参加しています。</p><div class="rec-sum" id="recSum">${recSumHtml()}</div>${done.length?done.map(item).join(''):'<div class="empty">まだありません。</div>'}
   <h3 style="margin:18px 0 0;font-size:15px">一覧にない研修を記録する</h3><div class="rec-add"><input type="text" id="recTitle" placeholder="研修・学会の名前"><input type="date" id="recDate" value="${today}"><input type="number" id="recCredits" step="0.5" min="0" placeholder="単位"><button type="button" class="btn primary" data-recadd>記録する</button></div></section>
-  <p class="lead" style="text-align:center">記録はこの端末のブラウザにだけ保存されます。資格は「設定」の「資格と更新期限」で登録したものから選べます。</p></div>`;
+  <div class="sync-btns" style="justify-content:center"><button type="button" class="btn" data-reccsv${list.length?'':' disabled'}>受講記録をCSVで保存(Excelで開けます)</button></div>
+  <p class="lead" style="text-align:center">記録はこの端末のブラウザにだけ保存されます。CSVで保存しておくとバックアップにもなります。資格は「設定」の「資格と更新期限」で登録したものから選べます。</p></div>`;
+}
+function recSumHtml(){const sum={};Object.values(plans).filter(p=>p.status==='done').forEach(p=>{const k=p.qual||'資格の指定なし';sum[k]=(sum[k]||0)+(parseFloat(p.credits)||0);});return Object.entries(sum).map(([k,v])=>`<span>${esc(k)} <b>${v}</b>単位</span>`).join('');}
+function recordCsv(){
+  const cell=v=>{const t=String(v??'');return /[",\r\n]/.test(t)?'"'+t.replace(/"/g,'""')+'"':t;};
+  const rows=[['状態','日付','研修・学会名','開催地','主催','単位','関係する資格','メモ','URL']];
+  Object.values(plans).sort((a,b)=>String(a.date).localeCompare(String(b.date))).forEach(p=>rows.push([p.status==='done'?'参加':'参加予定',p.date?p.date.replace(/-/g,'/'):'',p.title,p.place,p.source,p.credits,p.qual,p.note,p.url]));
+  const csv='\ufeff'+rows.map(r=>r.map(cell).join(',')).join('\r\n');   // 先頭のBOMでExcelが文字化けしない
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download=`jukou-kiroku_${today}.csv`;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1000);
 }
 // ---- スワイプとトースト ----
 let swipeOn=store.get('rtn-swipe','on')!=='off';
@@ -780,7 +789,10 @@ function renderWeek(){
     <h3>先週(${md(lastStart)}〜${md(lastEnd)})の確認事項 ${hi.length}件</h3>${hi.length?`<ul>${hi.map(li).join('')}</ul>`:'<p class="lead">ありませんでした。</p>'}
     <h3>今週(〜${md(thisEnd)})の締切・開催 ${sched.length}件</h3>${sched.length?`<ul>${sched.map(sl).join('')}</ul>`:'<p class="lead">ありません。</p>'}</section>`;
 }
+// PCの広い画面(2段組み)では、日程・供給状況・論文を右側に置く
+const wideMq=window.matchMedia('(min-width:960px)');
 function renderRecent(list){
+  const wide=wideMq.matches;
   const ord=(a,b)=>(!!watchHit(b)-!!watchHit(a))||focusFirst(a,b)||byNewest(a,b);
   const hi=list.filter(n=>impOf(n)==='高').sort(ord),mid=list.filter(n=>impOf(n)==='中').sort(ord),lo=list.filter(n=>impOf(n)==='低').sort(ord);
   const loShown=(showAllLo||q||cat!=='all')?lo:lo.slice(0,SHOW_LO);
@@ -793,12 +805,11 @@ function renderRecent(list){
   return `${renderWeek()}${renderToday3()}${filterNote(list.length)}<div class="layout recent">
     <div class="main">
       <section class="section" aria-labelledby="h-hi"><h2 id="h-hi">確認しておきたいこと<span class="count">${hi.length}件</span></h2><p class="lead">制度・診療報酬、安全情報、薬剤の供給など、部署で対応が必要になりそうなもの</p>${must}</section>
-      ${renderSchedule()}
-      ${renderSupply()}
+      ${wide?'':renderSchedule()+renderSupply()}
       <section class="section" aria-labelledby="h-mid"><h2 id="h-mid">研修・学会のお知らせ<span class="count">${mid.length}件</span></h2><p class="lead">学会・技師会・行政からの案内と、国内の新しい装置の話題</p>${sharedNotes}${mid.length?`<div class="list">${mid.map(n=>row(n)).join('')}</div>`:`<div class="empty">この期間のお知らせはありません。</div>`}</section>
-      ${renderPapers()}
+      ${wide?'':renderPapers()}
     </div>
-    <aside class="side section" aria-labelledby="h-lo"><h2 id="h-lo">ほかのニュース<span class="count">${lo.length}件</span></h2><p class="lead">一般メディアの医療・放射線の話題</p>${lo.length?`<div class="list">${loShown.map(n=>row(n)).join('')}${loShown.length<lo.length?`<button type="button" class="more" data-more>残り${lo.length-loShown.length}件を見る</button>`:''}</div>`:`<div class="empty">この期間のニュースはありません。</div>`}</aside>
+    <aside class="side">${wide?renderSchedule()+renderSupply()+renderPapers():''}<section class="section" aria-labelledby="h-lo"><h2 id="h-lo">ほかのニュース<span class="count">${lo.length}件</span></h2><p class="lead">一般メディアの医療・放射線の話題</p>${lo.length?`<div class="list">${loShown.map(n=>row(n)).join('')}${loShown.length<lo.length?`<button type="button" class="more" data-more>残り${lo.length-loShown.length}件を見る</button>`:''}</div>`:`<div class="empty">この期間のニュースはありません。</div>`}</section></aside>
   </div>`;
 }
 
@@ -865,7 +876,8 @@ function renderHello(){
 let qTimer;
 document.getElementById('q').addEventListener('input',e=>{clearTimeout(qTimer);qTimer=setTimeout(()=>{q=e.target.value.trim();render();ensureArchiveForView();},120);});
 document.getElementById('clearQ').onclick=()=>{const i=document.getElementById('q');i.value='';q='';render();i.focus();};
-document.querySelectorAll('.seg, .bottomnav').forEach(nav=>nav.addEventListener('click',e=>{const b=e.target.closest('button[data-view]');if(!b)return;const changed=view!==b.dataset.view;view=b.dataset.view;render();ensureArchiveForView();if(changed&&nav.classList.contains('bottomnav'))window.scrollTo({top:0});}));
+document.querySelectorAll('.seg, .bottomnav').forEach(nav=>nav.addEventListener('click',e=>{const b=e.target.closest('button[data-view]');if(!b)return;const changed=view!==b.dataset.view;
+  if(!changed){window.scrollTo({top:0,behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth'});return;}/* 今の画面のタブをもう一度押すと一番上へ */view=b.dataset.view;render();ensureArchiveForView();if(changed&&nav.classList.contains('bottomnav'))window.scrollTo({top:0});}));
 document.getElementById('chips').addEventListener('click',e=>{if(e.target.closest('[data-unread]')){unreadOnly=!unreadOnly;store.set('rtn-unread-only',unreadOnly);render();return;}const b=e.target.closest('button[data-cat]');if(!b)return;cat=b.dataset.cat;render();});
 document.getElementById('view').addEventListener('click',e=>{
   const fh=e.target.closest('.foldable>h2');if(fh&&!e.target.closest('a,button')){toggleFold(fh.id);return;}
@@ -878,6 +890,7 @@ document.getElementById('view').addEventListener('click',e=>{
   if(rec&&e.target.closest('[data-recdel]')){const k=rec.dataset.rec,old=plans[k];delete plans[k];savePlans();renderHello();render();toast('記録を消しました',()=>{plans[k]=old;savePlans();renderHello();render();});return;}
   if(e.target.closest('[data-recadd]')){const t=document.getElementById('recTitle').value.trim();if(!t){document.getElementById('recTitle').focus();return;}plans['manual:'+Date.now()]={title:t,url:'',date:document.getElementById('recDate').value,place:'',source:'',apply_end:'',status:'done',credits:document.getElementById('recCredits').value,qual:'',note:''};savePlans();render();return;}
   if(e.target.closest('[data-morepapers]')){showAllPapers=true;render();return;}
+  if(e.target.closest('[data-reccsv]')){recordCsv();toast('受講記録をCSVで保存しました');return;}
   const fb=e.target.closest('[data-fix]');if(fb){openFix(fb.dataset.fix);return;}
   if(e.target.closest('[data-weekclose]')){store.set('rtn-week-closed',weekStart(today));render();return;}
   const ta=e.target.closest('a.title, .week a');if(ta){const art=ta.closest('article');markRead(ta.getAttribute('href'));setTimeout(()=>{render();},400);if(art)art.classList.add('read');}
@@ -888,9 +901,9 @@ document.getElementById('view').addEventListener('click',e=>{
 });
 document.getElementById('view').addEventListener('keydown',e=>{const fh=e.target.closest('.foldable>h2');if(fh&&(e.key==='Enter'||e.key===' ')){e.preventDefault();toggleFold(fh.id);}});
 document.getElementById('view').addEventListener('input',e=>{const t=e.target.closest('textarea[data-memo]');if(t)saveMemo(t.dataset.memo,t.value);
-  const f=e.target.closest('[data-recf]');if(f){const k=f.closest('[data-rec]').dataset.rec;if(plans[k]){plans[k][f.dataset.recf]=f.value;savePlans();}}});
+  const f=e.target.closest('[data-recf]');if(f){const k=f.closest('[data-rec]').dataset.rec;if(plans[k]){plans[k][f.dataset.recf]=f.value;savePlans();const rs=document.getElementById('recSum');if(rs)rs.innerHTML=recSumHtml();}}});
 document.getElementById('view').addEventListener('change',e=>{const d=e.target.closest('[data-duedate]');if(d){setDue(d.closest('[data-dueurl]').dataset.dueurl,d.value);renderHello();render();return;}
-  const f=e.target.closest('select[data-recf],input[data-recf=credits]');if(f)render();});
+  const f=e.target.closest('select[data-recf]');if(f){const k=f.closest('[data-rec]').dataset.rec;if(plans[k]){plans[k].qual=f.value;savePlans();}const rs=document.getElementById('recSum');if(rs)rs.innerHTML=recSumHtml();}});
 // 全部既読(1回目で確認表示、2回目で実行)
 document.getElementById('chips').addEventListener('click',e=>{const b=e.target.closest('[data-allread]');if(!b)return;e.stopPropagation();
   if(!b.classList.contains('confirm')){b.classList.add('confirm');b.textContent='もう一度押すと全部既読';setTimeout(()=>{if(b.isConnected){b.classList.remove('confirm');b.textContent='全部既読にする';}},4000);return;}
@@ -944,6 +957,7 @@ document.getElementById('fixDlg').addEventListener('close',()=>{const d=document
   db=(window.__rawDb||db).map(applyFix);renderHello();render();});
 function updateFocusBtn(){const fb=document.getElementById('focusBtn');const n=focusCats.size+quals.length;fb.textContent='設定';fb.title=n?`担当分野${focusCats.size}・資格${quals.length}`:'担当分野・資格の設定';}
 updateFocusBtn();
+if(wideMq.addEventListener)wideMq.addEventListener('change',()=>{if(view==='recent')render();});
 // 上部バーが本文に重なったら境界線を出す
 const bar=document.getElementById('bar');
 if('IntersectionObserver' in window){new IntersectionObserver(([en])=>bar.classList.toggle('stuck',!en.isIntersecting)).observe(document.querySelector('.hello'));}
