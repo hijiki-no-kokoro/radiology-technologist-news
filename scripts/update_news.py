@@ -810,6 +810,80 @@ def technologist_note(x):
     return ''
 
 
+PREFECTURES = (
+    '北海道', '青森', '岩手', '宮城', '秋田', '山形', '福島', '茨城', '栃木', '群馬', '埼玉', '千葉', '東京', '神奈川',
+    '新潟', '富山', '石川', '福井', '山梨', '長野', '岐阜', '静岡', '愛知', '三重', '滋賀', '京都', '大阪', '兵庫',
+    '奈良', '和歌山', '鳥取', '島根', '岡山', '広島', '山口', '徳島', '香川', '愛媛', '高知', '福岡', '佐賀', '長崎',
+    '熊本', '大分', '宮崎', '鹿児島', '沖縄',
+)
+_DATE_YMD = re.compile(r'(?<!\d)(20\d{2})/(\d{1,2})/(\d{1,2})(?!\d)')
+_DATE_MD = re.compile(r'(?<!\d)(\d{1,2})月(\d{1,2})日')
+_NOT_EVENT_AFTER = re.compile(r'^\s*(\d{1,2}[:：]\d{2}\s*)?(更新|追記|掲載|発売|付)')
+
+
+def _to_date(y, m, d):
+    try:
+        return datetime(int(y), int(m), int(d)).date()
+    except ValueError:
+        return None
+
+
+def extract_schedule(x):
+    """研修・講習会の案内から開催日(または申込締切)と開催地を取り出す。
+
+    戻り値: {'event_date': 'YYYY-MM-DD', 'event_kind': '開催'|'申込締切', 'event_place': str} または {}
+    """
+    head = str(x.get('headline') or x.get('title') or '')
+    text = head + ' ' + str(x.get('summary') or '')
+    low = text.lower()
+    if not (any(k.lower() in low for k in EVENT_TERMS) or '告示研修' in text):
+        return {}
+    if any(k in text for k in ('報告', '中止', '延期', '遅延')):
+        return {}
+    try:
+        base = datetime.fromisoformat(str(x.get('date'))[:10]).date()
+    except ValueError:
+        base = datetime.now(JST).date()
+
+    def md_date(m, d):
+        dt = _to_date(base.year, m, d)
+        if dt and (base - dt).days > 60:      # 「1月9日」が年明けを指す場合
+            dt = _to_date(base.year + 1, m, d)
+        return dt
+
+    found = None
+    # 申込締切: 「申込は10月1日正午～11月26日正午」のように範囲の終わりを使う
+    m = re.search(r'(申込|申し込み|受付|締切|〆切)[^。]{0,30}?[～〜\-－]\s*(\d{1,2})月(\d{1,2})日', text) \
+        or re.search(r'(申込|申し込み|受付)(締切|期限)[はが：:\s]*(\d{1,2})月(\d{1,2})日', text)
+    if m:
+        mm, dd = m.groups()[-2:]
+        dt = md_date(mm, dd)
+        if dt:
+            found = (dt, '申込締切')
+    if not found:
+        head_wo_prefix = re.sub(r'^\s*\d{4}/\d{1,2}/\d{1,2}\s+(お知らせ|会告/告示|会告|告示)', '', head)
+        for pat, conv in ((_DATE_YMD, lambda g: _to_date(*g)), (_DATE_MD, lambda g: md_date(*g))):
+            for mt in pat.finditer(head_wo_prefix):
+                if _NOT_EVENT_AFTER.match(head_wo_prefix[mt.end():]):
+                    continue
+                dt = conv(mt.groups())
+                if dt:
+                    found = (dt, '開催')
+                    break
+            if found:
+                break
+    if not found:
+        return {}
+    place = ''
+    for pref in PREFECTURES:
+        if pref in head:
+            place = pref
+            break
+    if not place and re.search(r'web|ウェブ|オンライン|eラーニング|e-ラーニング|ウェビナー', low):
+        place = 'オンライン'
+    return {'event_date': found[0].isoformat(), 'event_kind': found[1], 'event_place': place}
+
+
 def clean_summary(x):
     """見出しをそのまま繰り返しているだけの要約は空にする。"""
     summary = str(x.get('summary') or '').strip()
@@ -1024,6 +1098,9 @@ def clean_db(db):
         )
         x['summary'] = clean_summary(x)
         x['why'] = technologist_note(x)
+        for k in ('event_date', 'event_kind', 'event_place'):
+            x.pop(k, None)
+        x.update(extract_schedule(x))
 
         # 過去データも現行の選定基準で再分類し、表示のズレを残さない。
         # 重要度「高」は業務に直結するので、一般メディア発でも専門ニュース側に出す
@@ -1071,6 +1148,7 @@ def make_item(x):
     }
     item['summary'] = clean_summary(item)
     item['why'] = technologist_note(item)
+    item.update(extract_schedule(item))
     return normalize_sources(apply_curated_specialist(item))
 
 
