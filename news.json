@@ -1,5 +1,38 @@
 [
   {
+    "date": "2026-10-27",
+    "category": "安全管理",
+    "importance": "高",
+    "headline": "医療安全情報 No.239：患者の体内に植込まれた医療機器等の不十分な確認（第２報）",
+    "summary": "",
+    "why": "自分の検査で同じ確認漏れが起きないか、問診やチェックの手順を見直すきっかけにしましょう。",
+    "source": "日本医療機能評価機構",
+    "url": "https://www.med-safe.jp/pdf/med-safe_239.pdf",
+    "track": "official"
+  },
+  {
+    "date": "2026-10-27",
+    "category": "安全管理",
+    "importance": "高",
+    "headline": "医療安全情報 No.236：パニック値の連絡を受けた後の対応漏れ",
+    "summary": "",
+    "why": "自分の検査で同じ確認漏れが起きないか、問診やチェックの手順を見直すきっかけにしましょう。",
+    "source": "日本医療機能評価機構",
+    "url": "https://www.med-safe.jp/pdf/med-safe_236.pdf",
+    "track": "official"
+  },
+  {
+    "date": "2026-10-27",
+    "category": "安全管理",
+    "importance": "高",
+    "headline": "医療安全情報 No.225：「既読」の画像診断報告書の重要所見への未対応",
+    "summary": "",
+    "why": "自分の検査で同じ確認漏れが起きないか、問診やチェックの手順を見直すきっかけにしましょう。",
+    "source": "日本医療機能評価機構",
+    "url": "https://www.med-safe.jp/pdf/med-safe_225.pdf",
+    "track": "official"
+  },
+  {
     "date": "2026-10-26",
     "category": "CT",
     "importance": "低",
