@@ -91,6 +91,7 @@ OFFICIAL = (
     'qabcs.or.jp',
     'jastro.or.jp', 'jsmp.org', 'jsmrm.jp', 'jsir.or.jp', 'jsum.or.jp', 'jsnmt.org', 'jsct-tech.org',
     'kagawart.jp', 'jsrt-chushi.jp', 'info.pmda.go.jp',
+    'jabcs.jp', 'jscts.org', 'radiation-therapy.jp', 'jert.info',
 )
 
 CATEGORIES = (
@@ -827,7 +828,8 @@ def update_seminars():
 # 学会・厚労省の新着を直接取得する
 # --------------------------------------------------
 SOCIETY_DOMAINS = ('jsrt.or.jp', 'radiology.jp', 'jsnm.org', 'jsgcs.or.jp', 'jastro.or.jp', 'jsmp.org', 'jsmrm.jp',
-                   'jsir.or.jp', 'jsum.or.jp', 'jsnmt.org', 'jsct-tech.org', 'kagawart.jp', 'jsrt-chushi.jp')
+                   'jsir.or.jp', 'jsum.or.jp', 'jsnmt.org', 'jsct-tech.org', 'kagawart.jp', 'jsrt-chushi.jp',
+                   'jabcs.jp', 'jscts.org', 'radiation-therapy.jp', 'jert.info')
 JSRT_NEWS = 'https://www.jsrt.or.jp/data/'
 JRS_TOP = 'https://www.radiology.jp/'
 JSNM_FEED = 'https://jsnm.org/feed/'
@@ -838,7 +840,8 @@ KART_TOP = 'https://kagawart.jp/'
 KART_SCHEDULE = 'https://kagawart.jp/article/schedulelist.php?y={y}&m={m}'
 JSRT_CHUSHI_FEED = 'https://jsrt-chushi.jp/?feed=rss2'
 # 地元の会は更新がまばらなので、取り込む期間を長めに
-LOCAL_DAYS = {'香川県診療放射線技師会': 45, '日本放射線技術学会 中国・四国支部': 60}
+LOCAL_DAYS = {'香川県診療放射線技師会': 45, '日本放射線技術学会 中国・四国支部': 60, '日本乳癌検診学会': 60,
+              '日本CT検診学会': 45, '日本放射線治療専門放射線技師認定機構': 60, '日本救急撮影技師認定機構': 60}
 
 # 分野ごとの専門学会。(表示名, URL, 読み方, 既定の分類, リンク条件, 読み始める目印)
 # 読み方: rss = RSS、list = 日付とリンクが並ぶお知らせ一覧(parse_dated_links)
@@ -850,12 +853,57 @@ SPECIALTY_SOURCES = (
     ('日本超音波医学会', 'https://www.jsum.or.jp/feed/', 'rss', '超音波', None, None),
     ('日本核医学技術学会', 'https://jsnmt.org/news/feed/', 'rss', '核医学', None, None),
     ('日本CT技術学会', 'https://www.jsct-tech.org/', 'list', 'CT', '.', None),
+    # 検診・認定機構('blocks' は「日付 → 本文」が並ぶ一覧。5番目は日付の書き方)
+    ('日本乳癌検診学会', 'https://www.jabcs.jp/', 'blocks', 'マンモグラフィ', 'jp', None),
+    ('日本CT検診学会', 'https://www.jscts.org/index.php?page=update', 'blocks', '検診', 'yy', None),
+    ('日本放射線治療専門放射線技師認定機構', 'https://www.radiation-therapy.jp/news/index.shtml', 'blocks', '放射線治療', 'slash', None),
+    ('日本救急撮影技師認定機構', 'https://jert.info/feed/', 'rss', '教育', None, None),
 )
 # 専門学会の記事で、分類が一般的なもの(その他・学術・教育・制度)になった場合は学会の分野を使う
 SPECIALTY_DEFAULT_CATEGORY = {name: cat for name, _, _, cat, *_ in SPECIALTY_SOURCES}
 SPECIALTY_DEFAULT_CATEGORY['日本磁気共鳴専門技術者認定機構'] = 'MRI'
 
 QABCS_FEED = 'https://www.qabcs.or.jp/rss2.xml'
+BLOCK_DATES = {
+    'jp': re.compile(r'(20\d{2})年\s*(\d{1,2})月\s*(\d{1,2})日'),
+    'yy': re.compile(r'(?<![\d.])(\d{2})\.(\d{2})\.(\d{2})(?![\d.])'),
+    'slash': re.compile(r'(?<!\d)(20\d{2})/(\d{1,2})/(\d{1,2})(?!\d)'),
+}
+# 役員会の報告などは研修・制度の情報ではないので除く
+BLOCK_SKIP = re.compile(r'理事会|社員総会|寄付|役員一覧|賛助会員|理事長挨拶')
+
+
+def parse_dated_blocks(html, base, fmt):
+    """「日付」のあとに本文(リンク付きのことが多い)が続く一覧を読む。
+
+    日付から次の日付までを1件とみなし、見出し(hN)があればそれを、なければ本文を題名にする。
+    同じページへのリンクが何度も出てくる(「〇〇を更新しました」)ので、URLには日付を付けて区別する。
+    """
+    html = re.sub(r'<(script|style)\b.*?</\1>', '', html, flags=re.S | re.I)
+    dates = list(BLOCK_DATES[fmt].finditer(html))
+    out = {}
+    for i, m in enumerate(dates):
+        seg = html[m.end():dates[i + 1].start() if i + 1 < len(dates) else m.end() + 1500]
+        y, mo, d = m.groups()
+        dt = _to_date(int(y) + 2000 if len(y) == 2 else y, mo, d)
+        h = re.search(r'<h[1-6][^>]*>(.*?)</h[1-6]>', seg, re.S | re.I)
+        title = clean_html(h.group(1) if h else seg)
+        title = re.sub(r'^[\s　:：|｜]+', '', title)
+        title = re.sub(r'\s+', ' ', title).strip()
+        title = re.sub(r'(?<=[^\x00-\x7f]) (?=[^\x00-\x7f])', '', title)[:90]   # タグの境目に入った空白
+        if not dt or len(title) < 4 or BLOCK_SKIP.search(title):
+            continue
+        a = re.search(r'<a\b[^>]*href=["\']([^"\']+)["\']', seg, re.I)
+        if not a:
+            url = base.split('#')[0] + f'#d{dt:%Y%m%d}-{len(dates) - i}'   # 記事ごとのリンクがない一覧
+        else:
+            url = urljoin(base, unescape(a.group(1)))
+            if '#' not in url:
+                url += f'#d{dt:%Y%m%d}'
+        out.setdefault(url, {'title': title, 'url': url, 'published': datetime(dt.year, dt.month, dt.day, tzinfo=JST).isoformat()})
+    return list(out.values())
+
+
 DIRECT_MAX_PER_SOURCE = 5   # 初回に古い記事がまとめて入らないよう、1回あたりの上限
 DIRECT_DAYS = 21            # これより古い記事は取り込まない(学会は更新がまばらなため3週間)
 
@@ -1186,7 +1234,9 @@ def direct_official_news():
         ('香川県診療放射線技師会', KART_TOP, lambda html: parse_dated_links(html, KART_TOP, r'data\.php\?nid=')),
         ('日本放射線技術学会 中国・四国支部', JSRT_CHUSHI_FEED, parse_rss),
     ) + tuple(
-        (name, url, parse_rss if kind == 'rss' else (lambda html, _u=url, _f=flt, _s=start: parse_dated_links(html, _u, _f, _s)))
+        (name, url, parse_rss if kind == 'rss' else
+         (lambda html, _u=url, _f=flt: parse_dated_blocks(html, _u, _f)) if kind == 'blocks' else
+         (lambda html, _u=url, _f=flt, _s=start: parse_dated_links(html, _u, _f, _s)))
         for name, url, kind, _cat, flt, start in SPECIALTY_SOURCES
     )
     now = datetime.now(JST)
@@ -1359,6 +1409,7 @@ OFFICIAL_SOURCE_NAMES = (
     '日本放射線腫瘍学会', '日本医学物理学会', '日本磁気共鳴医学会', '日本磁気共鳴専門技術者認定機構',
     '日本ivr学会', '日本超音波医学会', '日本核医学技術学会', '日本ct技術学会',
     '香川県診療放射線技師会', '中国・四国支部',
+    '日本乳癌検診学会', '日本ct検診学会', '日本放射線治療専門放射線技師認定機構', '日本救急撮影技師認定機構',
 )
 
 # 高: 自分の部署で確認・対応が必要になりうる情報
