@@ -44,28 +44,6 @@
     "track": "official"
   },
   {
-    "date": "2026-10-16",
-    "category": "安全管理",
-    "importance": "高",
-    "headline": "医療機器の回収(クラスII)：ARCHITECT アナライザー i2000SR(免疫発光測定装置)",
-    "summary": "アボットジャパン合同会社",
-    "why": "自施設に該当する機器・薬剤がないか確認しておきましょう。",
-    "source": "PMDA",
-    "url": "https://www.info.pmda.go.jp/rgo/MainServlet?recallno=2-12995",
-    "track": "official"
-  },
-  {
-    "date": "2026-10-13",
-    "category": "安全管理",
-    "importance": "高",
-    "headline": "医療機器の回収(クラスII)：VuePoint II OCT フィクセイションシステム(脊椎内固定器具)",
-    "summary": "ニューベイシブジャパン株式会社",
-    "why": "自施設に該当する機器・薬剤がないか確認しておきましょう。",
-    "source": "PMDA",
-    "url": "https://www.info.pmda.go.jp/rgo/MainServlet?recallno=2-12987",
-    "track": "official"
-  },
-  {
     "date": "2026-10-13",
     "category": "安全管理",
     "importance": "高",
