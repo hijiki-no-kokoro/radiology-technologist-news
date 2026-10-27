@@ -89,6 +89,7 @@ OFFICIAL = (
     'jcqhc.or.jp',
     'jsgcs.or.jp',
     'qabcs.or.jp',
+    'jastro.or.jp', 'jsmp.org', 'jsmrm.jp', 'jsir.or.jp', 'jsum.or.jp', 'jsnmt.org', 'jsct-tech.org',
 )
 
 CATEGORIES = (
@@ -773,6 +774,14 @@ def update_seminars():
             print('JART seminar error:', page, e)
             SOURCE_STATUS.setdefault('技師会の研修一覧', {})['error'] = f'{type(e).__name__}: {e}'[:160]
     try:
+        ev = parse_jmrts(fetch(JMRTS_TOP))[1]
+        for x in ev:
+            found[x['url'] + '#' + x['event_start']] = x
+        SOURCE_STATUS['MR認定研究会・セミナー'] = {'listed': len(ev)}
+    except Exception as e:
+        print('JMRTS seminar error:', e)
+        SOURCE_STATUS['MR認定研究会・セミナー'] = {'error': f'{type(e).__name__}: {e}'[:160]}
+    try:
         q = parse_qabcs_seminars(fetch(QABCS_FEED))
         for x in q:
             found[x['url']] = x
@@ -800,12 +809,30 @@ def update_seminars():
 # --------------------------------------------------
 # 学会・厚労省の新着を直接取得する
 # --------------------------------------------------
-SOCIETY_DOMAINS = ('jsrt.or.jp', 'radiology.jp', 'jsnm.org', 'jsgcs.or.jp')
+SOCIETY_DOMAINS = ('jsrt.or.jp', 'radiology.jp', 'jsnm.org', 'jsgcs.or.jp', 'jastro.or.jp', 'jsmp.org', 'jsmrm.jp',
+                   'jsir.or.jp', 'jsum.or.jp', 'jsnmt.org', 'jsct-tech.org')
 JSRT_NEWS = 'https://www.jsrt.or.jp/data/'
 JRS_TOP = 'https://www.radiology.jp/'
 JSNM_FEED = 'https://jsnm.org/feed/'
 MHLW_FEED = 'https://www.mhlw.go.jp/stf/news.rdf'
 JSGCS_TOP = 'https://www.jsgcs.or.jp/'
+JMRTS_TOP = 'https://plaza.umin.ac.jp/~JMRTS/'
+
+# 分野ごとの専門学会。(表示名, URL, 読み方, 既定の分類, リンク条件, 読み始める目印)
+# 読み方: rss = RSS、list = 日付とリンクが並ぶお知らせ一覧(parse_dated_links)
+SPECIALTY_SOURCES = (
+    ('日本放射線腫瘍学会', 'https://www.jastro.or.jp/', 'list', '放射線治療', '.', 'news_list'),
+    ('日本医学物理学会', 'https://www.jsmp.org/feed/', 'rss', '放射線治療', None, None),
+    ('日本磁気共鳴医学会', 'https://www.jsmrm.jp/', 'list', 'MRI', '/modules/news/', 'box_news'),
+    ('日本IVR学会', 'https://www.jsir.or.jp/feed/', 'rss', '血管撮影', None, None),
+    ('日本超音波医学会', 'https://www.jsum.or.jp/feed/', 'rss', '超音波', None, None),
+    ('日本核医学技術学会', 'https://jsnmt.org/news/feed/', 'rss', '核医学', None, None),
+    ('日本CT技術学会', 'https://www.jsct-tech.org/', 'list', 'CT', '.', None),
+)
+# 専門学会の記事で、分類が一般的なもの(その他・学術・教育・制度)になった場合は学会の分野を使う
+SPECIALTY_DEFAULT_CATEGORY = {name: cat for name, _, _, cat, *_ in SPECIALTY_SOURCES}
+SPECIALTY_DEFAULT_CATEGORY['日本磁気共鳴専門技術者認定機構'] = 'MRI'
+
 QABCS_FEED = 'https://www.qabcs.or.jp/rss2.xml'
 DIRECT_MAX_PER_SOURCE = 5   # 初回に古い記事がまとめて入らないよう、1回あたりの上限
 DIRECT_DAYS = 21            # これより古い記事は取り込まない(学会は更新がまばらなため3週間)
@@ -871,6 +898,87 @@ def parse_jsgcs(html):
     return list(out.values())
 
 
+_DATE_ANY = re.compile(r'(20\d{2})\s*[./年-]\s*(\d{1,2})\s*[./月-]\s*(\d{1,2})日?')
+
+
+def parse_dated_links(html, base, href_re=r'.', start=None):
+    """「日付 + リンク」が並ぶお知らせ一覧を読む汎用の処理。
+
+    各リンクについて、直前のリンクとの間(直前の文字)にある日付を優先し、なければ
+    次のリンクまでの間(直後の文字)にある日付を使う。リンク文字の中の日付は使わない
+    (イベント紹介のバナーなどを拾わないため)。
+    """
+    if start and start in html:
+        html = html[html.index(start):]
+    anchors = list(re.finditer(r'<a\b[^>]*href=["\']([^"\'#][^"\']*)["\'][^>]*>(.*?)</a>', html, re.S | re.I))
+    out = {}
+    for i, m in enumerate(anchors):
+        href, title = m.group(1), clean_html(m.group(2))
+        if len(title) < 6 or not re.search(href_re, href):
+            continue
+        prev_end = anchors[i - 1].end() if i else max(0, m.start() - 400)
+        next_start = anchors[i + 1].start() if i + 1 < len(anchors) else m.end() + 300
+        before = clean_html(html[max(prev_end, m.start() - 400):m.start()])
+        after = clean_html(html[m.end():min(next_start, m.end() + 300)])
+        d = (list(_DATE_ANY.finditer(before)) or [None])[-1] or _DATE_ANY.search(after)
+        if not d:
+            continue
+        dt = _to_date(*d.groups()[:3])
+        url = urljoin(base, href)
+        if dt and url not in out:
+            out[url] = {'title': title, 'url': url, 'published': datetime(dt.year, dt.month, dt.day, tzinfo=JST).isoformat()}
+    return list(out.values())
+
+
+CITY_PREF = {'神戸': '兵庫', '函館': '北海道', '札幌': '北海道', '仙台': '宮城', '横浜': '神奈川', '名古屋': '愛知',
+             '金沢': '石川', '博多': '福岡', '高松': '香川', '松山': '愛媛'}
+
+
+def parse_jmrts(html, today=None):
+    """日本磁気共鳴専門技術者認定機構のトップ一覧。
+
+    <li><span class="label">お知らせ</span><span class="date">【現地開催：11/7(土)】<a href="…">第10回高知MRI技術研究会開催のお知らせ＜2026.10></a></span></li>
+    戻り値: (記事のリスト, 研究会・セミナーの日程のリスト)
+    """
+    today = today or datetime.now(JST).date()
+    news, events = [], []
+    for li in re.findall(r'<li[^>]*>(.*?)</li>', html, re.S | re.I):
+        lab = re.search(r'class=["\'][^"\']*label[^"\']*["\'][^>]*>(.*?)</span>', li, re.S | re.I)
+        a = re.search(r'<a[^>]+href=["\']([^"\'#][^"\']*)["\'][^>]*>(.*?)</a>', li, re.S | re.I)
+        if not (lab and a):
+            continue
+        label = clean_html(lab.group(1))
+        text = clean_html(a.group(2))
+        ym = re.search(r'[＜<]\s*(20\d{2})\.(\d{1,2})\s*[＞>]', unescape(text))
+        title = re.sub(r'\s*[＜<]\s*20\d{2}\.\d{1,2}\s*[＞>]\s*$', '', unescape(text)).strip()
+        url = urljoin(JMRTS_TOP, a.group(1))
+        ev = re.search(r'【([^】]*?)開催[:：]\s*(\d{1,2})/(\d{1,2})', clean_html(li))
+        if ev:
+            mode, mm, dd = ev.group(1), int(ev.group(2)), int(ev.group(3))
+            dt = _to_date(today.year, mm, dd)
+            if dt and (today - dt).days > 60:
+                dt = _to_date(today.year + 1, mm, dd)
+            if not dt:
+                continue
+            place = 'オンライン' if re.search(r'web|ウェブ|オンライン', mode, re.I) else ''
+            if not place:
+                place = next((p for p in PREFECTURES if p in title), '') or next((v for k, v in CITY_PREF.items() if k in title), '')
+            events.append({'title': title, 'url': url, 'kind': 'JMRTS', 'status': '', 'event_start': dt.isoformat(),
+                           'event_end': dt.isoformat(), 'apply_start': '', 'apply_end': '', 'place': place,
+                           'category': 'MRI', 'source': '日本磁気共鳴専門技術者認定機構'})
+            continue
+        if not ym:
+            continue
+        y, m = int(ym.group(1)), int(ym.group(2))
+        # 一覧には年月しかないので、今月の掲載分は「見つけた日」を日付にする
+        if (y, m) == (today.year, today.month):
+            published = datetime.combine(today, datetime.min.time()).replace(tzinfo=JST)
+        else:
+            published = datetime(y, m, 1, tzinfo=JST)
+        news.append({'title': f'{title}' if label in title else title, 'url': url, 'published': published.isoformat(), 'label': label})
+    return news, events
+
+
 def direct_official_news():
     """学会(技術学会・医学放射線学会・核医学会)と厚労省の新着を、記事の形で返す。"""
     sources = (
@@ -879,6 +987,10 @@ def direct_official_news():
         ('日本核医学会', JSNM_FEED, parse_rss),
         ('厚生労働省', MHLW_FEED, parse_rss),
         ('日本消化器がん検診学会', JSGCS_TOP, parse_jsgcs),
+        ('日本磁気共鳴専門技術者認定機構', JMRTS_TOP, lambda html: parse_jmrts(html)[0]),
+    ) + tuple(
+        (name, url, parse_rss if kind == 'rss' else (lambda html, _u=url, _f=flt, _s=start: parse_dated_links(html, _u, _f, _s)))
+        for name, url, kind, _cat, flt, start in SPECIALTY_SOURCES
     )
     now = datetime.now(JST)
     out = []
@@ -1047,6 +1159,8 @@ OFFICIAL_SOURCE_NAMES = (
     '医薬品医療機器総合機構', 'pmda',
     '日本医療機能評価機構',
     '日本消化器がん検診学会', '精中機構',
+    '日本放射線腫瘍学会', '日本医学物理学会', '日本磁気共鳴医学会', '日本磁気共鳴専門技術者認定機構',
+    '日本ivr学会', '日本超音波医学会', '日本核医学技術学会', '日本ct技術学会',
 )
 
 # 高: 自分の部署で確認・対応が必要になりうる情報
@@ -1541,6 +1655,9 @@ def clean_db(db):
 
         # 分類ルールの改善を過去分にも反映する(手動指定のカテゴリは後で上書きされる)
         x['category'] = category(x)
+        # 専門学会の記事は、一般的な分類なら学会の分野にそろえる
+        if x['category'] in ('その他', '学術', '教育', '制度') and normalize_source(x.get('source')) in SPECIALTY_DEFAULT_CATEGORY:
+            x['category'] = SPECIALTY_DEFAULT_CATEGORY[normalize_source(x.get('source'))]
         x['importance'] = importance(
             x,
             is_official(x.get('url', '')) or x.get('source') == 'JART'

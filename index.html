@@ -502,7 +502,7 @@ function scheduleItems(){
     if(!x.event_start||(x.event_end||x.event_start)<today)return;
     const span=(Date.parse(x.event_end||x.event_start)-Date.parse(x.event_start))/864e5;
     if(span>60)return;
-    const it={event_date:x.event_start<today?today:x.event_start,event_kind:'開催',title:x.title,url:x.url,event_place:(/^jart$/i.test(String(x.place||'').trim())||!x.place)?(/web|ウェブ|オンライン|e-?ラーニング/i.test(x.title||'')?'オンライン':''):String(x.place).replace(/(都|府|県)$/,''),status:x.status,apply_start:x.apply_start,apply_end:x.apply_end,category:x.category||SEM_CAT[x.kind]||'教育',source:x.kind==='精中機構'?'精中機構':'日本診療放射線技師会',headline:x.title};
+    const it={event_date:x.event_start<today?today:x.event_start,event_kind:'開催',title:x.title,url:x.url,event_place:(/^jart$/i.test(String(x.place||'').trim())||!x.place)?(/web|ウェブ|オンライン|e-?ラーニング/i.test(x.title||'')?'オンライン':''):String(x.place).replace(/(都|府|県)$/,''),status:x.status,apply_start:x.apply_start,apply_end:x.apply_end,category:x.category||SEM_CAT[x.kind]||'教育',source:x.source||(x.kind==='精中機構'?'精中機構':'日本診療放射線技師会'),headline:x.title};
     seen.add(normTitle(x.title));seen.add(x.url);out.push(it);
   });
   // ニュース記事から読み取った日程(研修一覧と重複するものは除く)
