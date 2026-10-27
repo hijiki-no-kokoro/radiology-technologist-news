@@ -76,12 +76,35 @@ button{font:inherit;color:inherit}
 /* ---- あいさつ ---- */
 .hello{padding:28px 0 18px}
 .hello-top{display:flex;justify-content:space-between;align-items:center;gap:12px}
-.brand{font-family:"Zen Maru Gothic",sans-serif;font-weight:700;font-size:14px;color:var(--ink-soft);display:flex;align-items:center;gap:8px;margin:0}
+.brand{font-family:"Zen Maru Gothic",sans-serif;font-weight:700;font-size:14px;color:var(--ink-soft);display:flex;align-items:center;gap:8px;margin:0;min-width:0;white-space:nowrap}
+@media (max-width:420px){.brand .bn{display:none}.brand .bs{display:inline!important}}
 .brand svg{flex-shrink:0}
 .themebtn{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 12px;font-size:12.5px;color:var(--ink-soft);cursor:pointer}
 .themebtn:hover{color:var(--ink)}
 .hello h1{font-size:clamp(26px,6vw,34px);font-weight:900;line-height:1.35;margin:14px 0 4px;letter-spacing:.01em}
 .hello .sub{margin:0;color:var(--ink-soft);font-size:14px}
+.hello-tools{display:flex;gap:6px;flex-shrink:0}
+.pill.focus{background:transparent;color:var(--blue);border:1px solid var(--blue);padding:0 9px}
+.chips button.is-focus::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--blue);margin-right:6px;vertical-align:middle}
+.chips button.is-focus[aria-pressed="true"]::before{background:var(--on-blue)}
+dialog.settings{border:1px solid var(--line);border-radius:20px;background:var(--surface);color:var(--ink);padding:20px;max-width:420px;width:calc(100% - 32px);box-shadow:var(--shadow)}
+dialog.settings::backdrop{background:rgba(27,32,48,.35)}
+dialog.settings h2{margin:0 0 4px;font-size:18px}
+dialog.settings p{margin:0 0 14px;color:var(--ink-soft);font-size:13.5px}
+.focus-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+.focus-grid label{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:14px;cursor:pointer}
+.focus-grid input{accent-color:var(--blue);width:16px;height:16px;margin:0}
+.focus-grid label:has(input:checked){border-color:var(--blue);background:var(--blue-soft)}
+.dlg-actions{display:flex;justify-content:flex-end;gap:8px}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 16px;font-size:14px;cursor:pointer}
+.btn.primary{background:var(--blue);border-color:var(--blue);color:var(--on-blue);font-weight:700}
+.memo{margin-top:8px}
+.memo textarea{width:100%;min-height:58px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2);color:var(--ink);padding:8px 10px;font:inherit;font-size:14px;resize:vertical}
+.memo textarea:focus{outline:none;border-color:var(--blue);background:var(--surface)}
+.memo-line{margin-top:6px;font-size:13px;color:var(--ink-soft)}
+.memo-line b{color:var(--ink);font-weight:700;margin-right:4px}
+.stale{margin:12px 0 0;background:var(--honey-soft);color:var(--ink);border-radius:12px;padding:9px 12px;font-size:13.5px}
+.stale b{color:var(--honey)}
 .hello h1 .wd{font-size:.55em;font-weight:700;color:var(--ink-soft);margin-left:.5em;letter-spacing:.04em}
 
 /* ---- 検索と絞り込み(スクロールしても上に残る) ---- */
@@ -204,12 +227,16 @@ footer{padding:10px 18px 40px;color:var(--ink-soft);font-size:12.5px;text-align:
     <div class="hello-top">
       <p class="brand">
         <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="var(--blue-soft)"/><path d="M7 12h10M12 7v10" stroke="var(--blue)" stroke-width="2.4" stroke-linecap="round"/></svg>
-        診療放射線技師ニュース
+        <span class="bn">診療放射線技師ニュース</span><span class="bs" style="display:none">技師ニュース</span>
       </p>
-      <button type="button" class="themebtn" id="themeBtn">表示: 自動</button>
+      <div class="hello-tools">
+        <button type="button" class="themebtn" id="focusBtn">担当分野</button>
+        <button type="button" class="themebtn" id="themeBtn">表示: 自動</button>
+      </div>
     </div>
     <h1 id="today">&nbsp;</h1>
     <p class="sub" id="sub">ニュースを読み込んでいます…</p>
+    <p class="stale" id="stale" hidden></p>
   </header>
 </div>
 
@@ -230,6 +257,15 @@ footer{padding:10px 18px 40px;color:var(--ink-soft);font-size:12.5px;text-align:
     <div class="chips" id="chips" role="group" aria-label="分野で絞り込む"></div>
   </div>
 </div>
+
+<dialog class="settings" id="focusDlg" aria-labelledby="focusTitle">
+  <form method="dialog">
+    <h2 id="focusTitle">担当分野</h2>
+    <p>選んだ分野の記事は、各欄の上のほうに目印つきで並びます。設定はこの端末に保存されます。</p>
+    <div class="focus-grid" id="focusGrid"></div>
+    <div class="dlg-actions"><button class="btn" value="cancel">閉じる</button><button class="btn primary" value="save" id="focusSave">保存する</button></div>
+  </form>
+</dialog>
 
 <main class="wrap">
   <div id="view"></div>
@@ -252,7 +288,7 @@ const CAT_ORDER=['制度','職能','診療報酬・補助金','安全管理','�
 const WD='日月火水木金土';
 
 // 検索対象は人が読む文字だけ(URL内の英数字に「CT」「AI」が当たらないように)
-const searchText=n=>[n.headline,n.summary,n.source,n.category,n.why,...(Array.isArray(n.also)?n.also.map(a=>a&&a.source):[])].filter(Boolean).join(' ').toLowerCase();
+const searchText=n=>[n.headline,n.summary,n.source,n.category,n.why,(typeof saved!=='undefined'&&saved[n.url]&&saved[n.url].memo)||'',...(Array.isArray(n.also)?n.also.map(a=>a&&a.source):[])].filter(Boolean).join(' ').toLowerCase();
 const words=()=>q.toLowerCase().split(/\s+/).filter(Boolean);
 const matchQ=n=>!q||words().every(w=>searchText(n).includes(w));
 const inView=n=>view==='recent'?isRecent(n):!isRecent(n);
@@ -268,6 +304,10 @@ let saved=store.get('rtn-saved',{});  // あとで読む {url: 記事の写し}
 function markSeen(){
   const seen=store.get('rtn-seen',null),urls=db.map(n=>n.url).filter(Boolean);
   if(Array.isArray(seen)){const s=new Set(seen);newSet=new Set(urls.filter(u=>!s.has(u)));}
+  // その日に新着だった記事は、同じ日に開き直しても新着のまま残す
+  const kept=store.get('rtn-new',null);
+  if(kept&&kept.date===today&&Array.isArray(kept.urls))kept.urls.forEach(u=>{if(urls.includes(u))newSet.add(u);});
+  store.set('rtn-new',{date:today,urls:[...newSet]});
   // 次回のために今の記事を既読として記録(古いものから捨てて最大1000件)
   const merged=[...new Set([...(Array.isArray(seen)?seen:[]),...urls])].slice(-1000);
   store.set('rtn-seen',merged);
@@ -306,19 +346,33 @@ async function ensureArchiveForView(){
   if(q)await loadMonths(archiveIndex.months.map(x=>x.month));
   else render();
 }
+// ---- 担当分野(端末に保存) ----
+let focusCats=new Set(store.get('rtn-focus',[]));
+const isFocus=n=>focusCats.has(n.category);
+const focusFirst=(a,b)=>(isFocus(b)-isFocus(a));
+function openFocus(){
+  const cats=CAT_ORDER.concat(['その他']);
+  document.getElementById('focusGrid').innerHTML=cats.map(c=>`<label><input type="checkbox" value="${esc(c)}"${focusCats.has(c)?' checked':''}>${esc(c)}</label>`).join('');
+  document.getElementById('focusDlg').showModal();
+}
+// ---- あとで読むのメモ ----
+const memoOf=n=>(saved[n.url]&&saved[n.url].memo)||'';
+let memoTimer;
+function saveMemo(url,text){if(!saved[url])return;saved[url].memo=text;clearTimeout(memoTimer);memoTimer=setTimeout(()=>store.set('rtn-saved',saved),300);}
 let hideNotes=new Set();
 function noteHtml(n){return (n.why&&!hideNotes.has(n.why))?`<div class="note"><span class="face" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.7.7 1 1.5 1 2.5h6c0-1 .3-1.8 1-2.5A6 6 0 0 0 12 3z"/></svg></span><p class="say"><small>ポイント</small>${esc(n.why)}</p></div>`:'';}
-function metaHtml(n,showImp,showDate=true){const i=IMP[impOf(n)];return `<div class="meta">${newSet.has(n.url)?'<span class="pill new">新着</span>':''}${showImp?`<span class="pill ${i.cls}">${i.label}</span>`:''}<span class="pill cat">${esc(n.category||'その他')}</span>${showDate?`<span>${dayText(feedDate(n))}</span>`:''}${saveBtn(n)}</div>`;}
+function metaHtml(n,showImp,showDate=true){const i=IMP[impOf(n)];return `<div class="meta">${newSet.has(n.url)?'<span class="pill new">新着</span>':''}${showImp?`<span class="pill ${i.cls}">${i.label}</span>`:''}${isFocus(n)?'<span class="pill focus">担当</span>':''}<span class="pill cat">${esc(n.category||'その他')}</span>${showDate?`<span>${dayText(feedDate(n))}</span>`:''}${saveBtn(n)}</div>`;}
 function itemBody(n){return `<a class="title" href="${esc(n.url)}" target="_blank" rel="noopener">${esc(displayHeadline(n))}</a><div class="src">${esc(n.source||'')}</div>${n.summary?`<p class="sum">${esc(n.summary)}</p>`:''}${alsoHtml(n)}`;}
-const mustItem=n=>`<article class="must-item">${metaHtml(n,false)}${itemBody(n)}${noteHtml(n)}</article>`;
-const row=(n,showImp=false,showDate=true)=>`<article class="row">${metaHtml(n,showImp,showDate)}${itemBody(n)}${noteHtml(n)}</article>`;
+const mustItem=n=>`<article class="must-item">${metaHtml(n,false)}${itemBody(n)}${memoHtml(n)}${noteHtml(n)}</article>`;
+const memoHtml=n=>view==='saved'?`<div class="memo"><textarea data-memo="${esc(n.url)}" placeholder="メモ(例: 勉強会で紹介する、あとで添付文書を確認)" aria-label="この記事のメモ">${esc(memoOf(n))}</textarea></div>`:(memoOf(n)?`<div class="memo-line"><b>メモ</b>${esc(memoOf(n))}</div>`:'');
+const row=(n,showImp=false,showDate=true)=>`<article class="row">${metaHtml(n,showImp,showDate)}${itemBody(n)}${memoHtml(n)}${noteHtml(n)}</article>`;
 const byNewest=(a,b)=>feedDate(b).localeCompare(feedDate(a));
 
 function renderChips(){
   const base=(view==='saved'?savedList():view==='past'?pastPool():db.filter(inView)).filter(matchQ);const cnt={};base.forEach(n=>{cnt[n.category]=(cnt[n.category]||0)+1});
   const cats=CAT_ORDER.filter(c=>cnt[c]).concat(Object.keys(cnt).filter(c=>!CAT_ORDER.includes(c)&&c!=='その他').sort()).concat(cnt['その他']?['その他']:[]);
   if(cat!=='all'&&!cats.includes(cat))cats.push(cat);
-  const b=(c,label,k)=>`<button type="button" data-cat="${esc(c)}" aria-pressed="${cat===c}">${esc(label)}<span class="n">${k}</span></button>`;
+  const b=(c,label,k)=>`<button type="button" data-cat="${esc(c)}" aria-pressed="${cat===c}" class="${focusCats.has(c)?'is-focus':''}">${esc(label)}<span class="n">${k}</span></button>`;
   document.getElementById('chips').innerHTML=b('all','すべて',base.length)+cats.map(c=>b(c,c,cnt[c]||0)).join('');
 }
 
@@ -335,7 +389,8 @@ function renderSchedule(){
   return `<section class="section" aria-labelledby="h-sched"><h2 id="h-sched">これからの日程<span class="count">${items.length}件</span></h2><p class="lead">案内に書かれた開催日と申込締切を、近い順に並べています</p><div class="sched">${items.map(n=>{const [y,m,d]=n.event_date.split('-').map(Number);const dt=new Date(Date.UTC(y,m-1,d));const left=Math.round((dt-Date.parse(today+'T00:00:00Z'))/864e5);const dl=n.event_kind==='申込締切';const pl=n.event_place;const plHtml=pl?(pl==='オンライン'?'<span class="pill near">オンライン</span>':NEAR.includes(pl)?`<span class="pill near">${esc(pl)}(近畿・中四国)</span>`:`<span class="pill place">${esc(pl)}</span>`):'';return `<article class="sched-item"><div class="sched-date${dl?' deadline':''}"><span class="md">${m}/${d}</span><span class="wd">${WD[dt.getUTCDay()]}曜</span></div><div class="sched-body"><div class="kind">${dl?'<b>申込締切</b>':'開催'}　${left===0?'今日':`あと${left}日`}</div><a class="title" href="${esc(n.url)}" target="_blank" rel="noopener">${esc(displayHeadline(n))}</a><div class="sched-tools">${plHtml}<a class="cal" href="${calLink(n)}" target="_blank" rel="noopener">Googleカレンダーに追加</a></div></div></article>`;}).join('')}</div></section>`;
 }
 function renderRecent(list){
-  const hi=list.filter(n=>impOf(n)==='高').sort(byNewest),mid=list.filter(n=>impOf(n)==='中').sort(byNewest),lo=list.filter(n=>impOf(n)==='低').sort(byNewest);
+  const ord=(a,b)=>focusFirst(a,b)||byNewest(a,b);
+  const hi=list.filter(n=>impOf(n)==='高').sort(ord),mid=list.filter(n=>impOf(n)==='中').sort(ord),lo=list.filter(n=>impOf(n)==='低').sort(ord);
   const loShown=(showAllLo||q||cat!=='all')?lo:lo.slice(0,SHOW_LO);
   // 同じ一言が3件以上並ぶときは、各記事ではなく見出しの下に1回だけ出す
   const nc={};mid.forEach(n=>{if(n.why)nc[n.why]=(nc[n.why]||0)+1});
@@ -394,6 +449,10 @@ function renderHello(){
   const hi=db.filter(n=>isRecent(n)&&impOf(n)==='高').length;
   let upd='';
   if(meta&&meta.checked_at){const t=new Date(meta.checked_at);if(!isNaN(t)){const hm=t.toLocaleTimeString('ja-JP',{timeZone:'Asia/Tokyo',hour:'numeric',minute:'2-digit'});const sameDay=t.toLocaleDateString('sv-SE',{timeZone:'Asia/Tokyo'})===today;upd=`${sameDay?'今日':t.toLocaleDateString('ja-JP',{timeZone:'Asia/Tokyo',month:'numeric',day:'numeric'})} ${hm}に更新。`;}}
+  // 自動更新が止まっていたら知らせる(最終更新から36時間以上)
+  const st=document.getElementById('stale');const t0=meta&&meta.checked_at?new Date(meta.checked_at):null;
+  const hours=t0&&!isNaN(t0)?(Date.now()-t0.getTime())/36e5:Infinity;
+  if(hours>=36){st.hidden=false;st.innerHTML=t0&&!isNaN(t0)?`<b>自動更新が止まっています。</b>最後の更新は${t0.toLocaleDateString('ja-JP',{timeZone:'Asia/Tokyo',month:'numeric',day:'numeric'})}(${Math.floor(hours/24)}日前)です。新しい記事が反映されていない可能性があります。`:'<b>更新時刻を確認できませんでした。</b>新しい記事が反映されていない可能性があります。';}
   document.getElementById('sub').textContent=`${newSet.size?`前回から${newSet.size}件増えました。`:''}${hi?`この1週間に確認しておきたいことが${hi}件あります。`:'この1週間、急ぎの確認事項はありません。'}${upd}`;
 }
 
@@ -409,6 +468,11 @@ document.getElementById('view').addEventListener('click',e=>{
   if(e.target.closest('[data-more]')){showAllLo=true;render();return;}
   if(e.target.closest('[data-reset]')){cat='all';q='';document.getElementById('q').value='';render();}
 });
+document.getElementById('view').addEventListener('input',e=>{const t=e.target.closest('textarea[data-memo]');if(t)saveMemo(t.dataset.memo,t.value);});
+document.getElementById('focusBtn').onclick=openFocus;
+document.getElementById('focusDlg').addEventListener('close',()=>{const d=document.getElementById('focusDlg');if(d.returnValue!=='save')return;focusCats=new Set([...d.querySelectorAll('input:checked')].map(i=>i.value));store.set('rtn-focus',[...focusCats]);updateFocusBtn();render();});
+function updateFocusBtn(){const fb=document.getElementById('focusBtn');fb.textContent=focusCats.size?`担当分野(${focusCats.size})`:'担当分野';fb.title=focusCats.size?[...focusCats].join('、'):'担当分野を設定する';}
+updateFocusBtn();
 // 上部バーが本文に重なったら境界線を出す
 const bar=document.getElementById('bar');
 if('IntersectionObserver' in window){new IntersectionObserver(([en])=>bar.classList.toggle('stuck',!en.isIntersecting)).observe(document.querySelector('.hello'));}
