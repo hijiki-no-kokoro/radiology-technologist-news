@@ -92,6 +92,10 @@ dialog.settings::backdrop{background:rgba(27,32,48,.35)}
 dialog.settings h2{margin:0 0 4px;font-size:18px}
 dialog.settings p{margin:0 0 14px;color:var(--ink-soft);font-size:13.5px}
 dialog.settings h3{margin:0 0 2px;font-size:15.5px}
+.scope-grid{flex-direction:column;flex-wrap:nowrap;margin-bottom:6px}
+.scope-grid label{display:flex;align-items:flex-start;border-radius:12px}
+.scope-grid input{margin-top:3px}
+.scope-grid small.scope-n{display:block;color:var(--ink-soft);font-size:12px;font-weight:400}
 .notes:empty,.notes:has(> .stale[hidden]:only-child){display:none}
 .focus-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
 .focus-grid label{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:14px;cursor:pointer}
@@ -311,6 +315,11 @@ footer{padding:10px 18px 40px;color:var(--ink-soft);font-size:12.5px;text-align:
       <p>選んだ分野の記事は、各欄の上のほうに目印つきで並びます。</p>
       <div class="focus-grid" id="focusGrid"></div>
       <div class="set-sec">
+        <h3>「これからの日程」に出すもの</h3>
+        <p>チェックを外した種類は日程の欄に出しません。開催地は研修一覧の記載と題名から判断しています。</p>
+        <div class="focus-grid scope-grid" id="scopeGrid"></div>
+      </div>
+      <div class="set-sec">
         <h3>資格と更新期限</h3>
         <p>更新期限が近づくと上部でお知らせし、関係しそうな講習会に印を付けます。</p>
         <datalist id="qualPresets"></datalist>
@@ -419,6 +428,30 @@ async function ensureArchiveForView(){
   if(q)await loadMonths(archiveIndex.months.map(x=>x.month));
   else render();
 }
+// ---- 日程に出す範囲(端末に保存。初期値は全部表示) ----
+const SCOPES=[
+  {k:'kagawa',label:'香川の開催',note:'香川県技師会の予定など'},
+  {k:'online',label:'オンライン・Web',note:'ハイブリッド・オンデマンドを含む'},
+  {k:'national',label:'全国規模・開催地の記載なし',note:'学会の全国大会、技師会・認定機構の講習会など'},
+  {k:'near',label:'近畿・中四国の現地開催',note:'香川以外の近隣の府県'},
+  {k:'other',label:'その他の地域の現地開催',note:'関東・東北・九州など'}
+];
+let schedScopes=new Set(store.get('rtn-sched-scope',SCOPES.map(x=>x.k)));
+const ONLINE_RE=/web|ウェブ|オンライン|オンデマンド|e-?ラーニング|ハイブリッド|ライブ配信|配信|zoom|webinar/i;
+const NATIONAL_RE=/全国|総会学術大会|秋季学術大会|学術集会|日本.{0,14}(学会|技師会).{0,8}(大会|総会)|JRC|ITEM/;
+const LOCAL_RE=/支部|地区|地方会|県技師会|府技師会|都技師会/;
+const OTHER_AREA=['北海道','青森','岩手','宮城','秋田','山形','福島','茨城','栃木','群馬','埼玉','千葉','東京','神奈川','新潟','富山','石川','福井','山梨','長野','岐阜','静岡','愛知','三重','福岡','佐賀','長崎','熊本','大分','宮崎','鹿児島','沖縄','東北','関東','甲信越','北陸','東海','中部','九州','函館','札幌','仙台','横浜','名古屋','金沢','博多','湘南'];
+const NEAR_AREA=['大阪','兵庫','京都','滋賀','奈良','和歌山','鳥取','島根','岡山','広島','山口','徳島','愛媛','高知','近畿','関西','中国','四国','中四国','神戸','姫路'];
+function schedScope(n){
+  const t=String(n.title||n.headline||''),p=String(n.event_place||'');
+  if(p==='香川'||/香川|さぬき|高松|丸亀/.test(t))return 'kagawa';
+  if(p==='オンライン'||ONLINE_RE.test(t+' '+p))return 'online';
+  if(NATIONAL_RE.test(t)&&!LOCAL_RE.test(t))return 'national';
+  if(p)return NEAR.includes(p)?'near':'other';
+  if(OTHER_AREA.some(w=>t.includes(w)))return 'other';   // 「東京都」の「京都」に当てないよう先に見る
+  if(NEAR_AREA.some(w=>t.includes(w)))return 'near';
+  return 'national';
+}
 // ---- 担当分野(端末に保存) ----
 let focusCats=new Set(store.get('rtn-focus',[]));
 const isFocus=n=>focusCats.has(n.category);
@@ -426,6 +459,8 @@ const focusFirst=(a,b)=>(isFocus(b)-isFocus(a));
 function openFocus(){
   const cats=CAT_ORDER.concat(['その他']);
   document.getElementById('focusGrid').innerHTML=cats.map(c=>`<label><input type="checkbox" value="${esc(c)}"${focusCats.has(c)?' checked':''}>${esc(c)}</label>`).join('');
+  const cnt={};scheduleItems(true).forEach(n=>{const k=schedScope(n);cnt[k]=(cnt[k]||0)+1;});
+  document.getElementById('scopeGrid').innerHTML=SCOPES.map(x=>`<label title="${esc(x.note)}"><input type="checkbox" value="${x.k}"${schedScopes.has(x.k)?' checked':''}><span>${esc(x.label)}<small class="scope-n">${cnt[x.k]||0}件・${esc(x.note)}</small></span></label>`).join('');
   document.getElementById('qualPresets').innerHTML=QUAL_PRESETS.map(p=>`<option value="${esc(p.name)}">`).join('');
   document.getElementById('qualRows').innerHTML=(quals.length?quals:[{name:'',expiry:''}]).map(qualRowHtml).join('');
   const nf=Object.keys(fixes).length;
@@ -502,21 +537,24 @@ function calLink(n){const d=n.event_date.replace(/-/g,'');const [y,m,dd]=n.event
 const SEM_CAT={告示研修:'職能',生涯教育:'教育',認定資格:'教育'};
 const md=d=>{const [,m,dd]=String(d).split('-').map(Number);return `${m}/${dd}`;};
 const normTitle=t=>String(t||'').replace(/\s+-\s+[^-]{1,40}$/,'').replace(/[\s（）()]/g,'');
-function scheduleItems(){
+let schedHidden=0;
+function scheduleItems(all){
   const out=[],seen=new Set();
   // 技師会の研修一覧(受付状態・申込締切つき)。何か月も続く常設講座は除く
   seminars.forEach(x=>{
     if(!x.event_start||(x.event_end||x.event_start)<today)return;
     const span=(Date.parse(x.event_end||x.event_start)-Date.parse(x.event_start))/864e5;
     if(span>60)return;
-    const it={event_date:x.event_start<today?today:x.event_start,event_kind:'開催',title:x.title,url:x.url,event_place:(/^jart$/i.test(String(x.place||'').trim())||!x.place)?(/web|ウェブ|オンライン|e-?ラーニング/i.test(x.title||'')?'オンライン':''):String(x.place).replace(/(都|府|県)$/,''),status:x.status,apply_start:x.apply_start,apply_end:x.apply_end,category:x.category||SEM_CAT[x.kind]||'教育',source:x.source||(x.kind==='精中機構'?'精中機構':'日本診療放射線技師会'),headline:x.title};
+    const it={event_date:x.event_start<today?today:x.event_start,event_kind:'開催',title:x.title,url:x.url,event_place:(/^jart$/i.test(String(x.place||'').trim())||!x.place)?(/web|ウェブ|オンライン|e-?ラーニング/i.test(x.title||'')?'オンライン':''):(/^京都(府)?$/.test(String(x.place).trim())?'京都':String(x.place).trim().replace(/(都|府|県)$/,'')),status:x.status,apply_start:x.apply_start,apply_end:x.apply_end,category:x.category||SEM_CAT[x.kind]||'教育',source:x.source||(x.kind==='精中機構'?'精中機構':'日本診療放射線技師会'),headline:x.title};
     seen.add(normTitle(x.title));seen.add(x.url);out.push(it);
   });
   // ニュース記事から読み取った日程(研修一覧と重複するものは除く)
   db.forEach(n=>{if(n.event_date&&n.event_date>=today&&!seen.has(n.url)&&!seen.has(normTitle(displayHeadline(n))))out.push(n);});
   // 申込締切まで7日以内(受付中)のものは「締切間近」として先頭に
   out.forEach(n=>{const dl=n.event_kind==='申込締切'?n.event_date:n.apply_end;n._deadline=dl||'';const left=dl?daysTo(dl):null;n._urgent=left!==null&&left>=0&&left<=7&&!/申込み不可|受付終了|満員|定員|受付前/.test(n.status||'');n._quals=qualFor(n.title||n.headline);});
-  return out.filter(n=>matchQ(n)&&(cat==='all'||n.category===cat)).sort((a,b)=>(b._urgent-a._urgent)||(a._urgent&&b._urgent?a._deadline.localeCompare(b._deadline):0)||a.event_date.localeCompare(b.event_date));
+  if(all)return out;
+  const vis=out.filter(n=>schedScopes.has(schedScope(n)));schedHidden=out.length-vis.length;
+  return vis.filter(n=>matchQ(n)&&(cat==='all'||n.category===cat)).sort((a,b)=>(b._urgent-a._urgent)||(a._urgent&&b._urgent?a._deadline.localeCompare(b._deadline):0)||a.event_date.localeCompare(b.event_date));
 }
 function statusHtml(n){
   if(n.status==='申込み可')return `<span class="pill open">受付中${n.apply_end?`・${md(n.apply_end)}まで`:''}</span>`;
@@ -533,9 +571,9 @@ function renderSupply(){
   return `<section class="section" aria-labelledby="h-supply"><h2 id="h-supply">造影剤・放射性医薬品の供給状況<span class="count">${items.length}品目</span></h2><p class="lead">厚生労働省「医療用医薬品供給状況」のうち、限定出荷・供給停止になっているもの${supply.as_of?`(${esc(supply.as_of)})`:''}</p><details class="supply"><summary>${stop?`<span class="pill urgent">供給停止 ${stop}品目</span>`:''}<span class="pill">限定出荷 ${items.length-stop}品目</span>一覧を見る</summary><ul>${items.map(x=>`<li><b>${esc(x.product)}</b>　<span class="pill${/供給停止/.test(x.status)?' urgent':''}">${esc(x.status)}</span><div class="meta">${esc(x.ingredient)}・${esc(x.maker)}${x.category?`・${esc(x.category)}`:''}${x.changed?`・${esc(x.changed.slice(5).replace('-','/'))}更新`:''}${x.outlook?`・解除見込み: ${esc(x.outlook)}`:''}</div></li>`).join('')}</ul><p class="lead" style="margin-top:10px"><a href="${esc(supply.source)}" target="_blank" rel="noopener">厚生労働省のページで確認する</a></p></details></section>`;
 }
 function renderSchedule(){
-  const all=scheduleItems();if(!all.length)return '';
+  const all=scheduleItems();if(!all.length&&!schedHidden)return '';
   const items=showAllSched?all:all.slice(0,6);
-  return `<section class="section" aria-labelledby="h-sched"><h2 id="h-sched">これからの日程<span class="count">${all.length}件</span></h2><p class="lead">技師会の研修一覧と、案内記事に書かれた開催日・申込締切を近い順に並べています</p><div class="sched">${items.map(n=>{const [y,m,d]=n.event_date.split('-').map(Number);const dt=new Date(Date.UTC(y,m-1,d));const left=Math.round((dt-Date.parse(today+'T00:00:00Z'))/864e5);const dl=n.event_kind==='申込締切';const pl=n.event_place;const plHtml=pl?(pl==='オンライン'?'<span class="pill near">オンライン</span>':NEAR.includes(pl)?`<span class="pill near">${esc(pl)}(近畿・中四国)</span>`:`<span class="pill place">${esc(pl)}</span>`):'';return `<article class="sched-item"><div class="sched-date${dl?' deadline':''}"><span class="md">${m}/${d}</span><span class="wd">${WD[dt.getUTCDay()]}曜</span></div><div class="sched-body"><div class="kind">${dl?'<b>申込締切</b>':'開催'}　${left===0?'今日':`あと${left}日`}</div><a class="title" href="${esc(n.url)}" target="_blank" rel="noopener">${esc(n.title||displayHeadline(n))}</a><div class="sched-tools">${n._urgent?`<span class="pill urgent">締切間近・${daysTo(n._deadline)===0?'今日まで':`あと${daysTo(n._deadline)}日`}</span>`:''}${n._quals&&n._quals.length?`<span class="pill qual">資格の更新に関係</span>`:''}${statusHtml(n)}${plHtml}<a class="cal" href="${calLink(n)}" target="_blank" rel="noopener">Googleカレンダーに追加</a></div></div></article>`;}).join('')}${all.length>items.length?`<button type="button" class="more sched-more" data-allsched>残り${all.length-items.length}件の日程を見る</button>`:''}</div></section>`;
+  return `<section class="section" aria-labelledby="h-sched"><h2 id="h-sched">これからの日程<span class="count">${all.length}件</span></h2><p class="lead">技師会の研修一覧と、案内記事に書かれた開催日・申込締切を近い順に並べています${schedHidden?`(設定により${schedHidden}件を非表示)`:''}</p>${all.length?'':'<div class="empty">表示する日程はありません。「設定」で出す種類を選べます。</div>'}<div class="sched">${items.map(n=>{const [y,m,d]=n.event_date.split('-').map(Number);const dt=new Date(Date.UTC(y,m-1,d));const left=Math.round((dt-Date.parse(today+'T00:00:00Z'))/864e5);const dl=n.event_kind==='申込締切';const pl=n.event_place;const plHtml=pl?(pl==='オンライン'?'<span class="pill near">オンライン</span>':NEAR.includes(pl)?`<span class="pill near">${esc(pl)}(近畿・中四国)</span>`:`<span class="pill place">${esc(pl)}</span>`):'';return `<article class="sched-item"><div class="sched-date${dl?' deadline':''}"><span class="md">${m}/${d}</span><span class="wd">${WD[dt.getUTCDay()]}曜</span></div><div class="sched-body"><div class="kind">${dl?'<b>申込締切</b>':'開催'}　${left===0?'今日':`あと${left}日`}</div><a class="title" href="${esc(n.url)}" target="_blank" rel="noopener">${esc(n.title||displayHeadline(n))}</a><div class="sched-tools">${n._urgent?`<span class="pill urgent">締切間近・${daysTo(n._deadline)===0?'今日まで':`あと${daysTo(n._deadline)}日`}</span>`:''}${n._quals&&n._quals.length?`<span class="pill qual">資格の更新に関係</span>`:''}${statusHtml(n)}${plHtml}<a class="cal" href="${calLink(n)}" target="_blank" rel="noopener">Googleカレンダーに追加</a></div></div></article>`;}).join('')}${all.length>items.length?`<button type="button" class="more sched-more" data-allsched>残り${all.length-items.length}件の日程を見る</button>`:''}</div></section>`;
 }
 // ---- 週のまとめ(月〜水曜に表示。閉じたらその週は出さない) ----
 function weekStart(dstr){const [y,m,d]=dstr.split('-').map(Number);const dt=new Date(Date.UTC(y,m-1,d));const wd=(dt.getUTCDay()+6)%7;dt.setUTCDate(dt.getUTCDate()-wd);return dt.toISOString().slice(0,10);}
@@ -645,6 +683,7 @@ document.getElementById('view').addEventListener('click',e=>{
 document.getElementById('view').addEventListener('input',e=>{const t=e.target.closest('textarea[data-memo]');if(t)saveMemo(t.dataset.memo,t.value);});
 document.getElementById('focusBtn').onclick=openFocus;
 document.getElementById('focusDlg').addEventListener('close',()=>{const d=document.getElementById('focusDlg');if(d.returnValue!=='save')return;focusCats=new Set([...d.querySelectorAll('#focusGrid input:checked')].map(i=>i.value));store.set('rtn-focus',[...focusCats]);
+  schedScopes=new Set([...d.querySelectorAll('#scopeGrid input:checked')].map(i=>i.value));store.set('rtn-sched-scope',[...schedScopes]);
   quals=[...d.querySelectorAll('.qual-row')].map(r=>({name:r.querySelector('input[type=text]').value.trim(),expiry:r.querySelector('input[type=date]').value})).filter(q=>q.name);store.set('rtn-quals',quals);
   updateFocusBtn();renderHello();render();});
 document.getElementById('qualAdd').onclick=()=>document.getElementById('qualRows').insertAdjacentHTML('beforeend',qualRowHtml());
