@@ -60,3 +60,40 @@ def test_ascii_terms_match_whole_words_only(headline):
 def test_source_name_is_not_used_for_category():
     # 配信元「日本放射線技術学会」の「学会」で学術に入れない
     assert u.category(item('動画視聴システム更新に伴う一時休止のお知らせ', '日本放射線技術学会')) == 'その他'
+
+
+# --- 海外の地方ニュース・配信元名・医療安全情報 ---------------------
+
+@pytest.mark.parametrize('source', ['Vietnam.vn', 'vietnam.vn', 'Laodong.vn'])
+def test_foreign_local_news_is_excluded(source):
+    assert not u.is_news_item(item('カントー腫瘍病院の放射線治療装置が依然として故障している', source))
+
+
+def test_foreign_news_in_japanese_media_is_kept():
+    assert u.is_news_item(item('Mayo Clinicの膵がんAI、放射線科医が見逃すリスクシグナルを検出', 'remio'))
+
+
+@pytest.mark.parametrize('raw, expected', [
+    ('公益社団法人 日本放射線技術学会', '日本放射線技術学会'),
+    ('日本放射線技術学会（JSRT）', '日本放射線技術学会'),
+    ('jsrt.or.jp', '日本放射線技術学会'),
+    ('JART', '日本診療放射線技師会'),
+    ('日本診療放射線技師会（JART）', '日本診療放射線技師会'),
+    ('公益社団法人日本医学放射線学会', '日本医学放射線学会'),
+    ('クラウドファンディング - READYFOR', 'READYFOR'),
+    ('Yahoo!ニュース', 'Yahoo!ニュース'),
+])
+def test_source_names_are_unified(raw, expected):
+    assert u.normalize_source(raw) == expected
+
+
+@pytest.mark.parametrize('headline', [
+    'MRI検査時の体内植込み機器等の確認忘れで再度の注意喚起─医療安全情報',
+    '患者の体内に植込まれた医療機器等を十分に確認せずにMRI検査を実施してしまう医療事故が依然として散発—医療機能評価機構',
+    '画像診断管理加算2「175点→166点」は本当に減収なのか？',
+])
+def test_safety_and_fee_items_are_high(headline):
+    x = {'headline': headline, 'summary': headline, 'source': 'GemMed', 'url': 'https://news.google.com/x'}
+    assert u.importance(x, False) == '高'
+    x['importance'] = '高'
+    assert u.technologist_note(x) != ''

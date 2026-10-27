@@ -402,7 +402,44 @@ def is_news_item(x):
     if is_market_report(x):
         return False
 
+    if is_foreign_local_news(x):
+        return False
+
     return True
+
+
+# 海外の地方病院ニュースを機械翻訳した配信元(装置の故障・導入など現地の話題が大半)
+FOREIGN_LOCAL_SOURCES = ('vietnam.vn', 'laodong.vn', 'vnexpress', 'baomoi', 'tuoitre', 'thanhnien')
+
+
+def is_foreign_local_news(x):
+    source = str(x.get('source') or '').lower()
+    url = str(x.get('url') or '').lower()
+    return any(s in source or s in url for s in FOREIGN_LOCAL_SOURCES)
+
+
+# 同じ団体の配信元名の表記ゆれをそろえる(表示とフィルタの一貫性のため)
+SOURCE_ALIASES = (
+    (r'^(公益社団法人\s*)?日本放射線技術学会(（JSRT）|\(JSRT\))?$|^jsrt(\.or\.jp)?$', '日本放射線技術学会'),
+    (r'^(公益社団法人\s*)?日本診療放射線技師会(（JART）|\(JART\))?$|^jart(\.jp)?$', '日本診療放射線技師会'),
+    (r'^(公益社団法人\s*)?日本医学放射線学会(（JRS）|\(JRS\))?$|^radiology\.jp$', '日本医学放射線学会'),
+    (r'readyfor', 'READYFOR'),
+)
+
+
+def normalize_sources(item):
+    item['source'] = normalize_source(item.get('source'))
+    for a in item.get('also') or []:
+        a['source'] = normalize_source(a.get('source'))
+    return item
+
+
+def normalize_source(source):
+    s = str(source or '').strip()
+    for pattern, name in SOURCE_ALIASES:
+        if re.search(pattern, s, flags=re.I):
+            return name
+    return s
 
 
 # 市場調査会社の宣伝記事(「〇〇市場、2035年に89億米ドルへ」など)は実務に役立たないので除外する
@@ -629,6 +666,10 @@ IMPORTANCE_HIGH_TERMS = (
     # 薬剤・装置の供給と安全性
     '限定出荷', '出荷停止', '供給停止', '供給不足', '出荷調整',
     'リコール', '自主回収', '安全性情報', '添付文書改訂',
+    # 医療事故の再発防止情報(医療機能評価機構・PMDAの医療安全情報など)
+    '医療安全情報', '注意喚起', '再発防止', '医療事故',
+    # 点数の変更
+    '管理加算', '加算',
     # 会員・患者情報
     '個人情報漏えい', '個人情報漏洩', '不審アクセス', 'サイバー攻撃',
     # 指針
@@ -704,11 +745,13 @@ TECHNOLOGIST_NOTES = (
      '登録メールアドレス宛の不審なメールに注意するよう、部内にも周知しておくと安心です。'),
     (('サイバー攻撃', 'ランサムウェア'),
      'PACS・RISのバックアップやシステム停止時の運用手順を見直すきっかけになります。'),
+    (('医療安全情報', '注意喚起', '再発防止', '医療機能評価機構'),
+     '同様の事例が自施設で起きないか、確認手順(問診・チェックリスト)を見直すきっかけにしましょう。'),
     (('声明',),
      '撮影手技の見直しにつながる可能性があります。内容を部内で共有しておきたい声明です。'),
     (('__guideline_release__',),
      '推奨内容の変更点を確認し、撮影プロトコルや院内マニュアルへの反映を検討しましょう。'),
-    (('診療報酬', '報酬改定', '施設基準'),
+    (('診療報酬', '報酬改定', '施設基準', '加算'),
      '算定要件や施設基準への影響を確認し、必要に応じて医事課と共有しましょう。'),
     (('告示研修',),
      'タスク・シフトに伴う告示研修です。未受講のスタッフがいれば日程を共有しましょう。'),
@@ -962,13 +1005,14 @@ def clean_db(db):
         x['why'] = technologist_note(x)
 
         # 過去データも現行の選定基準で再分類し、表示のズレを残さない。
+        # 重要度「高」は業務に直結するので、一般メディア発でも専門ニュース側に出す
         x['track'] = (
             'official'
-            if is_specialist(x)
+            if is_specialist(x) or x.get('importance') == '高'
             else 'general'
         )
 
-        out.append(apply_curated_specialist(x))
+        out.append(normalize_sources(apply_curated_specialist(x)))
 
     return out
 
@@ -1006,7 +1050,7 @@ def make_item(x):
     }
     item['summary'] = clean_summary(item)
     item['why'] = technologist_note(item)
-    return apply_curated_specialist(item)
+    return normalize_sources(apply_curated_specialist(item))
 
 
 def main():
