@@ -847,7 +847,7 @@ KART_SCHEDULE = 'https://kagawart.jp/article/schedulelist.php?y={y}&m={m}'
 JSRT_CHUSHI_FEED = 'https://jsrt-chushi.jp/?feed=rss2'
 # 地元の会は更新がまばらなので、取り込む期間を長めに
 LOCAL_DAYS = {'香川県診療放射線技師会': 45, '日本放射線技術学会 中国・四国支部': 60, '日本乳癌検診学会': 60,
-              '日本CT検診学会': 45, '日本放射線治療専門放射線技師認定機構': 60, '日本救急撮影技師認定機構': 60}
+              '日本CT検診学会': 45, '日本放射線治療専門放射線技師認定機構': 60}
 
 # 分野ごとの専門学会。(表示名, URL, 読み方, 既定の分類, リンク条件, 読み始める目印)
 # 読み方: rss = RSS、list = 日付とリンクが並ぶお知らせ一覧(parse_dated_links)
@@ -863,7 +863,7 @@ SPECIALTY_SOURCES = (
     ('日本乳癌検診学会', 'https://www.jabcs.jp/', 'blocks', 'マンモグラフィ', 'jp', None),
     ('日本CT検診学会', 'https://www.jscts.org/index.php?page=update', 'blocks', '検診', 'yy', None),
     ('日本放射線治療専門放射線技師認定機構', 'https://www.radiation-therapy.jp/news/index.shtml', 'blocks', '放射線治療', 'slash', None),
-    ('日本救急撮影技師認定機構', 'https://jert.info/99/feed/', 'rss', '教育', None, None),
+    # 日本救急撮影技師認定機構(jert.info)はRSSに記事が入っておらず、一覧にも日付がないため取り込まない
 )
 # 専門学会の記事で、分類が一般的なもの(その他・学術・教育・制度)になった場合は学会の分野を使う
 SPECIALTY_DEFAULT_CATEGORY = {name: cat for name, _, _, cat, *_ in SPECIALTY_SOURCES}
