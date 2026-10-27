@@ -1,5 +1,93 @@
 [
   {
+    "date": "2026-10-13",
+    "category": "放射線治療",
+    "importance": "中",
+    "headline": "2025年度（2026年）社員総会開催のお知らせ",
+    "summary": "",
+    "why": "興味のある内容なら、開催日と申込期限を確認しておきましょう。",
+    "source": "日本放射線腫瘍学会",
+    "url": "https://www.jastro.or.jp/member/news/2026/20261013.pdf",
+    "track": "general"
+  },
+  {
+    "date": "2026-10-13",
+    "category": "MRI",
+    "importance": "中",
+    "headline": "第54回日本磁気共鳴医学会大会 インタビュー",
+    "summary": "",
+    "why": "",
+    "source": "日本磁気共鳴医学会",
+    "url": "https://www.jsmrm.jp/modules/news/index.php?content_id=758",
+    "track": "general"
+  },
+  {
+    "date": "2026-10-08",
+    "category": "MRI",
+    "importance": "中",
+    "headline": "本公開「MRMS」2026年度",
+    "summary": "",
+    "why": "",
+    "source": "日本磁気共鳴医学会",
+    "url": "https://www.jsmrm.jp/modules/news/index.php?content_id=754",
+    "track": "general"
+  },
+  {
+    "date": "2026-10-15",
+    "category": "血管撮影",
+    "importance": "中",
+    "headline": "IVR手技施行に関する診療体制についてのガイドライン",
+    "summary": "",
+    "why": "",
+    "source": "日本IVR学会",
+    "url": "https://www.jsir.or.jp/about/guide_line/ivr-procedures/",
+    "track": "general"
+  },
+  {
+    "date": "2026-10-23",
+    "category": "超音波",
+    "importance": "中",
+    "headline": "第41回超音波検査士認定試験：受験票の発送日について",
+    "summary": "",
+    "why": "",
+    "source": "日本超音波医学会",
+    "url": "https://www.jsum.or.jp/members/news/20261023/?utm_source=rss&utm_medium=rss&utm_campaign=20261023",
+    "track": "general"
+  },
+  {
+    "date": "2026-10-16",
+    "category": "超音波",
+    "importance": "中",
+    "headline": "医用超音波の基礎（連載第4回/全10回）",
+    "summary": "",
+    "why": "",
+    "source": "日本超音波医学会",
+    "url": "https://www.jsum.or.jp/members/news/20261016/?utm_source=rss&utm_medium=rss&utm_campaign=20261016",
+    "track": "general"
+  },
+  {
+    "date": "2026-10-15",
+    "category": "超音波",
+    "importance": "中",
+    "headline": "第100回学術集会 演題募集開始のお知らせ",
+    "summary": "",
+    "why": "興味のある内容なら、開催日と申込期限を確認しておきましょう。",
+    "source": "日本超音波医学会",
+    "url": "https://www.jsum.or.jp/members/news/20261015-2/?utm_source=rss&utm_medium=rss&utm_campaign=20261015-2",
+    "track": "general"
+  },
+  {
+    "date": "2026-10-15",
+    "category": "超音波",
+    "importance": "中",
+    "headline": "「超音波診断講習会（消化器）」開催のご案内",
+    "summary": "",
+    "why": "興味のある内容なら、開催日と申込期限を確認しておきましょう。",
+    "source": "日本超音波医学会",
+    "url": "https://www.jsum.or.jp/members/news/20261015/?utm_source=rss&utm_medium=rss&utm_campaign=20261015",
+    "track": "general"
+  },
+  {
     "date": "2026-10-20",
     "category": "学術",
     "importance": "中",
