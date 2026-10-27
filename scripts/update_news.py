@@ -818,8 +818,8 @@ def direct_official_news():
             if age > DIRECT_DAYS or not x['title']:
                 continue
             item = {'title': x['title'], 'url': x['url'], 'description': '', 'source': name, 'published': x['published']}
-            # 厚労省は省全体の新着なので、放射線・診療報酬に関係するものだけ
-            if name == '厚生労働省' and not (relevant(item) or re.search(r'疑義解釈|診療放射線|放射線|被ばく|画像診断|医療機器', item['title'])):
+            # 厚労省は省全体の新着なので、放射線に関係するもの(毎日の整理で残る基準と同じ)だけ
+            if name == '厚生労働省' and not relevant(item):
                 continue
             if not is_news_item(item):
                 continue
@@ -1055,7 +1055,7 @@ TECHNOLOGIST_NOTES = (
      '撮影手技の見直しにつながる内容です。推奨が変わった点と根拠を確認しておきましょう。'),
     (('__guideline_release__',),
      '推奨内容の変更点を確認し、普段の撮影条件やプロトコルと照らし合わせておきましょう。'),
-    (('診療報酬', '報酬改定', '施設基準', '加算'),
+    (('診療報酬', '報酬改定', '施設基準', '加算', '保険診療'),
      '算定要件や点数の変更点を押さえておきましょう。担当する検査の算定に関わることがあります。'),
     (('告示研修',),
      '業務範囲の拡大に伴う告示研修です。未受講なら日程と申込方法を確認しておきましょう。'),

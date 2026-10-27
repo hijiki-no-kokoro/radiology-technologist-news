@@ -31,7 +31,7 @@ JSNM_RSS = '''<?xml version="1.0"?><rss><channel>
 </channel></rss>'''
 
 MHLW_RDF = '''<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dc="http://purl.org/dc/elements/1.1/">
-<item rdf:about="https://www.mhlw.go.jp/a"><title>疑義解釈資料の送付について（その10）</title><link>https://www.mhlw.go.jp/stf/a.html</link><dc:date>2026-10-24T10:00:00+09:00</dc:date></item>
+<item rdf:about="https://www.mhlw.go.jp/a"><title>診療放射線技師の業務に関する疑義解釈について</title><link>https://www.mhlw.go.jp/stf/a.html</link><dc:date>2026-10-24T10:00:00+09:00</dc:date></item>
 <item rdf:about="https://www.mhlw.go.jp/b"><title>雇用調整助成金の支給状況</title><link>https://www.mhlw.go.jp/stf/b.html</link><dc:date>2026-10-24T10:00:00+09:00</dc:date></item>
 </rdf:RDF>'''
 
@@ -54,7 +54,7 @@ def test_parse_rss2_and_rss1():
     assert j[1]['title'] == 'Lu-177-PSMA-I&T治験適正使用マニュアル(第2版)を掲載'   # CDATAと実体参照を戻す
     assert j[0]['published'].startswith('2026-10-10T11:15')                        # 日本時間に
     m = u.parse_rss(MHLW_RDF)
-    assert [x['title'] for x in m] == ['疑義解釈資料の送付について（その10）', '雇用調整助成金の支給状況']
+    assert [x['title'] for x in m] == ['診療放射線技師の業務に関する疑義解釈について', '雇用調整助成金の支給状況']
 
 
 def test_direct_official_news_filters_and_limits(monkeypatch):
@@ -68,7 +68,7 @@ def test_direct_official_news_filters_and_limits(monkeypatch):
     monkeypatch.setattr(u, 'datetime', FixedNow)
     got = {x['title']: x for x in u.direct_official_news()}
     assert 'ピロリン酸テクネチウム（99mTc）注射液の保険診療上の取扱いについて' in got
-    assert '疑義解釈資料の送付について（その10）' in got
+    assert '診療放射線技師の業務に関する疑義解釈について' in got
     assert '雇用調整助成金の支給状況' not in got                 # 厚労省は放射線・診療報酬関連だけ
     assert got['令和9年度からの放射線科領域研修を希望する方へ']['source'] == '日本医学放射線学会'
 
@@ -88,3 +88,5 @@ def test_insurance_handling_is_high():
     x = {'headline': 'ピロリン酸テクネチウム（99mTc）注射液の保険診療上の取扱いについて', 'summary': '', 'source': '日本核医学会', 'url': 'https://jsnm.org/archives/10420/'}
     assert u.importance(x, False) == '高'
     assert u.relevant(x)
+    x['importance'] = '高'
+    assert '算定' in u.technologist_note(x)
