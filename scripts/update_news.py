@@ -405,7 +405,28 @@ def is_news_item(x):
     if is_foreign_local_news(x):
         return False
 
+    if is_light_read(x):
+        return False
+
     return True
+
+
+# 業務に役立たない読み物(漫画風の体験談・釣り見出し・闘病記・事件報道)
+LIGHT_READ_SOURCES = ('trill',)
+LIGHT_READ_PATTERN = re.compile(
+    r'→.*…|….*→'                     # 「…患者のネイルに→感心するも…」型の漫画記事
+    r'|顔面蒼白|まさかの|即答した正体|あるあるを描く|著者インタビュー'
+    r'|【闘病】|闘病記'
+    r'|殺意|殺害|刺殺|遺体'
+)
+
+
+def is_light_read(x):
+    source = str(x.get('source') or '').lower()
+    if any(s in source for s in LIGHT_READ_SOURCES):
+        return True
+    title = str(x.get('title') or x.get('headline') or '')
+    return bool(LIGHT_READ_PATTERN.search(title))
 
 
 # 海外の地方病院ニュースを機械翻訳した配信元(装置の故障・導入など現地の話題が大半)

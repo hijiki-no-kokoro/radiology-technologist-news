@@ -97,3 +97,24 @@ def test_safety_and_fee_items_are_high(headline):
     assert u.importance(x, False) == '高'
     x['importance'] = '高'
     assert u.technologist_note(x) != ''
+
+
+# --- 読み物系(体験談・釣り見出し・闘病記・事件報道)の除外 ---------------
+
+@pytest.mark.parametrize('headline, source', [
+    ('MRI検査中に地震が…！緊急時に役立つまさかの機能に「勉強になった」', 'TRILL'),
+    ('MRI検査前…患者のネイルに「めっちゃ綺麗ですね」→感心するも…告げられた事実に技師「では延期ですね」', 'ライブドアニュース'),
+    ('同業者からの共感続々。放射線技師のお仕事あるあるを描く“ギャル技師ちゃん”誕生のきっかけとは？【著者インタビュー】', 'ライブドアニュース'),
+    ('【闘病】“かなり初期”の『乳がん』でも抗がん剤と放射線25回', 'Yahoo!ニュース'),
+    ('遺族が悲痛な陳述 放射線技師を夢見た20歳の女子大学生を刺殺', 'TBS NEWS DIG'),
+])
+def test_light_reads_are_excluded(headline, source):
+    assert not u.is_news_item(item(headline, source))
+
+
+@pytest.mark.parametrize('headline', [
+    '画像診断管理加算2「175点→166点」は本当に減収なのか？',      # 「→」でも点数の話は残す
+    'MRI検査時の体内植込み機器等の確認忘れで再度の注意喚起─医療安全情報',
+])
+def test_practical_items_with_similar_wording_are_kept(headline):
+    assert u.is_news_item(item(headline, 'mbp-japan.com'))
