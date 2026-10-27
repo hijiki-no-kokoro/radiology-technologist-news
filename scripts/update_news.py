@@ -24,7 +24,7 @@ def build_daily_html(items, date_str):
         return (str(s or '').replace('&','&amp;').replace('<','&lt;').replace('>','&gt;').replace(chr(34),'&quot;'))
 
     def card(x):
-        return ('<article class="card"><div class="meta"><span class="tag">' + esc(x.get('category')) + '</span><span class="imp">重要度 ' + esc(x.get('importance')) + '</span><span class="date">' + esc(x.get('date')) + '</span></div><h2>' + esc(x.get('headline')) + '</h2><p>' + esc(x.get('summary')) + '</p><div class="why"><b>技師長目線：</b>' + esc(x.get('why')) + '</div><a href="' + esc(x.get('url')) + '" target="_blank" rel="noopener">' + esc(x.get('source') or '情報源') + ' ↗</a></article>')
+        return ('<article class="card"><div class="meta"><span class="tag">' + esc(x.get('category')) + '</span><span class="imp">重要度 ' + esc(x.get('importance')) + '</span><span class="date">' + esc(x.get('date')) + '</span></div><h2>' + esc(x.get('headline')) + '</h2>' + ('<p>' + esc(x.get('summary')) + '</p>' if x.get('summary') else '') + ('<div class="why"><b>技師長目線：</b>' + esc(x.get('why')) + '</div>' if x.get('why') else '') + '<a href="' + esc(x.get('url')) + '" target="_blank" rel="noopener">' + esc(x.get('source') or '情報源') + ' ↗</a></article>')
 
     def section(title, badge, data, empty):
         body = ''.join(card(x) for x in data) or '<div class="empty">' + empty + '</div>'
@@ -741,6 +741,76 @@ def importance(x, official):
     return '低'
 
 
+# 「技師長目線」の一言。上から順に最初に当てはまったものを使う。
+# どれにも当てはまらない記事は空欄にする(全記事に同じ定型文を付けない)。
+TECHNOLOGIST_NOTES = (
+    (('限定出荷', '出荷停止', '供給停止', '供給不足', '出荷調整'),
+     '院内の在庫量と代替品を確認し、検査予定への影響を関係部署と共有しておきたい情報です。'),
+    (('リコール', '自主回収', '安全性情報', '添付文書改訂'),
+     '院内に該当する機器・薬剤がないか確認し、該当すれば対応手順を部内に周知しましょう。'),
+    (('個人情報漏えい', '個人情報漏洩', '不審アクセス'),
+     '登録メールアドレス宛の不審なメールに注意するよう、部内にも周知しておくと安心です。'),
+    (('サイバー攻撃', 'ランサムウェア'),
+     'PACS・RISのバックアップやシステム停止時の運用手順を見直すきっかけになります。'),
+    (('声明',),
+     '撮影手技の見直しにつながる可能性があります。内容を部内で共有しておきたい声明です。'),
+    (('__guideline_release__',),
+     '推奨内容の変更点を確認し、撮影プロトコルや院内マニュアルへの反映を検討しましょう。'),
+    (('診療報酬', '報酬改定', '施設基準'),
+     '算定要件や施設基準への影響を確認し、必要に応じて医事課と共有しましょう。'),
+    (('告示研修',),
+     'タスク・シフトに伴う告示研修です。未受講のスタッフがいれば日程を共有しましょう。'),
+    (('パブリックコメント', 'パブコメ'),
+     '意見募集の締切と変更点を確認しておきましょう。'),
+    (('原稿募集', '留学生', '候補者', '公募'),
+     '応募条件と締切を確認し、関心のありそうなスタッフに共有しましょう。'),
+    (('__event__',),
+     '開催日程と申込期限を確認し、参加希望者がいれば勤務を調整しましょう。'),
+    (('法改正', '省令', '施行規則', '医療法', '指定規則', '業務範囲', 'タスクシフト', 'タスクシェア'),
+     '業務範囲や院内規程の見直しが必要になるか確認しておきたい情報です。'),
+    (('医療被ばく', '被ばく線量', '線量管理', '診断参考レベル', 'drl'),
+     '自施設の線量記録やDRLとの比較、線量管理体制の見直しに活用できます。'),
+    (('薬事承認', '承認取得', '国内初', '日本初', '国内で初', '保険適用'),
+     '新しい装置・技術の動向として、自施設の機器更新計画の参考になります。'),
+)
+
+
+def technologist_note(x):
+    """重要度「低」以外の記事に、判定理由に応じた一言を返す。"""
+    if x.get('importance') == '低':
+        return ''
+    t = ' '.join(
+        str(x.get(k) or '') for k in ('title', 'headline', 'description', 'summary')
+    ).lower()
+    flags = {
+        '__guideline_release__': bool(re.search(r'(ガイドライン|指針).{0,30}(公開|公表|改訂|発刊|刊行)', t)),
+        # 「開催報告」「開催遅延」「中止」は申込を促す案内ではない
+        '__event__': any(k.lower() in t for k in EVENT_TERMS)
+        and not any(k in t for k in ('報告', '遅延', '中止', '延期')),
+    }
+    for terms, note in TECHNOLOGIST_NOTES:
+        if any(flags.get(k) if k in flags else k.lower() in t for k in terms):
+            return note
+    return ''
+
+
+def clean_summary(x):
+    """見出しをそのまま繰り返しているだけの要約は空にする。"""
+    summary = str(x.get('summary') or '').strip()
+    source = str(x.get('source') or '').strip()
+    if source and summary.endswith(source):
+        summary_wo_source = summary[:-len(source)].strip()
+    else:
+        summary_wo_source = summary
+    head = canonical_title(x.get('headline') or x.get('title'))
+    if canonical_title(summary_wo_source) == head:
+        return ''
+    body = canonical_title(re.sub(r'\s+\S+$', '', summary))  # 末尾の媒体名を除く
+    if not summary or same_story(head, canonical_title(summary)) or same_story(head, body):
+        return ''
+    return summary
+
+
 def score(x):
     t = article_text(x)
     s = 0
@@ -939,6 +1009,8 @@ def clean_db(db):
             x,
             is_official(x.get('url', '')) or x.get('source') == 'JART'
         )
+        x['summary'] = clean_summary(x)
+        x['why'] = technologist_note(x)
 
         # 過去データも現行の選定基準で再分類し、表示のズレを残さない。
         x['track'] = (
@@ -971,12 +1043,7 @@ def make_item(x):
             ' ',
             x.get('description', '')
         ).strip()[:220],
-        'why': (
-            '公式情報のため、放射線部門の運用・教育・制度への影響を確認する価値があります。'
-            if official
-            else
-            '放射線部門の実務への影響を確認する価値があります。'
-        ),
+        'why': '',
         'source': (
             x.get('source')
             or dom(x['url'])
@@ -988,6 +1055,8 @@ def make_item(x):
             else 'general'
         ),
     }
+    item['summary'] = clean_summary(item)
+    item['why'] = technologist_note(item)
     return apply_curated_specialist(item)
 
 
