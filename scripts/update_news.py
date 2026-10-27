@@ -8,6 +8,7 @@ from urllib.request import Request, urlopen
 
 ROOT = Path(__file__).resolve().parents[1]
 NEWS_JSON = ROOT / 'news.json'
+META_JSON = ROOT / 'news_meta.json'  # 最終更新時刻と新着件数(画面の右上に表示)
 HTML_DIR = ROOT / 'daily_html'
 
 
@@ -394,7 +395,36 @@ def is_news_item(x):
     ):
         return False
 
+    # 見出しが取れなかったページ(「Untitled - 日本診療放射線技師会」など)
+    if re.match(r'^\s*(untitled|no title|無題)\s*(-|$)', title, flags=re.I):
+        return False
+
+    if is_market_report(x):
+        return False
+
     return True
+
+
+# 市場調査会社の宣伝記事(「〇〇市場、2035年に89億米ドルへ」など)は実務に役立たないので除外する
+MARKET_REPORT_SOURCES = (
+    'pando.life', 'spherical insights', 'indexbox', 'sns insider',
+    'global information', 'gii', 'researchandmarkets', 'report ocean',
+    'kenresearch', 'market research',
+)
+
+
+def is_market_report(x):
+    title = str(x.get('title') or x.get('headline') or '')
+    source = str(x.get('source') or '').lower()
+    if any(s in source for s in MARKET_REPORT_SOURCES):
+        return True
+    if '市場' not in title:
+        return False
+    return bool(re.search(
+        r'CAGR|年平均成長率|億\s*米?ドル|万\s*米?ドル|市場規模|市場予測|世界市場|市場分析|市場の(最新)?動向|成長見通し'
+        r'|\d{4}年\s*(から|～|〜|-)\s*\d{4}年|トップ\s*\d+\s*企業|メーカーランキング',
+        title, flags=re.I,
+    ))
 
 
 def parse_nearby_date(html, pos):
@@ -462,122 +492,44 @@ def direct_jart():
     return out
 
 
+# 上から順に最初に当てはまったカテゴリを使う。
+# 英字の語は単語単位で判定する(「AI」「CT」「RI」が他の単語の一部に当たらないように)。
+CATEGORY_RULES = (
+    ('診療報酬・補助金', ('診療報酬', '報酬改定', '補助金', '助成金', '加算', '施設基準')),
+    ('職能', ('STAT', 'タスクシフト', 'タスク・シフト', 'タスクシェア', 'タスク・シェア', '業務範囲',
+              '職能', '告示研修', '静脈路', '筋注')),
+    ('安全管理', ('安全管理', '医療安全', '放射線安全', '放射線防護', '被ばく', '線量管理', '線量測定',
+                  '診断参考レベル', 'DRL', '品質管理', '個人情報', '脆弱性', 'サイバー',
+                  '限定出荷', '出荷停止', '供給停止', '供給不足', 'リコール', '自主回収')),
+    ('放射線治療', ('放射線治療', '放射線療法', '照射', '寡分割', '定位放射線', 'リニアック', '陽子線',
+                    '粒子線', '重粒子', 'BNCT', 'IGRT', 'IMRT', 'SBRT', 'ZAP-X', 'サイバーナイフ', 'トモセラピー')),
+    ('核医学', ('核医学', '放射性医薬品', 'RI内用', 'セラノスティクス', 'リガンド療法', '核種', 'サイクロトロン',
+                'SPECT', 'PET', 'MIBG', 'Ac225', 'Lu-177', 'ルテチウム')),
+    ('CT', ('CT', 'コンピュータ断層', 'computed tomography', 'フォトンカウンティング')),
+    ('MRI', ('MRI', 'MR研究会', '磁気共鳴', 'magnetic resonance', 'テスラ')),
+    ('一般撮影', ('一般撮影', '単純X線', 'X線撮影', 'レントゲン', 'FPD', 'マンモグラフィ', 'マンモ',
+                  '乳房撮影', '骨密度', '透視', '生殖腺')),
+    ('AI', ('AI', '人工知能', '画像診断支援', '読影支援', '深層学習', 'ディープラーニング', '言語モデル')),
+    ('制度', ('制度', '厚生労働省', '医政', '法改正', '省令', '立入検査', '施設認定', '認証申請')),
+    ('教育', ('教育', '国家試験', '研修', '認定', 'セミナー', '講習', '講演会', 'eラーニング', 'e-ラーニング', '留学')),
+    ('学術', ('学術', '研究', '学会', 'ガイドライン', 'パブリックコメント', '論文', 'ESMO', 'ASTRO', 'RSNA')),
+)
+
+
+def _term_in(term, text):
+    if re.fullmatch(r'[A-Za-z0-9\-]+', term):
+        return re.search(r'(?<![a-z0-9])' + re.escape(term.lower()) + r'(?![a-z0-9])', text) is not None
+    return term.lower() in text
+
+
 def category(x):
-    t = article_text(x)
+    # 配信元名(「日本放射線技術学会」の「学会」など)では判定しない
+    t = ' '.join(
+        str(x.get(k) or '') for k in ('title', 'headline', 'description', 'summary')
+    ).lower()
 
-    rules = [
-        (
-            '診療報酬・補助金',
-            ('診療報酬', '補助金', '助成金', '加算')
-        ),
-        (
-            '安全管理',
-            (
-                '安全管理',
-                '安全',
-                '被ばく',
-                '線量管理',
-                '医療被ばく',
-                '線量',
-                '放射線安全',
-                '線量最適化'
-            )
-        ),
-        (
-            '一般撮影',
-            (
-                '一般撮影',
-                'FPD',
-                'マンモグラフィ',
-                'X線撮影'
-            )
-        ),
-        (
-            'CT',
-            ('CT', 'computed tomography')
-        ),
-        (
-            'MRI',
-            ('MRI', 'magnetic resonance')
-        ),
-        (
-            '核医学',
-            (
-                '核医学',
-                'SPECT',
-                'PET',
-                'MIBG',
-                'DAT',
-                'RI'
-            )
-        ),
-        (
-            '放射線治療',
-            (
-                '放射線治療',
-                'リニアック',
-                '陽子線',
-                '粒子線',
-                'IGRT'
-            )
-        ),
-        (
-            'AI',
-            (
-                'AI',
-                '人工知能',
-                '画像診断支援',
-                '読影支援'
-            )
-        ),
-        (
-            '教育',
-            (
-                '教育',
-                '国家試験',
-                '研修',
-                '認定',
-                'セミナー',
-                '講習'
-            )
-        ),
-        (
-            '学術',
-            (
-                '学術',
-                '研究',
-                '学会',
-                'ガイドライン',
-                'パブリックコメント'
-            )
-        ),
-        (
-            '職能',
-            (
-                'STAT',
-                'タスクシフト',
-                'タスクシェア',
-                '業務範囲',
-                '職能'
-            )
-        ),
-        (
-            '制度',
-            (
-                '制度',
-                '養成',
-                '確保',
-                '厚生労働省',
-                '医政'
-            )
-        ),
-    ]
-
-    for cat, terms in rules:
-        if any(
-            k.lower() in t
-            for k in terms
-        ):
+    for cat, terms in CATEGORY_RULES:
+        if any(_term_in(k, t) for k in terms):
             return cat
 
     return 'その他'
@@ -1000,11 +952,8 @@ def clean_db(db):
         seen_urls.update(a.get('url') for a in x.get('also') or [])
         kept.append((k, x))
 
-        x['category'] = (
-            x.get('category')
-            if x.get('category') in CATEGORIES
-            else category(x)
-        )
+        # 分類ルールの改善を過去分にも反映する(手動指定のカテゴリは後で上書きされる)
+        x['category'] = category(x)
         x['importance'] = importance(
             x,
             is_official(x.get('url', '')) or x.get('source') == 'JART'
@@ -1223,6 +1172,15 @@ def main():
     final = final[:200]
     NEWS_JSON.write_text(
         json.dumps(final, ensure_ascii=False, indent=2),
+        encoding='utf-8'
+    )
+
+    META_JSON.write_text(
+        json.dumps({
+            'checked_at': datetime.now(JST).isoformat(timespec='minutes'),
+            'added': len(added),
+            'total': len(final),
+        }, ensure_ascii=False, indent=2),
         encoding='utf-8'
     )
 
