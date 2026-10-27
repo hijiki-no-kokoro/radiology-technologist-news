@@ -772,14 +772,62 @@ def apply_curated_specialist(item):
 
 
 def canonical_title(title):
-    """Collapse duplicate Google News titles that differ only by source suffix."""
-    return norm(re.sub(r'\s+-\s+(?:jsrt\.or\.jp|日本放射線技術学会)$', '', str(title or ''), flags=re.I))
+    """Collapse duplicate titles that differ only by outlet name or decoration.
+
+    Google News titles end with " - 媒体名", syndicated copies add "【画像】" or
+    "(東海テレビ)", and JART's own list prefixes "2026/10/19 お知らせ".
+    """
+    t = str(title or '').strip()
+    t = re.sub(r'\s+-\s+[^-]{1,40}$', '', t)                      # " - ライブドアニュース"
+    # "(東海テレビ)" "（PR TIMES）" のような媒体名だけを外す。
+    # "（2026/10/14更新）" "（第3部）" のように記事を区別する括弧は残す。
+    m = re.search(r'\s*[\(（]([^()（）]{1,20})[\)）]\s*$', t)
+    if m and not re.search(r'[0-9０-９第部章編回版号更新]', m.group(1)):
+        t = t[:m.start()]
+    t = re.sub(r'\s*\d+枚目/全\d+枚.*$', '', t)                    # "3枚目/全44枚 1448871"
+    t = re.sub(r'^\s*【画像】\s*', '', t)
+    t = re.sub(r'^\s*\d{4}/\d{1,2}/\d{1,2}\s+(?:お知らせ|会告/告示|会告|告示)?\s*', '', t)
+    return norm(t)
+
+
+MIN_PREFIX_MATCH = 24
+
+
+def same_story(a, b):
+    """True when two canonical titles are the same story (one may be truncated)."""
+    if not a or not b:
+        return False
+    if a == b:
+        return True
+    short, long_ = sorted((a, b), key=len)
+    return len(short) >= MIN_PREFIX_MATCH and long_.startswith(short)
+
+
+def find_story(key, kept):
+    """Return the already-kept item whose title is the same story as key."""
+    for k, item in kept:
+        if same_story(key, k):
+            return item
+    return None
+
+
+def merge_duplicate(keep, dup):
+    """Record a duplicate's outlet on the kept item instead of discarding it."""
+    also = keep.setdefault('also', [])
+    urls = {keep.get('url')} | {a.get('url') for a in also}
+    for entry in [{'source': dup.get('source'), 'url': dup.get('url')}] + list(dup.get('also') or []):
+        if entry.get('url') and entry['url'] not in urls:
+            also.append({'source': entry.get('source') or dom(entry['url']), 'url': entry['url']})
+            urls.add(entry['url'])
+    if not also:
+        keep.pop('also', None)
 
 
 def clean_db(db):
     today = datetime.now(JST).date()
     out = []
-    seen = set()
+    kept = []  # (canonical title, item)
+    seen_urls = set()
 
     for x in db:
         try:
@@ -803,12 +851,24 @@ def clean_db(db):
             continue
 
         x = apply_curated_specialist(x)
-        k = canonical_title(x.get('headline')) or x.get('url')
+        k = canonical_title(x.get('headline'))
 
-        if not k or k in seen:
+        if not k and not x.get('url'):
             continue
 
-        seen.add(k)
+        if x.get('url') in seen_urls:
+            continue
+
+        # 同じ記事の別媒体版は捨てずに、残す1件の「他の配信元」に記録する。
+        original = find_story(k, kept) if k else None
+        if original is not None:
+            merge_duplicate(original, x)
+            seen_urls.add(x.get('url'))
+            continue
+
+        seen_urls.add(x.get('url'))
+        seen_urls.update(a.get('url') for a in x.get('also') or [])
+        kept.append((k, x))
 
         x['category'] = (
             x.get('category')
@@ -883,11 +943,16 @@ def main():
 
     db = clean_db(load())
 
-    seen = {
-        norm(x.get('headline'))
-        or x.get('url')
-        for x in db
-    }
+    known_titles = [canonical_title(x.get('headline')) for x in db]
+    known_urls = {x.get('url') for x in db}
+    for x in db:
+        known_urls.update(a.get('url') for a in x.get('also') or [])
+
+    def is_known(item):
+        if item['url'] in known_urls:
+            return True
+        k = canonical_title(item['title'])
+        return any(same_story(k, t) for t in known_titles)
 
     candidates = {}
 
@@ -901,12 +966,7 @@ def main():
         except Exception:
             continue
 
-        k = (
-            norm(x['title'])
-            or x['url']
-        )
-
-        if k not in seen:
+        if not is_known(x):
             candidates[x['url']] = x
 
     # Google News RSS
@@ -931,12 +991,7 @@ def main():
                 if not is_news_item(x):
                     continue
 
-                k = (
-                    norm(x['title'])
-                    or x['url']
-                )
-
-                if k not in seen:
+                if not is_known(x):
                     candidates[x['url']] = x
 
         except Exception as e:
@@ -983,10 +1038,12 @@ def main():
     added = []
     specialist_titles = set()
 
-    for x in specialist[:5]:
-        k = norm(x['title'])
+    for x in specialist:
+        if len(specialist_titles) >= 5:
+            break
+        k = canonical_title(x['title'])
 
-        if not k or k in specialist_titles:
+        if not k or any(same_story(k, t) for t in specialist_titles):
             continue
 
         specialist_titles.add(k)
@@ -1006,13 +1063,12 @@ def main():
 
     general_titles = set()
 
-    for x in general[:5]:
-        k = norm(x['title'])
+    for x in general:
+        if len(general_titles) >= 5:
+            break
+        k = canonical_title(x['title'])
 
-        if not k or k in specialist_titles:
-            continue
-
-        if k in general_titles:
+        if not k or any(same_story(k, t) for t in specialist_titles | general_titles):
             continue
 
         general_titles.add(k)
