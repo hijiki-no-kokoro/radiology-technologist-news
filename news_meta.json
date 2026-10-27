@@ -1,5 +1,33 @@
 {
-  "checked_at": "2026-10-27T13:36+09:00",
-  "added": 10,
-  "total": 132
+  "checked_at": "2026-10-27T13:39+09:00",
+  "added": 2,
+  "total": 132,
+  "sources": {
+    "医療機能評価機構": {
+      "picked": 3
+    },
+    "PMDA": {
+      "picked": 0
+    },
+    "日本放射線技術学会": {
+      "listed": 32,
+      "picked": 5
+    },
+    "日本医学放射線学会": {
+      "listed": 10,
+      "picked": 5
+    },
+    "日本核医学会": {
+      "listed": 10,
+      "picked": 3
+    },
+    "厚生労働省": {
+      "listed": 105,
+      "picked": 2
+    },
+    "技師会の研修一覧": {
+      "listed": 12,
+      "upcoming": 12
+    }
+  }
 }
