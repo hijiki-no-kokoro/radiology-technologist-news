@@ -1,5 +1,5 @@
 {
-  "checked_at": "2026-10-27T18:15+09:00",
+  "checked_at": "2026-10-27T18:19+09:00",
   "added": 1,
   "total": 165,
   "sources": {
@@ -84,8 +84,8 @@
     "PMDA回収クラスI": {
       "listed": 0,
       "picked": 0,
-      "sample": "ファイルダウンロード</A> &#x3000;<A HREF=\"./rcidx26-1k_all.zip\">CSVダウンロード</A> </TD> </TR> </TABLE> <BODY BGCOLOR=\"white\" LINK=\"#0000FF\" ALINK=\"#008000\" VLINK=\"#800080\"> <TABLE cellSpacing=0 cellPadding=1 width=\"100%\" bgColor=#ceffff border=1> <THEAD> <TR bgColor=#7777aa> <TH noWrap><FONT color=white>番号</FONT></TH> <TH noWrap><FONT color=white>掲載年月日</FONT></TH> <TH noWrap><FONT color=white>種類</FONT></TH> <TH><FONT color=white>一般名</FONT></TH> <TH><FONT color=white>販売名</FONT></TH> <TH><FONT color=white>製造販売業者等名称</FONT></TH> <TH noWrap><FONT color=white>備考</FONT></TH> </TR> </THEAD> </TBODY> <TR><TD NOWRAP>1-2475</TD><TD NOWRAP>2026/06/01</TD><TD>医療機器</TD><TD>大動脈用ステントグラフト</TD><TD><A HREF=/rgo/MainServlet?recallno=1-2475 TARGET=_blank >ＲｅｌａｙＰｒｏ 胸部ステントグラフトシステム</A></TD><TD>テルモ株式会社</TD><TD> </TD></TR> </TBODY><script type=\"text/javascript\" src=\"/bnith__0ybeFO5I5GN9FTUEKg-rhcs1e1fJGIJO_8h2ENlYmOcNiwc6GRYPNjvjNwo0BxCH_B7NTczlK_U=\"></script> <script language=\"JavaScript\" type=\"text/javascript\">const _0x35e",
-      "bytes": 3131
+      "sample": "ファイルダウンロード</A> &#x3000;<A HREF=\"./rcidx26-1k_all.zip\">CSVダウンロード</A> </TD> </TR> </TABLE> <BODY BGCOLOR=\"white\" LINK=\"#0000FF\" ALINK=\"#008000\" VLINK=\"#800080\"> <TABLE cellSpacing=0 cellPadding=1 width=\"100%\" bgColor=#ceffff border=1> <THEAD> <TR bgColor=#7777aa> <TH noWrap><FONT color=white>番号</FONT></TH> <TH noWrap><FONT color=white>掲載年月日</FONT></TH> <TH noWrap><FONT color=white>種類</FONT></TH> <TH><FONT color=white>一般名</FONT></TH> <TH><FONT color=white>販売名</FONT></TH> <TH><FONT color=white>製造販売業者等名称</FONT></TH> <TH noWrap><FONT color=white>備考</FONT></TH> </TR> </THEAD> </TBODY> <TR><TD NOWRAP>1-2475</TD><TD NOWRAP>2026/06/01</TD><TD>医療機器</TD><TD>大動脈用ステントグラフト</TD><TD><A HREF=/rgo/MainServlet?recallno=1-2475 TARGET=_blank >ＲｅｌａｙＰｒｏ 胸部ステントグラフトシステム</A></TD><TD>テルモ株式会社</TD><TD> </TD></TR> </TBODY><script type=\"text/javascript\" src=\"/bnith__HOHGaqGpvl006I44MCP0jQxZCTdYR1uJOp5JgKlUrzQWMjvtwEHe1fy2mTxlG1F7\"></script> <script language=\"JavaScript\" type=\"text/javascript\">const _0x35e8=['visitorI",
+      "bytes": 3119
     },
     "PMDA回収クラスII": {
       "listed": 26,
@@ -96,18 +96,18 @@
       "limited": 28
     },
     "日本放射線技術学会雑誌": {
-      "listed": 0,
-      "sample": "<?xml version=\"1.0\" encoding=\"utf-8\"?> <feed xmlns=\"http://www.w3.org/2005/Atom\" xml:lang=\"ja\"> <title>J-STAGE</title> <link href=\"http://www.jstage.jst.go.jp/browse/-char/ja\"/> <subtitle>科学技術情報発信・流通総合システム</subtitle> <updated>2026-10-27T03:53:34+09:00</updated> <rights>国立研究開発法人 科学技術振興機構 [JST]</rights> <id>tag:jstage.jst.go.jp:/WhatsNew/ja</id> <entry> <title><![CDATA[新着記事を登載しました。日本放射線技術学会雑誌]]></title> <link href=\"http://www.jstage.jst.go.jp/browse/jjrt/-char/ja\"/> <summary><![CDATA[ [ タイトル ] 先天性心疾患に対する小児心臓CTにおけるsplit-bolus法の有用性 [ 著者 ] 池野 裕介,森下 勝 [ 公開日 ] 2026-10-21 [ DOI ] https://doi.org/10.6009/jjrt.26-1700 ]]></summary> <id>tag:jstage.jst.go.jp:/WhatsNew/ja/NewArticle/jjrt_82_12_82_26-1700",
-      "added": 0
+      "listed": 13,
+      "feed_entries": 13,
+      "added": 13
     },
     "日本消化器がん検診学会雑誌": {
-      "listed": 0,
-      "sample": "<?xml version=\"1.0\" encoding=\"utf-8\"?> <feed xmlns=\"http://www.w3.org/2005/Atom\" xml:lang=\"ja\"> <title>J-STAGE</title> <link href=\"http://www.jstage.jst.go.jp/browse/-char/ja\"/> <subtitle>科学技術情報発信・流通総合システム</subtitle> <updated>2026-10-27T03:54:11+09:00</updated> <rights>国立研究開発法人 科学技術振興機構 [JST]</rights> <id>tag:jstage.jst.go.jp:/WhatsNew/ja</id> <entry> <title><![CDATA[新着記事を登載しました。日本消化器がん検診学会雑誌]]></title> <link href=\"http://www.jstage.jst.go.jp/browse/jsgcs/-char/ja\"/> <summary><![CDATA[ [ タイトル ] 講演プログラム [ 著者 ] [ 公開日 ] 2026-10-15 [ DOI ] https://doi.org/10.11404/jsgcs.64.993 ]]></summary> <id>tag:jstage.jst.go.jp:/WhatsNew/ja/NewArticle/jsgcs_64_Supplement2_64_64.993</id> <updated>2026-10-27T",
-      "added": 0
+      "listed": 33,
+      "feed_entries": 40,
+      "added": 33
     },
     "日本乳癌検診学会誌": {
       "listed": 0,
-      "sample": "<?xml version=\"1.0\" encoding=\"utf-8\"?> <feed xmlns=\"http://www.w3.org/2005/Atom\" xml:lang=\"ja\"> <title>J-STAGE</title> <link href=\"http://www.jstage.jst.go.jp/browse/-char/ja\"/> <subtitle>科学技術情報発信・流通総合システム</subtitle> <updated>2026-10-27T03:54:26+09:00</updated> <rights>国立研究開発法人 科学技術振興機構 [JST]</rights> <id>tag:jstage.jst.go.jp:/WhatsNew/ja</id> </feed> ",
+      "feed_entries": 0,
       "added": 0
     },
     "香川県技師会の予定表": {
