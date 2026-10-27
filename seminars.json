@@ -1,5 +1,5 @@
 {
- "checked_at": "2026-10-27T13:47+09:00",
+ "checked_at": "2026-10-27T17:19+09:00",
  "items": [
   {
    "title": "2026年度第1回 STAT画像所見報告セミナー",
@@ -132,6 +132,66 @@
    "apply_start": "2026-09-15",
    "apply_end": "2027-01-08",
    "place": "JART"
+  },
+  {
+   "title": "大阪府診療放射線技師会マンモグラフィ技術講習会",
+   "url": "https://www.qabcs.or.jp/mmg_g/schedule/270313_osaka.html",
+   "kind": "精中機構",
+   "status": "",
+   "event_start": "2027-03-13",
+   "event_end": "2027-03-13",
+   "apply_start": "",
+   "apply_end": "",
+   "place": "大阪",
+   "category": "マンモグラフィ"
+  },
+  {
+   "title": "第24回乳房超音波技術画像試験",
+   "url": "https://www.qabcs.or.jp/us/schedule_us_test_g/270313_fukuoka.html",
+   "kind": "精中機構",
+   "status": "",
+   "event_start": "2027-03-13",
+   "event_end": "2027-03-13",
+   "apply_start": "",
+   "apply_end": "",
+   "place": "福岡",
+   "category": "超音波"
+  },
+  {
+   "title": "第41回乳房超音波技術講習会",
+   "url": "https://www.qabcs.or.jp/us/schedule_us_g/270313%EF%BC%BFfukuoka.html",
+   "kind": "精中機構",
+   "status": "",
+   "event_start": "2027-03-13",
+   "event_end": "2027-03-13",
+   "apply_start": "",
+   "apply_end": "",
+   "place": "",
+   "category": "超音波"
+  },
+  {
+   "title": "第53回乳房超音波技術更新講習会",
+   "url": "https://www.qabcs.or.jp/us/schedule_us_update_g/270313_fukuoka.html",
+   "kind": "精中機構",
+   "status": "",
+   "event_start": "2027-03-13",
+   "event_end": "2027-03-13",
+   "apply_start": "",
+   "apply_end": "",
+   "place": "福岡",
+   "category": "超音波"
+  },
+  {
+   "title": "第３回京都乳房超音波技術講習会",
+   "url": "https://www.qabcs.or.jp/us/schedule_us_g/270321_kyoto.html",
+   "kind": "精中機構",
+   "status": "",
+   "event_start": "2027-03-21",
+   "event_end": "2027-03-21",
+   "apply_start": "",
+   "apply_end": "",
+   "place": "京都",
+   "category": "超音波"
   }
  ]
 }

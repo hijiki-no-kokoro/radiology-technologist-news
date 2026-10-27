@@ -1,7 +1,7 @@
 {
-  "checked_at": "2026-10-27T13:47+09:00",
-  "added": 0,
-  "total": 138,
+  "checked_at": "2026-10-27T17:19+09:00",
+  "added": 5,
+  "total": 143,
   "sources": {
     "医療機能評価機構": {
       "picked": 3
@@ -22,12 +22,19 @@
       "picked": 3
     },
     "厚生労働省": {
-      "listed": 105,
+      "listed": 110,
       "picked": 0
     },
+    "日本消化器がん検診学会": {
+      "listed": 43,
+      "picked": 5
+    },
+    "精中機構の講習会": {
+      "listed": 5
+    },
     "技師会の研修一覧": {
-      "listed": 12,
-      "upcoming": 12
+      "listed": 17,
+      "upcoming": 17
     },
     "メール通知": {
       "result": "no-items",

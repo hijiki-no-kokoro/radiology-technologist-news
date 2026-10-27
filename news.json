@@ -1,5 +1,60 @@
 [
   {
+    "date": "2026-10-20",
+    "category": "学術",
+    "importance": "中",
+    "headline": "学会誌64巻Suppl（第64回大会抄録号）が公開されました。",
+    "summary": "",
+    "why": "",
+    "source": "日本消化器がん検診学会",
+    "url": "https://www.jsgcs.or.jp/news/archives/1146",
+    "track": "general"
+  },
+  {
+    "date": "2026-10-16",
+    "category": "CT",
+    "importance": "中",
+    "headline": "2026年度大腸CT検査技師認定証発送について",
+    "summary": "",
+    "why": "",
+    "source": "日本消化器がん検診学会",
+    "url": "https://www.jsgcs.or.jp/news/archives/1144",
+    "track": "official"
+  },
+  {
+    "date": "2026-10-15",
+    "category": "制度",
+    "importance": "中",
+    "headline": "認定指導施設と指導医の保留制度の導入に伴う「認定医制度委員会の運営、指導医・認定指導施設に関する共通施行細則」の一部改正について",
+    "summary": "",
+    "why": "",
+    "source": "日本消化器がん検診学会",
+    "url": "https://www.jsgcs.or.jp/news/archives/1143",
+    "track": "general"
+  },
+  {
+    "date": "2026-10-13",
+    "category": "検診",
+    "importance": "中",
+    "headline": "対策型大腸がん検診における免疫便潜血検査陽性者に対する精密検査の基本的考え方",
+    "summary": "",
+    "why": "",
+    "source": "日本消化器がん検診学会",
+    "url": "https://www.jsgcs.or.jp/importants/archives/51",
+    "track": "general"
+  },
+  {
+    "date": "2026-10-08",
+    "category": "その他",
+    "importance": "中",
+    "headline": "2026年度 第2回代議員会開催（JDDW開催時）について",
+    "summary": "",
+    "why": "興味のある内容なら、開催日と申込期限を確認しておきましょう。",
+    "source": "日本消化器がん検診学会",
+    "url": "https://www.jsgcs.or.jp/news/archives/1138",
+    "track": "general"
+  },
+  {
     "date": "2026-10-27",
     "category": "超音波",
     "importance": "低",
