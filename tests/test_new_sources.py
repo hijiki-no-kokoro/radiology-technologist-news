@@ -167,3 +167,14 @@ def test_new_societies_are_relevant_and_categorized():
          'source': '日本CT検診学会', 'url': 'https://www.jscts.org/index.php#news175'}
     assert u.relevant(x) and u.is_official(x['url'])
     assert u.category(x) == '検診'
+
+
+REAL_RECALL_ROWS = '''<THEAD><TR bgColor=#7777aa><TH noWrap><FONT color=white>番号</FONT></TH></TR></THEAD> </TBODY>
+<TR><TD NOWRAP>2-13015</TD><TD NOWRAP>2026/10/27</TD><TD>医療機器</TD><TD>放射線治療計画プログラム</TD><TD><A HREF=/rgo/MainServlet?recallno=2-13015 TARGET=_blank >放射線治療計画ソフトウェア ＲａｙＳｔａｔｉｏｎ</A></TD><TD>レイサーチ・ジャパン株式会社</TD><TD> </TD></TR>
+<TR><TD NOWRAP>2-13013</TD><TD NOWRAP>2026/10/27</TD><TD>医療機器</TD><TD>耳かけ型補聴器</TD><TD><A HREF=/rgo/MainServlet?recallno=2-13013 TARGET=_blank >補聴器 ＨＢーＴ２Ｈ</A></TD><TD>ＷＳオーディオロジージャパン株式会社</TD><TD> </TD></TR>'''
+
+
+def test_pmda_real_markup_with_unquoted_href():
+    items = u.parse_pmda_recalls(REAL_RECALL_ROWS, 2)
+    assert [x['title'] for x in items] == ['医療機器の回収(クラスII)：放射線治療計画ソフトウェア RayStation(放射線治療計画プログラム)']
+    assert items[0]['url'] == 'https://www.info.pmda.go.jp/rgo/MainServlet?recallno=2-13015'

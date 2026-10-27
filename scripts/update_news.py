@@ -1,4 +1,4 @@
-import json, os, re, smtplib, xml.etree.ElementTree as ET
+import json, os, re, smtplib, unicodedata, xml.etree.ElementTree as ET
 from email.mime.text import MIMEText
 from datetime import datetime, timezone, timedelta
 from email.utils import parsedate_to_datetime
@@ -861,7 +861,7 @@ SPECIALTY_SOURCES = (
     ('日本乳癌検診学会', 'https://www.jabcs.jp/', 'blocks', 'マンモグラフィ', 'jp', None),
     ('日本CT検診学会', 'https://www.jscts.org/index.php?page=update', 'blocks', '検診', 'yy', None),
     ('日本放射線治療専門放射線技師認定機構', 'https://www.radiation-therapy.jp/news/index.shtml', 'blocks', '放射線治療', 'slash', None),
-    ('日本救急撮影技師認定機構', 'https://jert.info/?feed=rss2', 'rss', '教育', None, None),
+    ('日本救急撮影技師認定機構', 'https://jert.info/99/feed/', 'rss', '教育', None, None),
 )
 # 専門学会の記事で、分類が一般的なもの(その他・学術・教育・制度)になった場合は学会の分野を使う
 SPECIALTY_DEFAULT_CATEGORY = {name: cat for name, _, _, cat, *_ in SPECIALTY_SOURCES}
@@ -1070,13 +1070,13 @@ def parse_pmda_recalls(html, cls):
     """<tr><td>2-13015</td><td>2026/10/27</td><td>医療機器</td><td>一般名</td><td><a href="/rgo/MainServlet?recallno=…">販売名</a></td><td>業者</td>"""
     out = []
     for row in re.split(r'<tr[\s>]', html, flags=re.I)[1:]:
-        cells = re.findall(r'<td[^>]*>(.*?)</td>', row, re.S | re.I)
+        cells = re.findall(r'<td[^>]*>(.*?)</td>', row, re.S | re.I)   # 全角英数(ＣＴ・ＲａｙＳｔａｔｉｏｎ)は半角にそろえる
         if len(cells) < 6:
             continue
         no, day, kind, generic, product_html, maker = cells[:6]
         d = re.search(r'(20\d{2})/(\d{1,2})/(\d{1,2})', day)
-        a = re.search(r'href=["\']([^"\']+)["\']', product_html)
-        generic, product, maker = clean_html(generic), clean_html(product_html), clean_html(maker)
+        a = re.search(r'href=["\']?([^"\'\s>]+)', product_html, re.I)   # PMDAは引用符なしの HREF=/rgo/…
+        generic, product, maker = (unicodedata.normalize('NFKC', clean_html(v)) for v in (generic, product_html, maker))
         if not (d and a) or not any(t in generic + product for t in RECALL_DEVICE_TERMS):
             continue
         dt = _to_date(*d.groups())
