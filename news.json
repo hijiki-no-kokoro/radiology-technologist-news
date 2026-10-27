@@ -1,6 +1,72 @@
 [
   {
     "date": "2026-10-27",
+    "category": "その他",
+    "importance": "中",
+    "headline": "［案内板］【JST-RISTEX】12/1（火）SOLVEトラスト枠 公開イベント開催のご案内",
+    "summary": "",
+    "why": "興味のある内容なら、開催日と申込期限を確認しておきましょう。",
+    "source": "日本放射線技術学会",
+    "url": "https://www.jsrt.or.jp/data/news/70512/",
+    "track": "general"
+  },
+  {
+    "date": "2026-10-25",
+    "category": "学術",
+    "importance": "中",
+    "headline": "［案内板］原子力規制委員会行政職員（技術系および研究職）の公募（2026年11月30日締切）",
+    "summary": "",
+    "why": "応募条件と締切を確認しておきましょう。",
+    "source": "日本放射線技術学会",
+    "url": "https://www.jsrt.or.jp/data/news/70504/",
+    "track": "general"
+  },
+  {
+    "date": "2026-10-21",
+    "category": "教育",
+    "importance": "中",
+    "headline": "日本専門医機構認定放射線科領域専門研修プログラム",
+    "summary": "",
+    "why": "興味のある内容なら、開催日と申込期限を確認しておきましょう。",
+    "source": "日本医学放射線学会",
+    "url": "https://www.radiology.jp/specialist/kikou_program.html",
+    "track": "official"
+  },
+  {
+    "date": "2026-10-26",
+    "category": "核医学",
+    "importance": "中",
+    "headline": "Lu-177-PSMA-I&T治験適正使用マニュアル(第2版)を掲載",
+    "summary": "",
+    "why": "",
+    "source": "日本核医学会",
+    "url": "https://jsnm.org/archives/10435/",
+    "track": "official"
+  },
+  {
+    "date": "2026-10-20",
+    "category": "核医学",
+    "importance": "中",
+    "headline": "日本脳神経核医学研究会 学術奨励賞のお知らせ",
+    "summary": "",
+    "why": "",
+    "source": "日本核医学会",
+    "url": "https://jsnm.org/archives/10431/",
+    "track": "official"
+  },
+  {
+    "date": "2026-10-10",
+    "category": "その他",
+    "importance": "高",
+    "headline": "ピロリン酸テクネチウム（99mTc）注射液の保険診療上の取扱いについて",
+    "summary": "",
+    "why": "",
+    "source": "日本核医学会",
+    "url": "https://jsnm.org/archives/10420/",
+    "track": "official"
+  },
+  {
+    "date": "2026-10-27",
     "category": "安全管理",
     "importance": "高",
     "headline": "医療安全情報 No.239：患者の体内に植込まれた医療機器等の不十分な確認（第２報）",
