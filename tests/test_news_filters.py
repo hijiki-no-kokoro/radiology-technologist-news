@@ -146,6 +146,7 @@ def test_fluoroscopy_news_is_relevant():
     ('超音波スクリーニング研修講演会2026東京のご案内', '超音波'),
     ('腹部エコー検査の描出のコツ', '超音波'),
     ('マンモグラフィーと超音波検査の併用は慎重にすべき？乳がん検診', 'マンモグラフィ'),   # マンモを優先
+    ('妊婦健診のエコー検査で胎児が小さめと言われたら', '超音波'),
 ])
 def test_angio_and_ultrasound_category(headline, expected):
     assert u.category(item(headline)) == expected
@@ -169,3 +170,7 @@ def test_mammography_category(headline):
 
 def test_gastric_screening_stays_in_screening():
     assert u.category(item('胃がん検診の胃部X線検査で使うバリウムの改良')) == '検診'
+
+
+def test_market_research_without_the_word_market_is_excluded():
+    assert not u.is_news_item(item('デジタルサブトラクションアンギオグラフィーシステムマーケットリサーチ：調査方法＋業界分析＋売上規模、年平均成長率（CAGR）', 'pando.co'))

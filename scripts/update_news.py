@@ -513,6 +513,8 @@ def is_market_report(x):
     source = str(x.get('source') or '').lower()
     if any(s in source for s in MARKET_REPORT_SOURCES):
         return True
+    if re.search(r'マーケットリサーチ|マーケット調査|市場調査レポート|CAGR|年平均成長率', title, flags=re.I):
+        return True
     if '市場' not in title:
         return False
     return bool(re.search(
@@ -860,12 +862,13 @@ CATEGORY_RULES = (
                 'SPECT', 'PET', 'MIBG', 'Ac225', 'Lu-177', 'ルテチウム', '99mTc', 'テクネチウム', 'PSMA')),
     ('血管撮影', ('血管撮影', 'アンギオ', 'IVR', 'インターベンショナル', 'DSA', '心カテ', '心臓カテーテル',
                   'カテーテル治療', '血管内治療', '脳血管内')),
-    # マンモグラフィ: 乳がん検診の記事もこちら(検診より先に判定)
+    # マンモグラフィ: 乳がん検診の記事もこちら(超音波・検診より先に判定)
     ('マンモグラフィ', ('マンモ', '乳房撮影', '乳房X線', 'トモシンセシス', '乳がん検診', '乳癌検診', '精度管理中央機構')),
+    # 超音波: 「妊婦健診のエコー」などは検診より超音波として扱う
+    ('超音波', ('超音波', 'エコー検査', 'エコー', 'ultrasound', 'ultrasonography')),
     # 検診: 胃透視など検診で行う撮影も含める(CT・一般撮影より先に判定)
     ('検診', ('検診', '健診', '人間ドック', 'ドック', '胃透視', '胃X線', '胃部X線', 'バリウム', '上部消化管造影',
               '対策型', '任意型', '消化器がん検診', '読影認定')),
-    ('超音波', ('超音波', 'エコー検査', 'エコー', 'ultrasound', 'ultrasonography')),
     ('CT', ('CT', 'コンピュータ断層', 'computed tomography', 'フォトンカウンティング')),
     ('MRI', ('MRI', 'MR研究会', '磁気共鳴', 'magnetic resonance', 'テスラ')),
     ('一般撮影', ('一般撮影', '単純X線', 'X線撮影', 'レントゲン', 'FPD', '骨密度', '透視', '生殖腺')),
