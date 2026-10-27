@@ -78,3 +78,15 @@ def test_specialty_source_category_default(monkeypatch):
 def test_specialty_sources_are_configured():
     names = {n for n, *_ in u.SPECIALTY_SOURCES}
     assert {'日本放射線腫瘍学会', '日本磁気共鳴医学会', '日本IVR学会', '日本超音波医学会', '日本核医学技術学会', '日本CT技術学会', '日本医学物理学会'} <= names
+
+
+def test_society_guideline_is_high():
+    x = {'headline': 'IVR手技施行に関する診療体制についてのガイドライン', 'summary': '', 'source': '日本IVR学会', 'url': 'https://www.jsir.or.jp/x/'}
+    assert u.importance(x, False) == '高'
+    x['importance'] = '高'
+    assert 'プロトコル' in u.technologist_note(x)
+
+
+def test_guideline_seminar_or_public_comment_is_not_high():
+    for h in ('医療情報システム安全管理ガイドライン対応研修プログラムのご案内', '「画像診断ガイドライン」パブリックコメント募集'):
+        assert u.importance({'headline': h, 'summary': '', 'source': '日本医学放射線学会', 'url': 'https://www.radiology.jp/x'}, False) == '中'

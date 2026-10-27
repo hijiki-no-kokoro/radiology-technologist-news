@@ -1223,7 +1223,8 @@ def importance(x, official):
         return '低'
 
     # 「画像診断ガイドライン2026年度版の全記事の公開」のように語が離れている場合も拾う
-    guideline_release = re.search(r'(ガイドライン|指針).{0,30}(公開|公表|改訂|発刊|刊行)', t)
+    guideline_release = re.search(r'(ガイドライン|指針).{0,30}(公開|公表|改訂|発刊|刊行)', t) \
+        or (official and re.search(r'ガイドライン|指針|提言|勧告', t) and not re.search(r'研修|セミナー|講習|講演|募集|パブリックコメント|対応研修', t))
     # 学会・団体の声明は撮影手技の見直しなど実務に直結する
     official_statement = official and '声明' in t
 
@@ -1285,7 +1286,10 @@ def technologist_note(x):
         str(x.get(k) or '') for k in ('title', 'headline', 'description', 'summary')
     ).lower()
     flags = {
-        '__guideline_release__': bool(re.search(r'(ガイドライン|指針).{0,30}(公開|公表|改訂|発刊|刊行)', t)),
+        '__guideline_release__': bool(re.search(r'(ガイドライン|指針).{0,30}(公開|公表|改訂|発刊|刊行)', t)
+                                      or ((is_official(x.get('url', '')) or is_official_source(x))
+                                          and re.search(r'ガイドライン|指針|提言|勧告', t)
+                                          and not re.search(r'研修|セミナー|講習|講演|募集|パブリックコメント', t))),
         # 「開催報告」「開催遅延」「中止」は申込を促す案内ではない
         '__event__': any(k.lower() in t for k in EVENT_TERMS)
         and not any(k in t for k in ('報告', '遅延', '中止', '延期')),
