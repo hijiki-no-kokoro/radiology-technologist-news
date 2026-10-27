@@ -178,3 +178,13 @@ def test_pmda_real_markup_with_unquoted_href():
     items = u.parse_pmda_recalls(REAL_RECALL_ROWS, 2)
     assert [x['title'] for x in items] == ['医療機器の回収(クラスII)：放射線治療計画ソフトウェア RayStation(放射線治療計画プログラム)']
     assert items[0]['url'] == 'https://www.info.pmda.go.jp/rgo/MainServlet?recallno=2-13015'
+
+
+def test_recall_terms_match_whole_words():
+    assert not u.recall_is_imaging('ARCHITECT アナライザー i2000SR(免疫発光測定装置)')
+    assert not u.recall_is_imaging('VuePoint II OCT フィクセイションシステム(脊椎内固定器具)')
+    assert u.recall_is_imaging('(1)CTスキャナ Aquilion ONE TSX‐308A')
+    assert u.recall_is_imaging('ＣＴスキャナ')
+    assert u.recall_is_imaging('アーティス icono(据置型デジタル式循環器用X線透視診断装置)')
+    x = {'headline': '医療機器の回収(クラスII)：ARCHITECT アナライザー i2000SR(免疫発光測定装置)', 'url': 'https://www.info.pmda.go.jp/rgo/MainServlet?recallno=2-1'}
+    assert not u.relevant(x)

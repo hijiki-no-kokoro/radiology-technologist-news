@@ -358,6 +358,8 @@ def article_text(x):
 
 def relevant(x):
     # 医療安全情報は取得時に放射線関連だけを選んでいるので、そのまま残す
+    if 'recallno=' in x.get('url', ''):   # PMDAの医療機器回収は放射線関連の機器だけ
+        return recall_is_imaging(x.get('headline') or x.get('title') or '')
     if dom(x.get('url', '')) in SAFETY_INFO_DOMAINS:
         return True
     # 医薬品の供給状況は、取得時に造影剤・放射性医薬品だけを選んでいる
@@ -1066,6 +1068,12 @@ RECALL_DEVICE_TERMS = (
 )
 
 
+def recall_is_imaging(text):
+    """英字の語は単語単位で見る(「ARCHITECT」「OCT」の CT に当てないため)。"""
+    t = unicodedata.normalize('NFKC', text).lower()
+    return any(_term_in(unicodedata.normalize('NFKC', k), t) for k in RECALL_DEVICE_TERMS)
+
+
 def parse_pmda_recalls(html, cls):
     """<tr><td>2-13015</td><td>2026/10/27</td><td>医療機器</td><td>一般名</td><td><a href="/rgo/MainServlet?recallno=…">販売名</a></td><td>業者</td>"""
     out = []
@@ -1077,7 +1085,7 @@ def parse_pmda_recalls(html, cls):
         d = re.search(r'(20\d{2})/(\d{1,2})/(\d{1,2})', day)
         a = re.search(r'href=["\']?([^"\'\s>]+)', product_html, re.I)   # PMDAは引用符なしの HREF=/rgo/…
         generic, product, maker = (unicodedata.normalize('NFKC', clean_html(v)) for v in (generic, product_html, maker))
-        if not (d and a) or not any(t in generic + product for t in RECALL_DEVICE_TERMS):
+        if not (d and a) or not recall_is_imaging(generic + ' ' + product):
             continue
         dt = _to_date(*d.groups())
         out.append({
@@ -1255,7 +1263,8 @@ def direct_official_news():
     out = []
     for name, url, parser in sources:
         try:
-            items = parser(fetch(url))
+            page = fetch(url)
+            items = parser(page)
         except Exception as e:
             print(f'{name} direct error:', e)
             SOURCE_STATUS[name] = {'error': f'{type(e).__name__}: {e}'[:160]}
@@ -1279,6 +1288,8 @@ def direct_official_news():
                 break
         print(f'{name}: {len(items)} listed, {len(picked)} picked')
         SOURCE_STATUS[name] = {'listed': len(items), 'picked': len(picked)}
+        if not items:   # 1件も読めなかったときは、原因を調べられるようページの冒頭を残す
+            SOURCE_STATUS[name]['sample'] = re.sub(r'\s+', ' ', page[:700])
         out.extend(picked)
     return out
 
