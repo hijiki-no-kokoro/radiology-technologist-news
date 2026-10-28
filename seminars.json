@@ -1,5 +1,5 @@
 {
- "checked_at": "2026-10-27T18:21+09:00",
+ "checked_at": "2026-10-28T10:59+09:00",
  "items": [
   {
    "title": "第4回MRI Rookies セミナー開催のお知らせ",
@@ -136,6 +136,19 @@
    "status": "",
    "event_start": "2026-11-14",
    "event_end": "2026-11-14",
+   "apply_start": "",
+   "apply_end": "",
+   "place": "オンライン",
+   "category": "MRI",
+   "source": "日本磁気共鳴専門技術者認定機構"
+  },
+  {
+   "title": "第6回MRIfan.net Web講演会開催のお知らせ",
+   "url": "https://plaza.umin.ac.jp/~JMRTS/dl/MRIfannetdai6kai.pdf",
+   "kind": "JMRTS",
+   "status": "",
+   "event_start": "2026-11-18",
+   "event_end": "2026-11-18",
    "apply_start": "",
    "apply_end": "",
    "place": "オンライン",
