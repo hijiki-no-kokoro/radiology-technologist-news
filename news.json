@@ -2,6 +2,50 @@
   {
     "date": "2026-10-27",
     "category": "放射線治療",
+    "importance": "中",
+    "headline": "医学生・研修医セミナー30周年記念誌を掲載しました。",
+    "summary": "",
+    "why": "興味のある内容なら、開催日と申込期限を確認しておきましょう。",
+    "source": "日本放射線腫瘍学会",
+    "url": "https://www.jastro.or.jp/medicalpersonnel/event/student-seminar/30th-anniversary-magazine.pdf",
+    "track": "general"
+  },
+  {
+    "date": "2026-10-28",
+    "category": "安全管理",
+    "importance": "高",
+    "headline": "医療機器の回収(クラスII)：スペクトラル CT 7500(全身用X 線CT 診断装置)",
+    "summary": "株式会社フィリップス・ジャパン",
+    "why": "自施設に該当する機器・薬剤がないか確認しておきましょう。",
+    "source": "PMDA",
+    "url": "https://www.info.pmda.go.jp/rgo/MainServlet?recallno=2-13018",
+    "track": "official"
+  },
+  {
+    "date": "2026-10-28",
+    "category": "安全管理",
+    "importance": "高",
+    "headline": "医療機器の回収(クラスII)：超音波画像診断装置 EPIQ/Affiniti(汎用超音波画像診断装置)",
+    "summary": "株式会社フィリップス・ジャパン",
+    "why": "自施設に該当する機器・薬剤がないか確認しておきましょう。",
+    "source": "PMDA",
+    "url": "https://www.info.pmda.go.jp/rgo/MainServlet?recallno=2-13017",
+    "track": "official"
+  },
+  {
+    "date": "2026-10-29",
+    "category": "学術",
+    "importance": "低",
+    "headline": "Kaggleコンペティション「RSNA Knee Abnormality Detection」にて、Rist所属のKaggle Grandmaster Chenと劉がチームで優勝、金メダルを獲得 - AGARA 紀伊民報",
+    "summary": "",
+    "why": "",
+    "source": "AGARA 紀伊民報",
+    "url": "https://news.google.com/rss/articles/CBMiT0FVX3lxTE5QZ1VXMUVCbWFMd2Q5V2xTdEJkYWNlZlpyUUJYeFBiUUJqRmpBTV80amhsaEpLMHZNZlBKZVBSZTktX2JGcU9raG5zbTJaWm8?oc=5",
+    "track": "general"
+  },
+  {
+    "date": "2026-10-27",
+    "category": "放射線治療",
     "importance": "低",
     "headline": "超高再発リスクの前立腺癌にADT＋放射線療法にダロルタミド上乗せが有望【ESMO 2026】 - 日経メディカル",
     "summary": "",
