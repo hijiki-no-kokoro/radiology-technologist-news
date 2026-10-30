@@ -1,5 +1,55 @@
 [
   {
+    "date": "2026-10-29",
+    "category": "MRI",
+    "importance": "高",
+    "headline": "肝MRIによる脂肪定量の撮像・管理指針、細則",
+    "summary": "",
+    "why": "推奨内容の変更点を確認し、普段の撮影条件やプロトコルと照らし合わせておきましょう。",
+    "source": "日本医学放射線学会",
+    "url": "https://www.radiology.jp/guideline/20261029_01.html",
+    "track": "official",
+    "also": [
+      {
+        "source": "日本磁気共鳴医学会",
+        "url": "https://www.jsmrm.jp/modules/news/index.php?content_id=760"
+      }
+    ]
+  },
+  {
+    "date": "2026-10-29",
+    "category": "MRI",
+    "importance": "中",
+    "headline": "第30回MR実践・先端講座",
+    "summary": "",
+    "why": "",
+    "source": "日本磁気共鳴医学会",
+    "url": "https://www.jsmrm.jp/modules/news/index.php?content_id=759",
+    "track": "general"
+  },
+  {
+    "date": "2026-10-30",
+    "category": "放射線治療",
+    "importance": "低",
+    "headline": "相良病院がシーメンスヘルスケア、バリアンメディカルシステムズとパートナーシップ 5回照射による超寡分割放射線治療を開始 - ニッキンONLINE",
+    "summary": "",
+    "why": "",
+    "source": "ニッキンONLINE",
+    "url": "https://news.google.com/rss/articles/CBMiVkFVX3lxTE8ySXBuLWpIY3ZoUnhwM1F2bGpiQUg1cU9SV21uQkRfWXB1WkpMQ0JjUUloOTdpa05rbllLVm9LekNQSVA5a01oYlEzaUxDczV4eWJiWVdR?oc=5",
+    "track": "general"
+  },
+  {
+    "date": "2026-10-28",
+    "category": "マンモグラフィ",
+    "importance": "低",
+    "headline": "乳房をはさまない「痛くない乳がん検診」が第8回ヘルスケアベンチャー大賞で学会賞を受賞 - PR TIMES",
+    "summary": "",
+    "why": "",
+    "source": "PR TIMES",
+    "url": "https://news.google.com/rss/articles/CBMiakFVX3lxTE9XT2prdDI4WGlUemVhZTJLM3dIVzNkaVN5Qk0xVkEweVVBcFFSSUxHbkJjRTZNSE9lU29LS1ZNWklIODd4dXp6LUJEb1ZicTlKcTJDY3dpX0JHMU1BaDZOT3J1SVJEdTV4VUE?oc=5",
+    "track": "general"
+  },
+  {
     "date": "2026-10-27",
     "category": "放射線治療",
     "importance": "中",

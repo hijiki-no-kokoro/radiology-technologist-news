@@ -1,7 +1,7 @@
 {
-  "checked_at": "2026-10-29T11:03+09:00",
-  "added": 5,
-  "total": 170,
+  "checked_at": "2026-10-30T11:20+09:00",
+  "added": 6,
+  "total": 174,
   "sources": {
     "医療機能評価機構": {
       "picked": 3
@@ -22,12 +22,12 @@
       "picked": 3
     },
     "厚生労働省": {
-      "listed": 98,
+      "listed": 101,
       "picked": 0
     },
     "日本消化器がん検診学会": {
       "listed": 43,
-      "picked": 5
+      "picked": 4
     },
     "日本磁気共鳴専門技術者認定機構": {
       "listed": 79,
@@ -51,7 +51,7 @@
     },
     "日本磁気共鳴医学会": {
       "listed": 10,
-      "picked": 2
+      "picked": 3
     },
     "日本IVR学会": {
       "listed": 10,
@@ -79,13 +79,13 @@
     },
     "日本放射線治療専門放射線技師認定機構": {
       "listed": 1,
-      "picked": 1
+      "picked": 0
     },
     "PMDA回収クラスI": {
       "listed": 0,
       "picked": 0,
-      "sample": "ファイルダウンロード</A> &#x3000;<A HREF=\"./rcidx26-1k_all.zip\">CSVダウンロード</A> </TD> </TR> </TABLE> <BODY BGCOLOR=\"white\" LINK=\"#0000FF\" ALINK=\"#008000\" VLINK=\"#800080\"> <TABLE cellSpacing=0 cellPadding=1 width=\"100%\" bgColor=#ceffff border=1> <THEAD> <TR bgColor=#7777aa> <TH noWrap><FONT color=white>番号</FONT></TH> <TH noWrap><FONT color=white>掲載年月日</FONT></TH> <TH noWrap><FONT color=white>種類</FONT></TH> <TH><FONT color=white>一般名</FONT></TH> <TH><FONT color=white>販売名</FONT></TH> <TH><FONT color=white>製造販売業者等名称</FONT></TH> <TH noWrap><FONT color=white>備考</FONT></TH> </TR> </THEAD> </TBODY> <TR><TD NOWRAP>1-2475</TD><TD NOWRAP>2026/06/01</TD><TD>医療機器</TD><TD>大動脈用ステントグラフト</TD><TD><A HREF=/rgo/MainServlet?recallno=1-2475 TARGET=_blank >ＲｅｌａｙＰｒｏ 胸部ステントグラフトシステム</A></TD><TD>テルモ株式会社</TD><TD> </TD></TR> </TBODY><script type=\"text/javascript\" src=\"/bnith__oKXkoM9qwKFGfUQBt7o8zvJ7fbtL-WcqkgeZO5CVt7LKIOOSRej3kt9-hjIav24_3IQH-INlNNU=\"></script> <script language=\"JavaScript\" type=\"text/javascript\">const _0x35e",
-      "bytes": 3131
+      "sample": "ファイルダウンロード</A> &#x3000;<A HREF=\"./rcidx26-1k_all.zip\">CSVダウンロード</A> </TD> </TR> </TABLE> <BODY BGCOLOR=\"white\" LINK=\"#0000FF\" ALINK=\"#008000\" VLINK=\"#800080\"> <TABLE cellSpacing=0 cellPadding=1 width=\"100%\" bgColor=#ceffff border=1> <THEAD> <TR bgColor=#7777aa> <TH noWrap><FONT color=white>番号</FONT></TH> <TH noWrap><FONT color=white>掲載年月日</FONT></TH> <TH noWrap><FONT color=white>種類</FONT></TH> <TH><FONT color=white>一般名</FONT></TH> <TH><FONT color=white>販売名</FONT></TH> <TH><FONT color=white>製造販売業者等名称</FONT></TH> <TH noWrap><FONT color=white>備考</FONT></TH> </TR> </THEAD> </TBODY> <TR><TD NOWRAP>1-2475</TD><TD NOWRAP>2026/06/01</TD><TD>医療機器</TD><TD>大動脈用ステントグラフト</TD><TD><A HREF=/rgo/MainServlet?recallno=1-2475 TARGET=_blank >ＲｅｌａｙＰｒｏ 胸部ステントグラフトシステム</A></TD><TD>テルモ株式会社</TD><TD> </TD></TR> </TBODY><script type=\"text/javascript\" src=\"/bnith__KOFCqjgYKwOhY2nK0Sw5mkooL3E0WZgtgkv6p8Sia1o90oZvCupp0B_VSr3dxwHc\"></script> <script language=\"JavaScript\" type=\"text/javascript\">const _0x35e8=['visitorI",
+      "bytes": 3119
     },
     "PMDA回収クラスII": {
       "listed": 28,
@@ -125,7 +125,7 @@
     },
     "メール通知": {
       "result": "not-configured",
-      "items": 2
+      "items": 1
     }
   }
 }
