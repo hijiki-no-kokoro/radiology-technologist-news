@@ -1,10 +1,10 @@
 {
-  "checked_at": "2026-10-30T11:20+09:00",
-  "added": 6,
-  "total": 174,
+  "checked_at": "2026-10-31T10:58+09:00",
+  "added": 12,
+  "total": 185,
   "sources": {
     "医療機能評価機構": {
-      "picked": 3
+      "error": "URLError: <urlopen error timed out>"
     },
     "PMDA": {
       "picked": 0
@@ -22,12 +22,12 @@
       "picked": 3
     },
     "厚生労働省": {
-      "listed": 101,
+      "listed": 131,
       "picked": 0
     },
     "日本消化器がん検診学会": {
       "listed": 43,
-      "picked": 4
+      "picked": 5
     },
     "日本磁気共鳴専門技術者認定機構": {
       "listed": 79,
@@ -47,7 +47,7 @@
     },
     "日本医学物理学会": {
       "listed": 10,
-      "picked": 0
+      "picked": 1
     },
     "日本磁気共鳴医学会": {
       "listed": 10,
@@ -84,7 +84,7 @@
     "PMDA回収クラスI": {
       "listed": 0,
       "picked": 0,
-      "sample": "ファイルダウンロード</A> &#x3000;<A HREF=\"./rcidx26-1k_all.zip\">CSVダウンロード</A> </TD> </TR> </TABLE> <BODY BGCOLOR=\"white\" LINK=\"#0000FF\" ALINK=\"#008000\" VLINK=\"#800080\"> <TABLE cellSpacing=0 cellPadding=1 width=\"100%\" bgColor=#ceffff border=1> <THEAD> <TR bgColor=#7777aa> <TH noWrap><FONT color=white>番号</FONT></TH> <TH noWrap><FONT color=white>掲載年月日</FONT></TH> <TH noWrap><FONT color=white>種類</FONT></TH> <TH><FONT color=white>一般名</FONT></TH> <TH><FONT color=white>販売名</FONT></TH> <TH><FONT color=white>製造販売業者等名称</FONT></TH> <TH noWrap><FONT color=white>備考</FONT></TH> </TR> </THEAD> </TBODY> <TR><TD NOWRAP>1-2475</TD><TD NOWRAP>2026/06/01</TD><TD>医療機器</TD><TD>大動脈用ステントグラフト</TD><TD><A HREF=/rgo/MainServlet?recallno=1-2475 TARGET=_blank >ＲｅｌａｙＰｒｏ 胸部ステントグラフトシステム</A></TD><TD>テルモ株式会社</TD><TD> </TD></TR> </TBODY><script type=\"text/javascript\" src=\"/bnith__KOFCqjgYKwOhY2nK0Sw5mkooL3E0WZgtgkv6p8Sia1o90oZvCupp0B_VSr3dxwHc\"></script> <script language=\"JavaScript\" type=\"text/javascript\">const _0x35e8=['visitorI",
+      "sample": "ファイルダウンロード</A> &#x3000;<A HREF=\"./rcidx26-1k_all.zip\">CSVダウンロード</A> </TD> </TR> </TABLE> <BODY BGCOLOR=\"white\" LINK=\"#0000FF\" ALINK=\"#008000\" VLINK=\"#800080\"> <TABLE cellSpacing=0 cellPadding=1 width=\"100%\" bgColor=#ceffff border=1> <THEAD> <TR bgColor=#7777aa> <TH noWrap><FONT color=white>番号</FONT></TH> <TH noWrap><FONT color=white>掲載年月日</FONT></TH> <TH noWrap><FONT color=white>種類</FONT></TH> <TH><FONT color=white>一般名</FONT></TH> <TH><FONT color=white>販売名</FONT></TH> <TH><FONT color=white>製造販売業者等名称</FONT></TH> <TH noWrap><FONT color=white>備考</FONT></TH> </TR> </THEAD> </TBODY> <TR><TD NOWRAP>1-2475</TD><TD NOWRAP>2026/06/01</TD><TD>医療機器</TD><TD>大動脈用ステントグラフト</TD><TD><A HREF=/rgo/MainServlet?recallno=1-2475 TARGET=_blank >ＲｅｌａｙＰｒｏ 胸部ステントグラフトシステム</A></TD><TD>テルモ株式会社</TD><TD> </TD></TR> </TBODY><script type=\"text/javascript\" src=\"/bnith__3avURDQHJBiteVwwGb9PLxxokvKfpA9NJvinX1rPQWdjKpDVLeviIqc1V3yiROgX\"></script> <script language=\"JavaScript\" type=\"text/javascript\">const _0x35e8=['visitorI",
       "bytes": 3119
     },
     "PMDA回収クラスII": {
@@ -96,19 +96,13 @@
       "limited": 28
     },
     "日本放射線技術学会雑誌": {
-      "listed": 13,
-      "feed_entries": 13,
-      "added": 0
+      "error": "HTTPError: HTTP Error 503: Service Unavailable"
     },
     "日本消化器がん検診学会雑誌": {
-      "listed": 0,
-      "feed_entries": 0,
-      "added": 0
+      "error": "HTTPError: HTTP Error 503: Service Unavailable"
     },
     "日本乳癌検診学会誌": {
-      "listed": 0,
-      "feed_entries": 0,
-      "added": 0
+      "error": "HTTPError: HTTP Error 503: Service Unavailable"
     },
     "香川県技師会の予定表": {
       "listed": 7
@@ -125,7 +119,7 @@
     },
     "メール通知": {
       "result": "not-configured",
-      "items": 1
+      "items": 2
     }
   }
 }

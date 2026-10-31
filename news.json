@@ -1,5 +1,126 @@
 [
   {
+    "date": "2026-10-30",
+    "category": "制度",
+    "importance": "高",
+    "headline": "【厚生労働省】医薬品の適応外使用に係るかかる保険診療上の取扱いについて",
+    "summary": "",
+    "why": "算定要件や点数の変更点を押さえておきましょう。担当する検査の算定に関わることがあります。",
+    "source": "日本医学放射線学会",
+    "url": "https://www.radiology.jp/member_info/relation/20261030_01.html",
+    "track": "official"
+  },
+  {
+    "date": "2026-10-30",
+    "category": "その他",
+    "importance": "中",
+    "headline": "メンテナンス情報（11/4）",
+    "summary": "",
+    "why": "",
+    "source": "日本医学放射線学会",
+    "url": "https://www.radiology.jp/member_info/news_member/2015042808.html",
+    "track": "general"
+  },
+  {
+    "date": "2026-10-28",
+    "category": "その他",
+    "importance": "中",
+    "headline": "[AOSR] Education & Training",
+    "summary": "",
+    "why": "",
+    "source": "日本医学放射線学会",
+    "url": "https://www.radiology.jp/member_info/aosr.html",
+    "track": "general"
+  },
+  {
+    "date": "2026-10-30",
+    "category": "CT",
+    "importance": "中",
+    "headline": "2027年度 新規大腸CT検査技術認定施設申請手続きに関するお知らせ",
+    "summary": "",
+    "why": "",
+    "source": "日本消化器がん検診学会",
+    "url": "https://www.jsgcs.or.jp/news/archives/1142",
+    "track": "official"
+  },
+  {
+    "date": "2026-10-30",
+    "category": "CT",
+    "importance": "中",
+    "headline": "2027年度 大腸CT検査技術認定施設更新に関するお知らせ",
+    "summary": "",
+    "why": "",
+    "source": "日本消化器がん検診学会",
+    "url": "https://www.jsgcs.or.jp/news/archives/1141",
+    "track": "official"
+  },
+  {
+    "date": "2026-10-30",
+    "category": "核医学",
+    "importance": "中",
+    "headline": "書籍『RI内用療法の線量評価　基礎から実践まで』刊行のお知らせ",
+    "summary": "",
+    "why": "",
+    "source": "日本医学物理学会",
+    "url": "https://www.jsmp.org/info/%e6%9b%b8%e7%b1%8d%e3%80%8eri%e5%86%85%e7%94%a8%e7%99%82%e6%b3%95%e3%81%ae%e7%b7%9a%e9%87%8f%e8%a9%95%e4%be%a1%e3%80%80%e5%9f%ba%e7%a4%8e%e3%81%8b%e3%82%89%e5%ae%9f%e8%b7%b5%e3%81%be%e3%81%a7%e3%80%8f/",
+    "track": "general"
+  },
+  {
+    "date": "2026-10-30",
+    "category": "AI",
+    "importance": "低",
+    "headline": "ViewSend ICT、遠隔画像診断のAI開発・業務自動化で資金調達 所見作成・請求を効率化 - 医療テックニュース",
+    "summary": "",
+    "why": "",
+    "source": "医療テックニュース",
+    "url": "https://news.google.com/rss/articles/CBMiZEFVX3lxTFBCbURvTzc4bFlhenoybHdObkROUFlHSlF5NmdZOHcwMXdmd1lqcUFQTVV0TEtlTUFvQlFXYXVqb3p3YXZzMm4wLVZJbHNsQXRYdXNpN29WU0cwdlA0YWI3bkJmdVM?oc=5",
+    "track": "general"
+  },
+  {
+    "date": "2026-10-30",
+    "category": "AI",
+    "importance": "低",
+    "headline": "〈今期売上高5.86億円見込〉100施設超が導入する遠隔画像診断支援システムで医師不足・医療格差の解消を目指す「ViewSend ICT」 - FUNDINNO",
+    "summary": "",
+    "why": "",
+    "source": "FUNDINNO",
+    "url": "https://news.google.com/rss/articles/CBMiSEFVX3lxTE1pT0FUaXlJeF9zVTA1OW04WDFvNmRiSDhUSVV5X3M3a2dwbGh1bUVvX1FHOFRneGlaUkROR0JySDdUYzhMcVV6cQ?oc=5",
+    "track": "general"
+  },
+  {
+    "date": "2026-10-30",
+    "category": "放射線治療",
+    "importance": "低",
+    "headline": "住友重機械工業、BNCT治療で再発髄膜腫の適応承認を取得 - ニュースメディアVOIX",
+    "summary": "",
+    "why": "",
+    "source": "ニュースメディアVOIX",
+    "url": "https://news.google.com/rss/articles/CBMiU0FVX3lxTE9qT3BmSlRFSFkyT0k5UG9wYVRyMUtqbVdQTkFfU0I1TnJfc3VwQ09LbXFMOHk0enpnTTBxbjdvdWMxNDNCOXZmNlVpYW5JVFhpeHBB?oc=5",
+    "track": "general"
+  },
+  {
+    "date": "2026-10-30",
+    "category": "放射線治療",
+    "importance": "低",
+    "headline": "大阪医科薬科大学が実施した医師主導治験の成果をもとに BNCT治療システム、再発髄膜腫への適用拡大が承認 - Infoseek",
+    "summary": "",
+    "why": "",
+    "source": "Infoseek",
+    "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTFAwaVV2WllTaGRGTzRYNWJqdTJFSVRuZWhXTVZpa3VwdUc2M1lvdjFGMmJteVQ0cW1zUVU5RFVhWDJycmVqa25MX2lBdHhhN3o0TXlHNnJPRkxsUHRNYTZwSHI4OHV5dUU?oc=5",
+    "track": "general"
+  },
+  {
+    "date": "2026-10-30",
+    "category": "MRI",
+    "importance": "高",
+    "headline": "肝 MRI による脂肪定量の撮像・管理指針 - 日本医学放射線学会",
+    "summary": "",
+    "why": "推奨内容の変更点を確認し、普段の撮影条件やプロトコルと照らし合わせておきましょう。",
+    "source": "日本医学放射線学会",
+    "url": "https://news.google.com/rss/articles/CBMickFVX3lxTFBkZHdMLVBtVHhwZXMyRHhoRHdLbVBiNDJNTjktTEx6MGlkdkcyM3hxckxnOTdUb3BOUXQ5RmRGRXZFdmFUSVRVM1g0WFJZNnRWVmFxdDB0MVJaWTBSMVR6ZzhMVGoyV2tFRS15WGc5ZmxwUQ?oc=5",
+    "track": "official"
+  },
+  {
     "date": "2026-10-29",
     "category": "MRI",
     "importance": "高",
